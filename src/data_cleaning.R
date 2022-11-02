@@ -130,6 +130,25 @@ test_X_impute <- cbind(test_X_impute,
                        naFlag(df = test_X, df_val = train_X))
 
 str(train_X_impute)
+
+#write train_X_impute and test_X_impute to silver file
+write.table(train_X_impute, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
+write.table(test_X_impute, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
+
+# check for outliers for lead time
+train_lead_time_z <- scale(train_X_impute$lead_time)
+hist(train_lead_time_z)
+
+handle_outlier_z <- function(col){
+  col_z <- scale(col)
+  ifelse(abs(col_z)>3,
+         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
+}
+train_X_impute$lead_time <- handle_outlier_z(train_X_impute$lead_time)
+train_X_impute$lead_time
+
+
+
 #change the format of date
 
 train_X$arrival_date<-as.Date(train_X$arrival_date,format="%B %d %Y")
