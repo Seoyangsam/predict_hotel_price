@@ -211,7 +211,3 @@ train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.char
 str(train_X)
 test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
 str(test_X)
-
-#save the dataset
-write.table(train_X, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
-write.table(test_X, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
