@@ -115,8 +115,7 @@ test_X_impute["nr_babies"][test_X_impute["nr_babies"] == "n/a"] <- 0
 train_X_impute$nr_booking_changes <- impute(train_X_impute$nr_booking_changes, val = 0)
 test_X_impute$nr_booking_changes <- impute(test_X_impute$nr_booking_changes, val = 0)
 
-train_X_impute$nr_babies
-test_X_impute$nr_booking_changes
+unique(train_X$assigned_room_type)
 
 # Now check again if there are missing values
 colMeans(is.na(test_X_impute))
@@ -124,3 +123,31 @@ colMeans(is.na(train_X_impute))
 
 
 # flags
+
+train_X_impute <- cbind(train_X_impute,
+                        naFlag(df = train_X))
+test_X_impute <- cbind(test_X_impute,
+                       naFlag(df = test_X, df_val = train_X))
+
+str(train_X_impute)
+#change the format of date
+
+train_X$arrival_date<-as.Date(train_X$arrival_date,format="%B %d %Y")
+train_X$arrival_date
+
+#convert canceled into 1 and 0
+train_X$canceled<-ifelse(train_X$canceled=="stay cancelled",1,0)
+test_X$canceled<-ifelse(test_X$canceled=="stay cancelled",1,0)
+
+#convert deposit into 1 and 0
+train_X$deposit<-ifelse(train_X$deposit=="deposit equal to total cost of stay --- no refund",1,0)
+test_X$deposit<-ifelse(test_X$deposit=="deposit equal to total cost of stay --- no refund",1,0)
+
+#convert is_repeated_guest into 1 and 0
+train_X$is_repeated_guest<-ifelse(train_X$is_repeated_guest=="yes",1,0)
+test_X$is_repeated_guest<-ifelse(test_X$is_repeated_guest=="yes",1,0)
+
+#convert hotel_type into 1 and 0
+train_X$hotel_type<-ifelse(train_X$hotel_type=="City Hotel",1,0)
+test_X$hotel_type<-ifelse(test_X$hotel_type=="City Hotel",1,0)
+
