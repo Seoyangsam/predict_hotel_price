@@ -21,8 +21,6 @@ str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
 
-<<<<<<< HEAD
-=======
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
@@ -129,7 +127,6 @@ colMeans(is.na(train_X_impute))
 # flags
 
 
->>>>>>> 7b518b93c60a8afb5f453cfbb705e04ea90e8c89
 #change the format of date
 
 train_X$arrival_date<-as.Date(train_X$arrival_date,format="%m %d %Y")
