@@ -25,33 +25,6 @@ train_X <- cbind(train_X, dummies_train)
 test_X <- subset(test_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
 test_X <- cbind(test_X, dummies_test)
 
-#impute missing values
-
-train_X$nr_booking_changes[is.na(train_X$nr_booking_changes)] <- 0
-train_X$nr_booking_changes <-as.integer(train_X$nr_booking_changes)
-test_X$nr_booking_changes[is.na(test_X$nr_booking_changes)] <- 0
-test_X$nr_booking_changes <-as.integer(test_X$nr_booking_changes)
-
-train_X$nr_children[is.na(train_X$nr_children)] <- 0
-test_X$nr_children[is.na(test_X$nr_children)] <- 0
-
-train_X$nr_previous_bookings[is.na(train_X$nr_previous_bookings)] <- 0
-test_X$nr_previous_bookings[is.na(test_X$nr_previous_bookings)] <- 0
-
-train_X$previous_bookings_not_canceled[is.na(train_X$previous_bookings_not_canceled)] <- 0
-test_X$previous_bookings_not_canceled[is.na(test_X$previous_bookings_not_canceled)] <- 0
-
-train_X$previous_cancellations[is.na(train_X$previous_cancellations)] <- 0
-test_X$previous_cancellations[is.na(test_X$previous_cancellations)] <- 0
-
-train_X$lead_time <- gsub("[  day(s)]",'',train_X$lead_time)
-train_X$lead_time <-as.integer(train_X$lead_time)
-train_X$lead_time[is.na(train_X$lead_time)] <- mean(train_X$lead_time, na.rm = T)
-
-test_X$lead_time <- gsub("[  day(s)]",'',test_X$lead_time)
-test_X$lead_time <-as.integer(test_X$lead_time)
-test_X$lead_time[is.na(test_X$lead_time)] <- mean(train_X$lead_time, na.rm = T)
-
 #convert the predictors to factors
 train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
 str(train_X)
