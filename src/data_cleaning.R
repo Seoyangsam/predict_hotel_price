@@ -27,11 +27,12 @@ colMeans(is.na(train_X))
 # Create a validation set out of the training set
 train_X <- train_X[0:66436,]
 validation_X <- train_X[66437:83045,]
-test_X_impute <- test_X
+
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
 test_X_impute <- test_X
+validation_X_impute <- validation_X
 
 unique(train_X_impute$nr_previous_bookings)
 # Impute function
@@ -174,57 +175,6 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
-max(train_X_outlier$days_in_waiting_list)
-max(train_X_impute$days_in_waiting_list)
-
-
-# check for outliers for lead time
-train_X_outlier <- train_X_impute
-
-train_lead_time_z <- scale(train_X_outlier$lead_time)
-hist(train_lead_time_z)
-
-handle_outlier_z <- function(col){
-  col_z <- scale(col)
-  ifelse(abs(col_z)>3,
-         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
-}
-train_X_outlier$lead_time <- handle_outlier_z(train_X_outlier$lead_time)
-max(train_X_impute$lead_time)
-max(train_X_outlier$lead_time)
-
-#check for outliers for days in waiting list
-unique(train_X_impute$days_in_waiting_list)
-
-train_days_in_waiting_list_z <- scale(train_X_outlier$days_in_waiting_list)
-hist(train_days_in_waiting_list_z)
-
-handle_outlier_z <- function(col){
-  col_z <- scale(col)
-  ifelse(abs(col_z)>3,
-         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
-}
-train_X_outlier$days_in_waiting_list <- handle_outlier_z(train_X_outlier$days_in_waiting_list)
-max(train_X_impute$days_in_waiting_list)
-max(train_X_outlier$days_in_waiting_list)
-
-#check for outliers for previous cancellations
-unique(train_X_impute$previous_cancellations)
-
-
-handle_outlier_z <- function(col){
-  col_z <- scale(col)
-  ifelse(abs(col_z)>3,
-         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
-}
-
-train_X_outlier$days_in_waiting_list <- handle_outlier_z(train_X_outlier$days_in_waiting_list)
-max(train_X_impute$days_in_waiting_list)
-max(train_X_outlier$days_in_waiting_list)
-
-
-
-
 
 #change the format of date
 
@@ -251,5 +201,13 @@ train_X_impute$hotel_type<-ifelse(train_X_impute$hotel_type=="City Hotel",1,0)
 test_X_impute$hotel_type<-ifelse(test_X_impute$hotel_type=="City Hotel",1,0)
 validation_X_impute$hotel_type<-ifelse(validation_X_impute$hotel_type=="City Hotel",1,0)
 
-# remove outliers
-str(train_X_impute)
+#write it to silver file
+train_X_cleaned <- train_X_outlier
+test_X_cleaned <- test_X_impute
+validation_X_cleaned <- validation_X_impute
+
+write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
+write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
+write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
+
+
