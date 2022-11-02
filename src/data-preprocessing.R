@@ -1,9 +1,9 @@
 #Here we perform the data preprocessing
 #First we read our datas
-train <- read.csv(file = 'data/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
 str(train)
 
-test_X <- read.csv(file = 'data/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
 str(test_X)
 
 #Next, we split the independent & dependent variables in the training set.
@@ -11,8 +11,8 @@ train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
 
 train_y <- train$average_daily_rate
-train_y <- gsub('  \u0080','',train_y) #remove the euro sign
-train_y <- as.integer(train_y) #convert from chr to int
+train_y <- gsub(' .*','',train_y) #remove the euro sign
+train_y <- as.double(train_y) #convert from chr to float
 str(train_y)
 
 # we drop id, booking agent and booking company
@@ -41,49 +41,38 @@ test_X$is_repeated_guest<-ifelse(test_X$is_repeated_guest=="yes",1,0)
 train_X$hotel_type<-ifelse(train_X$hotel_type=="City Hotel",1,0)
 test_X$hotel_type<-ifelse(test_X$hotel_type=="City Hotel",1,0)
 
-#integer encoding for meal_booked
-union(unique(train_X$meal_booked), unique(test_X$meal_booked))
-meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
-train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
-test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
+#integer encoding for meal_booked, save for later
+#union(unique(train_X$meal_booked), unique(test_X$meal_booked))
+#meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
+#train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
+#test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
 
 library(dummy)
 # get categories and dummies
-cats <- categories(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment")])
+cats <- categories(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")])
 # apply on train set (exclude reference categories)
-dummies_train <- dummy(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment")],
+dummies_train <- dummy(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
-dummies_train <- subset(dummies_train, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation))
+str(dummies_train)
+dummies_train <- subset(dummies_train, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
 # apply on test set (exclude reference categories)
-dummies_test <- dummy(test_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment")],
+dummies_test <- dummy(test_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
-dummies_test <- subset(dummies_test, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation))
+dummies_test <- subset(dummies_test, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
 
 ## merge with overall training set
-train_X <- subset(train_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment))
+train_X <- subset(train_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
 train_X <- cbind(train_X, dummies_train)
 ## merge with overall test set
-test_X <- subset(test_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment))
+test_X <- subset(test_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
 test_X <- cbind(test_X, dummies_test)
-
-#convert the predictors to factors
-train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
-str(train_X)
-test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
-str(test_X)
-
-#save the dataset
-write.table(train_X, file = "train_X.csv", sep = "\t", row.names = F)
-write.table(test_X, file = "test_X.csv", sep = "\t", row.names = F)
 
 #impute missing values
 train_X$nr_adults[is.na(train_X$nr_adults)] <- 1
 test_X$nr_adults[is.na(test_X$nr_adults)] <- 1
 
-train_X$nr_babies[is.na(train_X$nr_babies)] <- 0
-train_X$nr_babies <-as.integer(train_X$nr_babies)
-test_X$nr_babies[is.na(test_X$nr_babies)] <- 0
-test_X$nr_babies <-as.integer(test_X$nr_babies)
+train_X["nr_babies"][train_X["nr_babies"] == "n/a"] <- 0
+test_X["nr_babies"][test_X["nr_babies"] == "n/a"] <- 0
 
 train_X$nr_booking_changes[is.na(train_X$nr_booking_changes)] <- 0
 train_X$nr_booking_changes <-as.integer(train_X$nr_booking_changes)
@@ -108,4 +97,14 @@ train_X$lead_time[is.na(train_X$lead_time)] <- mean(train_X$lead_time, na.rm = T
 
 test_X$lead_time <- gsub("[  day(s)]",'',test_X$lead_time)
 test_X$lead_time <-as.integer(test_X$lead_time)
-test_X_impute$Age[is.na(test_X_impute$Age)] <- mean(train_X$Age, na.rm = T)
+test_X$lead_time[is.na(test_X$lead_time)] <- mean(train_X$lead_time, na.rm = T)
+
+#convert the predictors to factors
+train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
+str(train_X)
+test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
+str(test_X)
+
+#save the dataset
+write.table(train_X, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
+write.table(test_X, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
