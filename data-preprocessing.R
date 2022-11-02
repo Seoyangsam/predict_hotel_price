@@ -66,21 +66,11 @@ train_X <- cbind(train_X, dummies_train)
 test_X <- subset(test_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment))
 test_X <- cbind(test_X, dummies_test)
 
-#convert the predictors to factors
-train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
-str(train_X)
-test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
-str(test_X)
-
-#save the dataset
-write.table(train_X, file = "train_X.csv", sep = "\t", row.names = F)
-write.table(test_X, file = "test_X.csv", sep = "\t", row.names = F)
-
 #impute missing values
 train_X$nr_adults[is.na(train_X$nr_adults)] <- 1
 test_X$nr_adults[is.na(test_X$nr_adults)] <- 1
 
-train_X$nr_babies[is.na(train_X$nr_babies)] <- 0
+train_X["nr_babies"][train_X["nr_babies"] == "n/a"] <- 0
 train_X$nr_babies <-as.integer(train_X$nr_babies)
 test_X$nr_babies[is.na(test_X$nr_babies)] <- 0
 test_X$nr_babies <-as.integer(test_X$nr_babies)
@@ -108,4 +98,16 @@ train_X$lead_time[is.na(train_X$lead_time)] <- mean(train_X$lead_time, na.rm = T
 
 test_X$lead_time <- gsub("[  day(s)]",'',test_X$lead_time)
 test_X$lead_time <-as.integer(test_X$lead_time)
-test_X_impute$Age[is.na(test_X_impute$Age)] <- mean(train_X$Age, na.rm = T)
+#test_X_impute$Age[is.na(test_X_impute$Age)] <- mean(train_X$Age, na.rm = T)
+
+
+#convert the predictors to factors
+train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
+str(train_X)
+test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
+str(test_X)
+
+#save the dataset
+write.table(train_X, file = "train_X.csv", sep = "\t", row.names = F)
+write.table(test_X, file = "test_X.csv", sep = "\t", row.names = F)
+
