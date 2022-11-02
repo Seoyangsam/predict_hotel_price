@@ -161,6 +161,7 @@ str(train_X_impute)
 #write train_X_impute and test_X_impute to silver file
 write.table(train_X_impute, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
 write.table(test_X_impute, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
+write.table(validation_X_impute, file = "data/silver/validation_X.csv", sep = "\t", row.names = F)
 
 #check for outliers
 train_X_outlier <- train_X_impute
