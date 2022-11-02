@@ -1,3 +1,12 @@
+#First we read our datas
+train_X_impute <- read.csv(file = 'data/silver/train_X.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+str(train_X_impute)
+
+test_X_impute <- read.csv(file = 'data/silver/test_X.csv', header = TRUE, fileEncoding = 'latin1')
+str(test_X_impute)
+
+validation_X_impute <- read.csv(file = 'data/silver/validation_X.csv', header = TRUE, fileEncoding = 'latin1')
+str(validation_X_impute)
 
 #integer encoding for meal_booked, save for later
 #union(unique(train_X$meal_booked), unique(test_X$meal_booked))
