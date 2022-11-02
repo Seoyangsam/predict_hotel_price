@@ -65,57 +65,57 @@ naFlag <- function(df, df_val = NULL) {
 # impute all categorical variables
 
 train_X_impute$booking_distribution_channel <- impute(train_X_impute$booking_distribution_channel, method = modus) 
-test_X_impute$booking_distribution_channel <- impute(test_X_impute$booking_distribution_channel, val = modus(train_X$booking_distribution_channel, na.rm = T))
-validation_X_impute$booking_distribution_channel <- impute(validation_X_impute$booking_distribution_channel, val = modus(train_X$booking_distribution_channel, na.rm = T))
+test_X_impute$booking_distribution_channel <- impute(test_X_impute$booking_distribution_channel, val = modus(train_X_impute$booking_distribution_channel, na.rm = T))
+validation_X_impute$booking_distribution_channel <- impute(validation_X_impute$booking_distribution_channel, val = modus(train_X_impute$booking_distribution_channel, na.rm = T))
 
 train_X_impute$country <- impute(train_X_impute$country, method=modus)
-test_X_impute$country <- impute(test_X_impute$country, val = modus(train_X$country, na.rm = T))
-validation_X_impute$country <- impute(validation_X_impute$country, val = modus(train_X$country, na.rm = T))
+test_X_impute$country <- impute(test_X_impute$country, val = modus(train_X_impute$country, na.rm = T))
+validation_X_impute$country <- impute(validation_X_impute$country, val = modus(train_X_impute$country, na.rm = T))
 
 train_X_impute$customer_type <- impute(train_X_impute$customer_type, method = modus)
-test_X_impute$customer_type <- impute(test_X_impute$customer_type, val = modus(train_X$customer_type, na.rm = T))
-validation_X_impute$customer_type <- impute(validation_X_impute$customer_type, val = modus(train_X$customer_type, na.rm = T))
+test_X_impute$customer_type <- impute(test_X_impute$customer_type, val = modus(train_X_impute$customer_type, na.rm = T))
+validation_X_impute$customer_type <- impute(validation_X_impute$customer_type, val = modus(train_X_impute$customer_type, na.rm = T))
 
 train_X_impute$hotel_type <- impute(train_X_impute$hotel_type, method = modus)
-test_X_impute$hotel_type <- impute(test_X_impute$hotel_type, val = modus(train_X$hotel_type, na.rm = T))
-validation_X_impute$hotel_type <- impute(validation_X_impute$hotel_type, val = modus(train_X$hotel_type, na.rm = T))
+test_X_impute$hotel_type <- impute(test_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
+validation_X_impute$hotel_type <- impute(validation_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
 
 train_X_impute$last_status <- impute(train_X_impute$last_status, method = modus)
-test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X$last_status, na.rm = T))
-validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X$last_status, na.rm = T))
+test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
+validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
 
 train_X_impute$market_segment <- impute(train_X_impute$market_segment, method = modus)
-test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X$market_segment, na.rm = T))
-validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X$market_segment, na.rm = T))
+test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
+validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 
 # impute all numerical variables
 train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, method = median)
-test_X_impute$car_parking_spaces <- impute(test_X_impute$car_parking_spaces, val = median(train_X$car_parking_spaces, na.rm = T))
-validation_X_impute$car_parking_spaces <- impute(validation_X_impute$car_parking_spaces, val = median(train_X$car_parking_spaces, na.rm = T))
+test_X_impute$car_parking_spaces <- impute(test_X_impute$car_parking_spaces, val = median(train_X_impute$car_parking_spaces, na.rm = T))
+validation_X_impute$car_parking_spaces <- impute(validation_X_impute$car_parking_spaces, val = median(train_X_impute$car_parking_spaces, na.rm = T))
 
 train_X_impute$days_in_waiting_list <- impute(train_X_impute$days_in_waiting_list, method = median)
-test_X_impute$days_in_waiting_list <- impute(test_X_impute$days_in_waiting_list, val = median(train_X$days_in_waiting_list, na.rm = T))
-validation_X_impute$days_in_waiting_list <- impute(validation_X_impute$days_in_waiting_list, val = median(train_X$days_in_waiting_list, na.rm = T))
+test_X_impute$days_in_waiting_list <- impute(test_X_impute$days_in_waiting_list, val = median(train_X_impute$days_in_waiting_list, na.rm = T))
+validation_X_impute$days_in_waiting_list <- impute(validation_X_impute$days_in_waiting_list, val = median(train_X_impute$days_in_waiting_list, na.rm = T))
 
 train_X_impute$nr_adults <- impute(train_X_impute$nr_adults, method = median)
-test_X_impute$nr_adults <- impute(test_X_impute$nr_adults, val = median(train_X$nr_adults, na.rm = T))
-validation_X_impute$nr_adults <- impute(validation_X_impute$nr_adults, val = median(train_X$nr_adults, na.rm = T))
+test_X_impute$nr_adults <- impute(test_X_impute$nr_adults, val = median(train_X_impute$nr_adults, na.rm = T))
+validation_X_impute$nr_adults <- impute(validation_X_impute$nr_adults, val = median(train_X_impute$nr_adults, na.rm = T))
 
 train_X_impute$nr_children <- impute(train_X_impute$nr_children, method = median)
-test_X_impute$nr_children <- impute(test_X_impute$nr_children, val = median(train_X$nr_children, na.rm = T))
-validation_X_impute$nr_children <- impute(validation_X_impute$nr_children, val = median(train_X$nr_children, na.rm = T))
+test_X_impute$nr_children <- impute(test_X_impute$nr_children, val = median(train_X_impute$nr_children, na.rm = T))
+validation_X_impute$nr_children <- impute(validation_X_impute$nr_children, val = median(train_X_impute$nr_children, na.rm = T))
 
 train_X_impute$nr_previous_bookings <- impute(train_X_impute$nr_previous_bookings, method = median)
-test_X_impute$nr_previous_bookings <- impute(test_X_impute$nr_previous_bookings, val = median(train_X$nr_previous_bookings, na.rm = T))
-validation_X_impute$nr_previous_bookings <- impute(validation_X_impute$nr_previous_bookings, val = median(train_X$nr_previous_bookings, na.rm = T))
+test_X_impute$nr_previous_bookings <- impute(test_X_impute$nr_previous_bookings, val = median(train_X_impute$nr_previous_bookings, na.rm = T))
+validation_X_impute$nr_previous_bookings <- impute(validation_X_impute$nr_previous_bookings, val = median(train_X_impute$nr_previous_bookings, na.rm = T))
 
 train_X_impute$previous_bookings_not_canceled <- impute(train_X_impute$previous_bookings_not_canceled, method = median)
-test_X_impute$previous_bookings_not_canceled <- impute(test_X_impute$previous_bookings_not_canceled, val = median(train_X$previous_bookings_not_canceled, na.rm = T))
-validation_X_impute$previous_bookings_not_canceled <- impute(validation_X_impute$previous_bookings_not_canceled, val = median(train_X$previous_bookings_not_canceled, na.rm = T))
+test_X_impute$previous_bookings_not_canceled <- impute(test_X_impute$previous_bookings_not_canceled, val = median(train_X_impute$previous_bookings_not_canceled, na.rm = T))
+validation_X_impute$previous_bookings_not_canceled <- impute(validation_X_impute$previous_bookings_not_canceled, val = median(train_X_impute$previous_bookings_not_canceled, na.rm = T))
 
 train_X_impute$previous_cancellations <- impute(train_X_impute$previous_cancellations, method = median)
-test_X_impute$previous_cancellations <- impute(test_X_impute$previous_cancellations, val = median(train_X$previous_cancellations, na.rm = T))
-validation_X_impute$previous_cancellations <- impute(validation_X_impute$previous_cancellations, val = median(train_X$previous_cancellations, na.rm = T))
+test_X_impute$previous_cancellations <- impute(test_X_impute$previous_cancellations, val = median(train_X_impute$previous_cancellations, na.rm = T))
+validation_X_impute$previous_cancellations <- impute(validation_X_impute$previous_cancellations, val = median(train_X_impute$previous_cancellations, na.rm = T))
 
 # Change lead time to integer to calculate mean
 train_X_impute$lead_time <- gsub("[  day(s)]",'',train_X_impute$lead_time)
@@ -128,8 +128,8 @@ validation_X_impute$lead_time <- gsub("[  day(s)]",'',validation_X_impute$lead_t
 validation_X_impute$lead_time <-as.integer(validation_X_impute$lead_time)
 
 train_X_impute$lead_time <- impute(train_X_impute$lead_time, method = mean)
-test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X$lead_time, na.rm = T))
-validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X$lead_time, na.rm = T))
+test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
+validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
 
 # replace n/a in babies with 0
 train_X_impute["nr_babies"][train_X_impute["nr_babies"] == "n/a"] <- 0
@@ -157,9 +157,6 @@ validation_X_impute <- cbind(validation_X_impute,
 
 str(train_X_impute)
 
-#write train_X_impute and test_X_impute to silver file
-write.table(train_X_impute, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
-write.table(test_X_impute, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -182,14 +179,17 @@ train_X_impute$arrival_date
 #convert canceled into 1 and 0
 train_X_impute$canceled<-ifelse(train_X_impute$canceled=="stay cancelled",1,0)
 test_X_impute$canceled<-ifelse(test_X_impute$canceled=="stay cancelled",1,0)
+validation_X_impute$canceled<-ifelse(validation_X_impute$canceled=="stay cancelled",1,0)
 
 #convert deposit into 1 and 0
 train_X_impute$deposit<-ifelse(train_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
 test_X_impute$deposit<-ifelse(test_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
+validation_X_impute$deposit<-ifelse(validation_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
 
 #convert is_repeated_guest into 1 and 0
 train_X_impute$is_repeated_guest<-ifelse(train_X_impute$is_repeated_guest=="yes",1,0)
 test_X_impute$is_repeated_guest<-ifelse(test_X_impute$is_repeated_guest=="yes",1,0)
+validation_X_impute$is_repeated_guest<-ifelse(validation_X_impute$is_repeated_guest=="yes",1,0)
 
 #convert hotel_type into 1 and 0
 train_X_impute$hotel_type<-ifelse(train_X_impute$hotel_type=="City Hotel",1,0)
