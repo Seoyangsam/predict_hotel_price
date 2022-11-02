@@ -1,6 +1,6 @@
 #Here we perform the data preprocessing
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, fileEncoding = 'latin1')
 str(train)
 
 
@@ -14,7 +14,7 @@ train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
 
 train_y <- train$average_daily_rate
-train_y <- gsub('  \u0080','',train_y) #remove the euro sign
+train_y <- gsub(" .*", "", train_y) #remove the euro sign
 train_y <- as.integer(train_y) #convert from chr to int
 str(train_y)
 
@@ -23,6 +23,39 @@ train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
 str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
+
+# missing values
+colMeans(is.na(test_X))
+colMeans(is.na(train_X))
+
+# Impute function
+impute <- function(x, method = mean, val = NULL) {
+  if (is.null(val)) {
+    val <- method(x, na.rm = TRUE)
+  }
+  x[is.na(x)] <- val
+  return(x)
+}
+
+# calculate mode of list
+modus <- function(x, na.rm = FALSE) {
+  if (na.rm) x <- x[!is.na(x)]
+  ux <- unique(x)
+  return(ux[which.max(tabulate(match(x, ux)))])
+}
+
+# flag function for NA values
+naFlag <- function(df, df_val = NULL) {
+  if (is.null(df_val)) {
+    df_val <- df
+  }
+  mask <- sapply(df_val, anyNA)
+  out <- lapply(df[mask], function(x)as.numeric(is.na(x)))
+  if (length(out) > 0) names(out) <- paste0(names(out), "_flag")
+  return(as.data.frame(out))
+}
+
+# flags
 
 #change the format of date
 train_X$arrival_date <- gsub("'",'',train_X$arrival_date)
@@ -122,3 +155,15 @@ train_X$lead_time[is.na(train_X$lead_time)] <- mean(train_X$lead_time, na.rm = T
 test_X$lead_time <- gsub("[  day(s)]",'',test_X$lead_time)
 test_X$lead_time <-as.integer(test_X$lead_time)
 test_X_impute$Age[is.na(test_X_impute$Age)] <- mean(train_X$Age, na.rm = T)
+
+test_X$last_status_date <- as.Date(test_X$last_status_date)
+train_X$last_status_date <- as.Date(train_X$last_status_date)
+
+test_X$lead_time <- as.integer(sub("day(s)", "", test_X$lead_time))
+train_X$lead_time <- as.integer(sub("day(s)","",train_X$lead_time))
+
+test_X$nr_booking_changes <- as.integer(test_X$nr_booking_changes)
+train_X$nr_booking_changes <- as.integer(test_X$nr_booking_changes)
+
+str(test_X)
+str(train_X)
