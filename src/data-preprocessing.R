@@ -1,6 +1,6 @@
 #Here we perform the data preprocessing
 #First we read our datas
-train <- read.csv(file = 'data/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
 str(train)
 
 
@@ -45,11 +45,12 @@ train_X$hotel_type<-ifelse(train_X$hotel_type=="City Hotel",1,0)
 test_X$hotel_type<-ifelse(test_X$hotel_type=="City Hotel",1,0)
 
 #integer encoding for meal_booked
-union(unique(train_X$meal_booked), unique(test_X$meal_booked))
-meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
-train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
-test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
+#union(unique(train_X$meal_booked), unique(test_X$meal_booked))
+#meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
+#train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
+#test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
 
+install.packages("dummy")
 library(dummy)
 # get categories and dummies
 cats <- categories(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment")])
@@ -75,14 +76,18 @@ str(train_X)
 test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
 str(test_X)
 
+# Hanne: check percentages of missing values for each column
+train_impute <- train
 train_X_impute <- train_X
 test_X_impute <- test_X
 
 colMeans(is.na(train_X_impute))
 colMeans(is.na(test_X_impute))
+colMeans(is.na(train_impute))
+
 #save the dataset
-write.table(train_X, file = "train_X.csv", sep = "\t", row.names = F)
-write.table(test_X, file = "test_X.csv", sep = "\t", row.names = F)
+write.table(train_X, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
+write.table(test_X, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
 
 #impute missing values
 train_X$nr_adults[is.na(train_X$nr_adults)] <- 1
