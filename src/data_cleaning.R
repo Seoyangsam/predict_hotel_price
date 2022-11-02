@@ -25,8 +25,12 @@ colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
 # Create a validation set out of the training set
-train_X_impute <- train_X[0:66436,]
-validation_X_impute <- train_X[66437:83045,]
+train_X <- train_X[0:66436,]
+validation_X <- train_X[66437:83045,]
+test_X_impute <- test_X
+
+# create new dataframes to avoid overwriting the existing dataframes
+train_X_impute <- train_X
 test_X_impute <- test_X
 
 unique(train_X_impute$nr_previous_bookings)
@@ -124,8 +128,8 @@ validation_X_impute$lead_time <- gsub("[  day(s)]",'',validation_X_impute$lead_t
 validation_X_impute$lead_time <-as.integer(validation_X_impute$lead_time)
 
 train_X_impute$lead_time <- impute(train_X_impute$lead_time, method = mean)
-test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X_impute_impute$lead_time, na.rm = T))
-validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X_impute_impute$lead_time, na.rm = T))
+test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
+validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
 
 # replace n/a in babies with 0
 train_X_impute["nr_babies"][train_X_impute["nr_babies"] == "n/a"] <- 0
@@ -141,6 +145,7 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
+validation_X_impute$lead_time
 # flags
 
 train_X_impute <- cbind(train_X_impute,
