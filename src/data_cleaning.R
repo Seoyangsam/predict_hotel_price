@@ -173,26 +173,26 @@ train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle
 
 #change the format of date
 
-train_X_impute$arrival_date<-as.POSIXct(train_X_impute$arrival_date,format="%B %d %Y")
-train_X_impute$arrival_date
+train_X_outlier$arrival_date<-as.POSIXct(train_X_outlier$arrival_date,format="%B %d %Y")
+train_X_outlier$arrival_date
 
 #convert canceled into 1 and 0
-train_X_impute$canceled<-ifelse(train_X_impute$canceled=="stay cancelled",1,0)
+train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
 test_X_impute$canceled<-ifelse(test_X_impute$canceled=="stay cancelled",1,0)
 validation_X_impute$canceled<-ifelse(validation_X_impute$canceled=="stay cancelled",1,0)
 
 #convert deposit into 1 and 0
-train_X_impute$deposit<-ifelse(train_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
+train_X_outlier$deposit<-ifelse(train_X_outlier$deposit=="deposit equal to total cost of stay --- no refund",1,0)
 test_X_impute$deposit<-ifelse(test_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
 validation_X_impute$deposit<-ifelse(validation_X_impute$deposit=="deposit equal to total cost of stay --- no refund",1,0)
 
 #convert is_repeated_guest into 1 and 0
-train_X_impute$is_repeated_guest<-ifelse(train_X_impute$is_repeated_guest=="yes",1,0)
+train_X_outlier$is_repeated_guest<-ifelse(train_X_outlier$is_repeated_guest=="yes",1,0)
 test_X_impute$is_repeated_guest<-ifelse(test_X_impute$is_repeated_guest=="yes",1,0)
 validation_X_impute$is_repeated_guest<-ifelse(validation_X_impute$is_repeated_guest=="yes",1,0)
 
 #convert hotel_type into 1 and 0
-train_X_impute$hotel_type<-ifelse(train_X_impute$hotel_type=="City Hotel",1,0)
+train_X_outlier$hotel_type<-ifelse(train_X_outlier$hotel_type=="City Hotel",1,0)
 test_X_impute$hotel_type<-ifelse(test_X_impute$hotel_type=="City Hotel",1,0)
 validation_X_impute$hotel_type<-ifelse(validation_X_impute$hotel_type=="City Hotel",1,0)
 
@@ -204,5 +204,8 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
+
+
+
 
 
