@@ -25,9 +25,11 @@ colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
 # Create a validation set out of the training set
-train_X <- train_X[0:66436,]
 validation_X <- train_X[66437:83045,]
+train_X <- train_X[0:66436,]
 
+write.table(train_X, file = "data/bronze/train_X.csv", sep = "\t", row.names = F)
+write.table(validation_X, file = "data/bronze/validation_X.csv", sep = "\t", row.names = F)
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -144,7 +146,7 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-
+str(validation_X_impute)
 # flags
 
 train_X_impute <- cbind(train_X_impute,
