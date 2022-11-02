@@ -3,8 +3,11 @@
 train <- read.csv(file = 'data/train.csv', header = TRUE, fileEncoding = 'latin1')
 str(train)
 
-test_X <- read.csv(file = "data/test.csv", header = TRUE, sep=",", fileEncoding = "latin1")
+
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
 str(test_X)
+
+
 
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
@@ -72,6 +75,23 @@ str(train_X)
 test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
 str(test_X)
 
+train_X_impute <- train_X
+test_X_impute <- test_X
+
+colMeans(is.na(train_X_impute))
+colMeans(is.na(test_X_impute))
+#save the dataset
+write.table(train_X, file = "train_X.csv", sep = "\t", row.names = F)
+write.table(test_X, file = "test_X.csv", sep = "\t", row.names = F)
+
+#impute missing values
+train_X$nr_adults[is.na(train_X$nr_adults)] <- 1
+test_X$nr_adults[is.na(test_X$nr_adults)] <- 1
+
+train_X$nr_babies[is.na(train_X$nr_babies)] <- 0
+train_X$nr_babies <-as.integer(train_X$nr_babies)
+test_X$nr_babies[is.na(test_X$nr_babies)] <- 0
+test_X$nr_babies <-as.integer(test_X$nr_babies)
 
 train_X$nr_booking_changes[is.na(train_X$nr_booking_changes)] <- 0
 train_X$nr_booking_changes <-as.integer(train_X$nr_booking_changes)
