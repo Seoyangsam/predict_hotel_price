@@ -124,8 +124,8 @@ validation_X_impute$lead_time <- gsub("[  day(s)]",'',validation_X_impute$lead_t
 validation_X_impute$lead_time <-as.integer(validation_X_impute$lead_time)
 
 train_X_impute$lead_time <- impute(train_X_impute$lead_time, method = mean)
-test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
-validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X_impute$lead_time, na.rm = T))
+test_X_impute$lead_time <- impute(test_X_impute$lead_time, val = mean(train_X_impute_impute$lead_time, na.rm = T))
+validation_X_impute$lead_time <- impute(validation_X_impute$lead_time, val = mean(train_X_impute_impute$lead_time, na.rm = T))
 
 # replace n/a in babies with 0
 train_X_impute["nr_babies"][train_X_impute["nr_babies"] == "n/a"] <- 0
@@ -157,8 +157,26 @@ str(train_X_impute)
 write.table(train_X_impute, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
 write.table(test_X_impute, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
 
+#check for outliers
+train_X_outlier <- train_X_impute
+
+handle_outlier_z <- function(col){
+  col_z <- scale(col)
+  ifelse(abs(col_z)>3,
+         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
+}
+
+num.cols <- sapply(train_X_outlier, is.numeric)
+train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
+
+max(train_X_outlier$days_in_waiting_list)
+max(train_X_impute$days_in_waiting_list)
+
+
 # check for outliers for lead time
-train_lead_time_z <- scale(train_X_impute$lead_time)
+train_X_outlier <- train_X_impute
+
+train_lead_time_z <- scale(train_X_outlier$lead_time)
 hist(train_lead_time_z)
 
 handle_outlier_z <- function(col){
@@ -166,8 +184,40 @@ handle_outlier_z <- function(col){
   ifelse(abs(col_z)>3,
          sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
 }
-train_X_impute$lead_time <- handle_outlier_z(train_X_impute$lead_time)
-train_X_impute$lead_time
+train_X_outlier$lead_time <- handle_outlier_z(train_X_outlier$lead_time)
+max(train_X_impute$lead_time)
+max(train_X_outlier$lead_time)
+
+#check for outliers for days in waiting list
+unique(train_X_impute$days_in_waiting_list)
+
+train_days_in_waiting_list_z <- scale(train_X_outlier$days_in_waiting_list)
+hist(train_days_in_waiting_list_z)
+
+handle_outlier_z <- function(col){
+  col_z <- scale(col)
+  ifelse(abs(col_z)>3,
+         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
+}
+train_X_outlier$days_in_waiting_list <- handle_outlier_z(train_X_outlier$days_in_waiting_list)
+max(train_X_impute$days_in_waiting_list)
+max(train_X_outlier$days_in_waiting_list)
+
+#check for outliers for previous cancellations
+unique(train_X_impute$previous_cancellations)
+
+
+handle_outlier_z <- function(col){
+  col_z <- scale(col)
+  ifelse(abs(col_z)>3,
+         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
+}
+
+train_X_outlier$days_in_waiting_list <- handle_outlier_z(train_X_outlier$days_in_waiting_list)
+max(train_X_impute$days_in_waiting_list)
+max(train_X_outlier$days_in_waiting_list)
+
+
 
 
 
