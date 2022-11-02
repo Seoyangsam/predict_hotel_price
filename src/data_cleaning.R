@@ -1,4 +1,3 @@
-#Here we perform the data preprocessing
 #First we read our datas
 train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
 str(train)
@@ -21,8 +20,6 @@ str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
 
-<<<<<<< HEAD
-=======
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
@@ -118,8 +115,7 @@ test_X_impute["nr_babies"][test_X_impute["nr_babies"] == "n/a"] <- 0
 train_X_impute$nr_booking_changes <- impute(train_X_impute$nr_booking_changes, val = 0)
 test_X_impute$nr_booking_changes <- impute(test_X_impute$nr_booking_changes, val = 0)
 
-train_X_impute$nr_babies
-test_X_impute$nr_booking_changes
+unique(train_X$assigned_room_type)
 
 # Now check again if there are missing values
 colMeans(is.na(test_X_impute))
@@ -128,11 +124,15 @@ colMeans(is.na(train_X_impute))
 
 # flags
 
+train_X_impute <- cbind(train_X_impute,
+                        naFlag(df = train_X))
+test_X_impute <- cbind(test_X_impute,
+                       naFlag(df = test_X, df_val = train_X))
 
->>>>>>> 7b518b93c60a8afb5f453cfbb705e04ea90e8c89
+str(train_X_impute)
 #change the format of date
 
-train_X$arrival_date<-as.Date(train_X$arrival_date,format="%m %d %Y")
+train_X$arrival_date<-as.Date(train_X$arrival_date,format="%B %d %Y")
 train_X$arrival_date
 
 #convert canceled into 1 and 0
@@ -151,70 +151,3 @@ test_X$is_repeated_guest<-ifelse(test_X$is_repeated_guest=="yes",1,0)
 train_X$hotel_type<-ifelse(train_X$hotel_type=="City Hotel",1,0)
 test_X$hotel_type<-ifelse(test_X$hotel_type=="City Hotel",1,0)
 
-#integer encoding for meal_booked, save for later
-#union(unique(train_X$meal_booked), unique(test_X$meal_booked))
-#meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
-#train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
-#test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
-
-library(dummy)
-# get categories and dummies
-cats <- categories(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")])
-# apply on train set (exclude reference categories)
-dummies_train <- dummy(train_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
-                       object = cats)
-str(dummies_train)
-dummies_train <- subset(dummies_train, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
-# apply on test set (exclude reference categories)
-dummies_test <- dummy(test_X[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
-                       object = cats)
-dummies_test <- subset(dummies_test, select = -c(booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
-
-## merge with overall training set
-train_X <- subset(train_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
-train_X <- cbind(train_X, dummies_train)
-## merge with overall test set
-test_X <- subset(test_X, select = -c(booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
-test_X <- cbind(test_X, dummies_test)
-
-#impute missing values
-train_X$nr_adults[is.na(train_X$nr_adults)] <- 1
-test_X$nr_adults[is.na(test_X$nr_adults)] <- 1
-
-train_X["nr_babies"][train_X["nr_babies"] == "n/a"] <- 0
-test_X["nr_babies"][test_X["nr_babies"] == "n/a"] <- 0
-
-train_X$nr_booking_changes[is.na(train_X$nr_booking_changes)] <- 0
-train_X$nr_booking_changes <-as.integer(train_X$nr_booking_changes)
-test_X$nr_booking_changes[is.na(test_X$nr_booking_changes)] <- 0
-test_X$nr_booking_changes <-as.integer(test_X$nr_booking_changes)
-
-train_X$nr_children[is.na(train_X$nr_children)] <- 0
-test_X$nr_children[is.na(test_X$nr_children)] <- 0
-
-train_X$nr_previous_bookings[is.na(train_X$nr_previous_bookings)] <- 0
-test_X$nr_previous_bookings[is.na(test_X$nr_previous_bookings)] <- 0
-
-train_X$previous_bookings_not_canceled[is.na(train_X$previous_bookings_not_canceled)] <- 0
-test_X$previous_bookings_not_canceled[is.na(test_X$previous_bookings_not_canceled)] <- 0
-
-train_X$previous_cancellations[is.na(train_X$previous_cancellations)] <- 0
-test_X$previous_cancellations[is.na(test_X$previous_cancellations)] <- 0
-
-train_X$lead_time <- gsub("[  day(s)]",'',train_X$lead_time)
-train_X$lead_time <-as.integer(train_X$lead_time)
-train_X$lead_time[is.na(train_X$lead_time)] <- mean(train_X$lead_time, na.rm = T)
-
-test_X$lead_time <- gsub("[  day(s)]",'',test_X$lead_time)
-test_X$lead_time <-as.integer(test_X$lead_time)
-test_X$lead_time[is.na(test_X$lead_time)] <- mean(train_X$lead_time, na.rm = T)
-
-#convert the predictors to factors
-train_X[sapply(train_X, is.character)] <- lapply(train_X[sapply(train_X, is.character)], as.factor)
-str(train_X)
-test_X[sapply(test_X, is.character)] <- lapply(test_X[sapply(test_X, is.character)], as.factor)
-str(test_X)
-
-#save the dataset
-write.table(train_X, file = "data/silver/train_X.csv", sep = "\t", row.names = F)
-write.table(test_X, file = "data/silver/test_X.csv", sep = "\t", row.names = F)
