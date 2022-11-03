@@ -47,5 +47,6 @@ validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(a
 validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_train)
 
 #save the dataset
-write.table(train_X, file = "data/silver/train_X.csv", sep = ",", row.names = F)
-write.table(test_X, file = "data/silver/test_X.csv", sep = ",", row.names = F)
+write.table(train_X_ft_engineering, file = "data/gold/train_X_ft_engineering.csv", sep = ",", row.names = F)
+write.table(test_X_ft_engineering, file = "data/gold/test_X_ft_engineering.csv", sep = ",", row.names = F)
+write.table(validation_X_ft_engineering, file = "data/gold/validation_X_ft_engineering.csv", sep = ",", row.names = F)

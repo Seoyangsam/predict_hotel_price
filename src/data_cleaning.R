@@ -110,7 +110,7 @@ test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_
 validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
 validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
 
-
+train_X_impute$last_status_date
 
 #make columns with week, year and day for arrival date and last status date
 train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
@@ -200,6 +200,7 @@ colMeans(is.na(validation_X_impute))
 
 #check for outliers
 train_X_outlier <- train_X_impute
+train_X_outlier <- subset(train_X_outlier, select = -c(car_parking_spaces))
 
 handle_outlier_z <- function(col){
   col_z <- scale(col)
@@ -209,6 +210,8 @@ handle_outlier_z <- function(col){
 
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
+
+train_X_outlier$car_parking_spaces <- train_X_only_0_1_variables$car_parking_spaces
 
 # flags
 
