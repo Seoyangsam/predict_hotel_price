@@ -1,5 +1,5 @@
 #First we read our datas
-train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 str(train_X_cleaned)
  
 test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
