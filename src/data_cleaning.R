@@ -100,11 +100,11 @@ test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
 validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
 #devtools::install_github("tidyverse/tidyverse")
 
-#library(anytime)
+library(anytime)
 
 # impute missing values for last status date as arrival date + nr nights
 #train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
-#train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
+train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
 
 #test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
 #test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
@@ -209,6 +209,7 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
+num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
 # flags
