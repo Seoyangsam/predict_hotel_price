@@ -196,19 +196,7 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-
-# flags
-
-train_X_impute <- cbind(train_X_impute,
-                        naFlag(df = train_X))
-test_X_impute <- cbind(test_X_impute,
-                       naFlag(df = test_X, df_val = train_X))
-validation_X_impute <- cbind(validation_X_impute,
-                       naFlag(df = validation_X_impute, df_val = train_X))                       
-
-
-str(train_X_impute)
-
+                
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -222,8 +210,14 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
+# flags
 
-
+train_X_outlier <- cbind(train_X_outlier,
+                        naFlag(df = train_X))
+test_X_impute <- cbind(test_X_impute,
+                       naFlag(df = test_X, df_val = train_X))
+validation_X_impute <- cbind(validation_X_impute,
+                       naFlag(df = validation_X, df_val = train_X))       
 
 #convert canceled into 1 and 0
 train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
