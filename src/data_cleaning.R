@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
 #Next, we split the independent & dependent variables in the training set.
@@ -25,9 +25,10 @@ colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
 # Create a validation set out of the training set
-validation_X <- train_X[66437:83045,]
+validation_X <- train_X[66437:83031,]
 train_X <- train_X[0:66436,]
-
+validation_y <- train_y[66437:83031]
+train_y <- train_y[0:66436]
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -89,28 +90,28 @@ test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus
 validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 
 # string to date object
-library(tidyverse)
+
+#library(tidyverse)
 library(lubridate)
 library(nycflights13)
 
 train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
 test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
 validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
-
+#devtools::install_github("tidyverse/tidyverse")
 
 library(anytime)
 
 # impute missing values for last status date as arrival date + nr nights
-train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
+#train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
 train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
 
-test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
+#test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
 test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
 
-validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
+#validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
 validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
 
-train_X_impute$last_status_date
 
 #make columns with week, year and day for arrival date and last status date
 train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
@@ -133,11 +134,11 @@ validation_X_impute$month_last_status_date <- format(validation_X_impute$last_st
 
 train_X_impute$day_arrival_date <- as.POSIXlt(train_X_impute$arrival_date)$wday
 test_X_impute$day_arrival_date <- as.POSIXlt(test_X_impute$arrival_date)$wday
-vaidation_X_impute$day_arrival_date <- as.POSIXlt(validation_X_impute$arrival_date)$wday
+validation_X_impute$day_arrival_date <- as.POSIXlt(validation_X_impute$arrival_date)$wday
 
 train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_date)$wday
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
-vaidation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
+validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
 
 # impute all numerical variables
@@ -196,7 +197,6 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-                
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -209,6 +209,7 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
+num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
 train_X_outlier$car_parking_spaces <- train_X_only_0_1_variables$car_parking_spaces
@@ -250,4 +251,6 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
+write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
+write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F)
 
