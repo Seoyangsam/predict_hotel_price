@@ -250,6 +250,7 @@ train_X_cleaned <- train_X_outlier
 test_X_cleaned <- test_X_impute
 validation_X_cleaned <- validation_X_impute
 
+write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv")
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)

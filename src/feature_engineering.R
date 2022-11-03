@@ -1,7 +1,7 @@
 #First we read our datas
 train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
 str(train_X_cleaned)
-
+ 
 test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 str(test_X_cleaned)
 
@@ -18,6 +18,7 @@ validation_X_ft_engineering <- validation_X_cleaned
 #train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
 #test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
 
+#dummy encoding is not yet neccessary for linear regression
 library(dummy)
 # get categories and dummies
 cats <- categories(train_X_ft_engineering[, c("booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")])
