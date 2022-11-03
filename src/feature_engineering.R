@@ -43,7 +43,7 @@ test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room
 test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
 ## merge with overall validation set
 validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(assigned_room_type, reserved_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
-validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_train)
+validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_validation)
 
 #convert the predictors to factors
 #train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)] <- lapply(train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)], as.factor)
@@ -72,7 +72,17 @@ test_X_scale[, scale_cols] <- scale(test_X_scale[, scale_cols], center = mean_tr
 # apply on validation set
 validation_X_scale[, scale_cols] <- scale(validation_X_scale[, scale_cols], center = mean_train, scale = sd_train)
 
+# now, we check the distributions
+colMeans(train_X_scale[, scale_cols])
+sapply(train_X_scale[, scale_cols], sd)
+
+colMeans(test_X_scale[, scale_cols])
+sapply(test_X_scale[, scale_cols], sd)
+
+colMeans(validation_X_scale[, scale_cols])
+sapply(validation_X_scale[, scale_cols], sd)
+
 #save the dataset
-write.table(train_X_scale, file = "data/gold/train_X.csv", sep = ",", row.names = F)
-write.table(test_X_scale, file = "data/gold/test_X.csv", sep = ",", row.names = F)
-write.table(test_X_scale, file = "data/gold/test_X.csv", sep = ",", row.names = F)
+write.table(train_X_scale, file = "data/gold/train_X_scale.csv", sep = ",", row.names = F)
+write.table(test_X_scale, file = "data/gold/test_X_scale.csv", sep = ",", row.names = F)
+write.table(validation_X_scale, file = "data/gold/validation_X_scale.csv", sep = ",", row.names = F)
