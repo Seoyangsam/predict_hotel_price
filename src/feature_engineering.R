@@ -1,11 +1,11 @@
 #First we read our datas
-train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
+train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE)
 str(train_X_cleaned)
 
-test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
+test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE)
 str(test_X_cleaned)
 
-validation_X_cleaned <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X_cleaned <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE)
 str(validation_X_cleaned)
 
 train_X_ft_engineering <- train_X_cleaned
@@ -25,15 +25,15 @@ cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "reserved_ro
 dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
 str(dummies_train)
-dummies_train <- subset(dummies_train, select = -c(assigned_room_type_P, reserved_room_type_P, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
 # apply on test set (exclude reference categories)
 dummies_test <- dummy(test_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
-dummies_test <- subset(dummies_test, select = -c(assigned_room_type_P, reserved_room_type_P, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_test <- subset(dummies_test, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
 # apply on validation set (exclude reference categories)
 dummies_validation <- dummy(validation_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
-dummies_validation <- subset(dummies_validation, select = -c(assigned_room_type_P, reserved_room_type_P, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_validation <- subset(dummies_validation, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
 
 ## merge with overall training set
 train_X_ft_engineering <- subset(train_X_ft_engineering, select = -c(assigned_room_type, reserved_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))

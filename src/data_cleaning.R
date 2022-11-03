@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, stringsAsFactors = FALSE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
 #Next, we split the independent & dependent variables in the training set.
@@ -25,9 +25,9 @@ colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
 # Create a validation set out of the training set
-validation_X <- train_X[66437:83045,]
+validation_X <- train_X[66437:83031,]
 train_X <- train_X[0:66436,]
-validation_y <- train_y[66437:83045]
+validation_y <- train_y[66437:83031]
 train_y <- train_y[0:66436]
 
 # create new dataframes to avoid overwriting the existing dataframes
@@ -107,10 +107,10 @@ library(anytime)
 train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
 
 #test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
-#test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
+test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
 
 #validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
-#validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
+validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
 
 
 #make columns with week, year and day for arrival date and last status date
@@ -197,7 +197,6 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-                
 
 #check for outliers
 train_X_outlier <- train_X_impute
