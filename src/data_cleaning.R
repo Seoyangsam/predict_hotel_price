@@ -203,7 +203,9 @@ test_X_impute <- cbind(test_X_impute,
                        naFlag(df = test_X, df_val = train_X))
 validation_X_impute <- cbind(validation_X_impute,
                        naFlag(df = validation_X_impute, df_val = train_X))                       
-
+colMeans(is.na(test_X_impute))
+colMeans(is.na(train_X_impute))
+colMeans(is.na(validation_X_impute))
 
 str(train_X_impute)
 
@@ -220,10 +222,7 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
-# missing values
-colMeans(is.na(train_X_outlier))
-colMeans(is.na(test_X_impute))
-colMeans(is.na(validation_X_impute))
+
 
 
 #convert canceled into 1 and 0
@@ -254,4 +253,3 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
-
