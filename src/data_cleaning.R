@@ -174,9 +174,19 @@ train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle
 
 
 #change the format of date
+install.packages("tidyverse")
+library(tidyverse)
 
-train_X_outlier$arrival_date<-as.POSIXct(train_X_outlier$arrival_date,format="%B %d %Y")
-train_X_outlier$arrival_date
+install.packages("lubridate")
+library(lubridate)
+
+install.packages("nycflights13")
+library(nycflights13)
+
+train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
+test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
+validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date) 
+train_X_impute$arrival_date
 
 #convert canceled into 1 and 0
 train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
