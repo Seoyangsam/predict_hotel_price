@@ -27,7 +27,8 @@ colMeans(is.na(train_X))
 # Create a validation set out of the training set
 validation_X <- train_X[66437:83045,]
 train_X <- train_X[0:66436,]
-
+validation_y <- train_y[66437:83045]
+train_y <- train_y[0:66436]
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -89,14 +90,15 @@ test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus
 validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 
 # string to date object
-library(tidyverse)
+
+#library(tidyverse)
 library(lubridate)
 library(nycflights13)
 
 train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
 test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
 validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
-
+#devtools::install_github("tidyverse/tidyverse")
 
 #library(anytime)
 
@@ -104,12 +106,11 @@ validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
 #train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
 #train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
 
-test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
-test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
+#test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
+#test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
 
-validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
-validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
-
+#validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
+#validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
 
 
 #make columns with week, year and day for arrival date and last status date
@@ -133,11 +134,11 @@ validation_X_impute$month_last_status_date <- format(validation_X_impute$last_st
 
 train_X_impute$day_arrival_date <- as.POSIXlt(train_X_impute$arrival_date)$wday
 test_X_impute$day_arrival_date <- as.POSIXlt(test_X_impute$arrival_date)$wday
-vaidation_X_impute$day_arrival_date <- as.POSIXlt(validation_X_impute$arrival_date)$wday
+validation_X_impute$day_arrival_date <- as.POSIXlt(validation_X_impute$arrival_date)$wday
 
 train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_date)$wday
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
-vaidation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
+validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
 
 # impute all numerical variables
