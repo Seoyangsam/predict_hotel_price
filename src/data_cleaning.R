@@ -96,7 +96,7 @@ library(nycflights13)
 train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
 test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
 validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
-train_X_impute$arrival_date
+
 
 #library(anytime)
 
@@ -109,6 +109,8 @@ test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_
 
 validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
 validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
+
+
 
 #make columns with week, year and day for arrival date and last status date
 train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
@@ -194,21 +196,7 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-
-# flags
-
-train_X_impute <- cbind(train_X_impute,
-                        naFlag(df = train_X))
-test_X_impute <- cbind(test_X_impute,
-                       naFlag(df = test_X, df_val = train_X))
-validation_X_impute <- cbind(validation_X_impute,
-                       naFlag(df = validation_X_impute, df_val = train_X))                       
-colMeans(is.na(test_X_impute))
-colMeans(is.na(train_X_impute))
-colMeans(is.na(validation_X_impute))
-
-str(train_X_impute)
-
+                
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -222,8 +210,14 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
+# flags
 
-
+train_X_outlier <- cbind(train_X_outlier,
+                        naFlag(df = train_X))
+test_X_impute <- cbind(test_X_impute,
+                       naFlag(df = test_X, df_val = train_X))
+validation_X_impute <- cbind(validation_X_impute,
+                       naFlag(df = validation_X, df_val = train_X))       
 
 #convert canceled into 1 and 0
 train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
@@ -250,6 +244,7 @@ train_X_cleaned <- train_X_outlier
 test_X_cleaned <- test_X_impute
 validation_X_cleaned <- validation_X_impute
 
-write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
-write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
-write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
+write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
+write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
+write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
+
