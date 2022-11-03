@@ -28,8 +28,6 @@ colMeans(is.na(train_X))
 validation_X <- train_X[66437:83045,]
 train_X <- train_X[0:66436,]
 
-write.table(train_X, file = "data/bronze/train_X.csv", sep = "\t", row.names = F)
-write.table(validation_X, file = "data/bronze/validation_X.csv", sep = "\t", row.names = F)
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -90,6 +88,34 @@ train_X_impute$market_segment <- impute(train_X_impute$market_segment, method = 
 test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 
+# impute missing values for last status date as arrival date + nr nights
+install.packages("tidyverse")
+library(tidyverse)
+install.packages("lubridate")
+library(lubridate)
+install.packages("nycflights13")
+library(nycflights13)
+
+train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
+test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
+validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
+train_X_impute$arrival_date
+
+install.packages("anytime")
+library(anytime)
+
+train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
+train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
+
+test_X_impute$arrival_date <- anydate(test_X_impute$arrival_date)
+test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_nights
+
+validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
+validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
+
+train_X_impute$last_status_date
+
+
 # impute all numerical variables
 train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, method = median)
 test_X_impute$car_parking_spaces <- impute(test_X_impute$car_parking_spaces, val = median(train_X_impute$car_parking_spaces, na.rm = T))
@@ -146,7 +172,7 @@ validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-str(validation_X_impute)
+
 # flags
 
 train_X_impute <- cbind(train_X_impute,
@@ -172,11 +198,11 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
+# missing values
+colMeans(is.na(train_X_outlier))
+colMeans(is.na(test_X_impute))
+colMeans(is.na(validation_X_impute))
 
-#change the format of date
-
-train_X_outlier$arrival_date<-as.POSIXct(train_X_outlier$arrival_date,format="%B %d %Y")
-train_X_outlier$arrival_date
 
 #convert canceled into 1 and 0
 train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
@@ -206,8 +232,3 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
-
-
-
-
-
