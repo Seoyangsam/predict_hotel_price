@@ -88,12 +88,9 @@ train_X_impute$market_segment <- impute(train_X_impute$market_segment, method = 
 test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 validation_X_impute$market_segment <- impute(validation_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
 
-# impute missing values for last status date as arrival date + nr nights
-install.packages("tidyverse")
+# string to date object
 library(tidyverse)
-install.packages("lubridate")
 library(lubridate)
-install.packages("nycflights13")
 library(nycflights13)
 
 train_X_impute$arrival_date <- mdy(train_X_impute$arrival_date)
@@ -101,9 +98,9 @@ test_X_impute$arrival_date <- mdy(test_X_impute$arrival_date)
 validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
 train_X_impute$arrival_date
 
-install.packages("anytime")
 library(anytime)
 
+# impute missing values for last status date as arrival date + nr nights
 train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
 train_X_impute$last_status_date <- train_X_impute$arrival_date + train_X_impute$nr_nights
 
@@ -113,7 +110,32 @@ test_X_impute$last_status_date <- test_X_impute$arrival_date + test_X_impute$nr_
 validation_X_impute$arrival_date <- anydate(validation_X_impute$arrival_date)
 validation_X_impute$last_status_date <- validation_X_impute$arrival_date + validation_X_impute$nr_nights
 
-train_X_impute$last_status_date
+#make columns with week, year and day for arrival date and last status date
+train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
+train_X_impute$month_arrival_date <- format(train_X_impute$arrival_date, format="%m")
+
+test_X_impute$year_arrival_date <- format(test_X_impute$arrival_date, format="%Y")
+test_X_impute$month_arrival_date <- format(test_X_impute$arrival_date, format="%m")
+
+validation_X_impute$year_arrival_date <- format(validation_X_impute$arrival_date, format="%Y")
+validation_X_impute$month_arrival_date <- format(validation_X_impute$arrival_date, format="%m")
+
+train_X_impute$year_last_status_date <- format(train_X_impute$last_status_date, format="%Y")
+train_X_impute$month_last_status_date <- format(train_X_impute$last_status_date, format="%m")
+
+test_X_impute$year_last_status_date <- format(test_X_impute$last_status_date, format="%Y")
+test_X_impute$month_last_status_date <- format(test_X_impute$last_status_date, format="%m")
+
+validation_X_impute$year_last_status_date <- format(validation_X_impute$last_status_date, format="%Y")
+validation_X_impute$month_last_status_date <- format(validation_X_impute$last_status_date, format="%m")
+
+train_X_impute$day_arrival_date <- as.POSIXlt(train_X_impute$arrival_date)$wday
+test_X_impute$day_arrival_date <- as.POSIXlt(test_X_impute$arrival_date)$wday
+vaidation_X_impute$day_arrival_date <- as.POSIXlt(validation_X_impute$arrival_date)$wday
+
+train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_date)$wday
+test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
+vaidation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
 
 # impute all numerical variables
@@ -232,3 +254,4 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = "\t", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = "\t", row.names = F)
+
