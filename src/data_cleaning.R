@@ -5,6 +5,8 @@ str(train)
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
+data_id <- train$id
+
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
@@ -13,6 +15,8 @@ train_y <- train$average_daily_rate
 train_y <- gsub(' .*','',train_y) #remove the euro sign
 train_y <- as.double(train_y) #convert from chr to float
 str(train_y)
+
+
 
 # we drop id, booking agent and booking company
 train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
@@ -28,7 +32,12 @@ colMeans(is.na(train_X))
 validation_X <- train_X[66437:83031,]
 train_X <- train_X[0:66436,]
 validation_y <- train_y[66437:83031]
+data_id <- data_id[66437:83031]
 train_y <- train_y[0:66436]
+
+write.table(data_id, file = "data/bronze/data_id.csv", sep = ",", row.names = F)
+
+
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X

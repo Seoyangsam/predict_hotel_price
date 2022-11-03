@@ -6,6 +6,7 @@ train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEnc
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+data_id <- read.csv(file = 'data/bronze/data_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 train_X_data = data.frame(train_X,train_y)
 train_X_data$average_daily_rate <- train_X_data$x
@@ -33,4 +34,11 @@ bestlam.lasso <- cv.lasso$lambda.min
 pred.lasso <- predict(cv.lasso, s = bestlam.lasso, newx = validation_X_matrix)
 lasso.error <- mean((pred.lasso - validation_X_data$average_daily_rate)^2)
 coef.lasso <- predict(cv.lasso, type = "coefficients", s = bestlam.lasso)
+
+data_submission$id <- data_id$x
+data_submission <- subset(data_submission, select = c(id))
+
+data_submission$average_daily_rate <- pred.lasso
+
+write.table(data_submission, file = "data/results/submission.csv", sep = ",", row.names = F)
 
