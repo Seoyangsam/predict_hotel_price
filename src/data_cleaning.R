@@ -209,6 +209,7 @@ colMeans(is.na(validation_X_impute))
 
 #check for outliers
 train_X_outlier <- train_X_impute
+train_X_outlier <- subset(train_X_outlier, select = -c(car_parking_spaces))
 
 handle_outlier_z <- function(col){
   col_z <- scale(col)
@@ -219,6 +220,8 @@ handle_outlier_z <- function(col){
 num.cols <- sapply(train_X_outlier, is.numeric)
 num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
+
+train_X_outlier$car_parking_spaces <- train_X_only_0_1_variables$car_parking_spaces
 
 # flags
 
