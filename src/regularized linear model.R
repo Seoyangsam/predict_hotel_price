@@ -6,6 +6,7 @@ train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEnc
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 
 train_X_data = data.frame(train_X,train_y)
 train_X_data$average_daily_rate <- train_X_data$x
@@ -18,7 +19,7 @@ str(validation_X_data)
 
 lm.fit <- lm(average_daily_rate ~ ., data = train_X_data)
 lm.fit
-
+update.packages("Matrix")
 library(Matrix)
 require(Matrix)
 
@@ -33,4 +34,6 @@ bestlam.lasso <- cv.lasso$lambda.min
 pred.lasso <- predict(cv.lasso, s = bestlam.lasso, newx = validation_X_matrix)
 lasso.error <- mean((pred.lasso - validation_X_data$average_daily_rate)^2)
 coef.lasso <- predict(cv.lasso, type = "coefficients", s = bestlam.lasso)
+
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = )
 
