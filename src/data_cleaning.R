@@ -5,7 +5,8 @@ str(train)
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
-data_id <- train$id
+test_id <- test_X$id
+write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
@@ -32,11 +33,7 @@ colMeans(is.na(train_X))
 validation_X <- train_X[66437:83031,]
 train_X <- train_X[0:66436,]
 validation_y <- train_y[66437:83031]
-data_id <- data_id[66437:83031]
 train_y <- train_y[0:66436]
-
-write.table(data_id, file = "data/bronze/data_id.csv", sep = ",", row.names = F)
-
 
 
 # create new dataframes to avoid overwriting the existing dataframes
