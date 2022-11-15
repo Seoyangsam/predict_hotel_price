@@ -87,6 +87,15 @@ train_X_impute$hotel_type <- impute(train_X_impute$hotel_type, method = modus)
 test_X_impute$hotel_type <- impute(test_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
 validation_X_impute$hotel_type <- impute(validation_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
 
+#train_X_impute$last_status<-ifelse(is.na(train_X_impute$last_status)==TRUE & train_X_impute$canceled=="stay cancelled", "Canceled", train_X_impute$last_status)
+#train_X_impute$last_status<-ifelse(is.na(train_X_impute$last_status)==TRUE & train_X_impute$canceled=="no cancellation", "Check-Out",train_X_impute$last_status)
+
+#test_X_impute$last_status<-ifelse(is.na(test_X_impute$last_status)==TRUE & test_X_impute$canceled=="stay cancelled", "Canceled", test_X_impute$last_status)
+#test_X_impute$last_status<-ifelse(is.na(test_X_impute$last_status)==TRUE & test_X_impute$canceled=="no cancellation", "Check-Out",test_X_impute$last_status)
+
+#validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="stay cancelled", "Canceled", validation_X_impute$last_status)
+#validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="no cancellation", "Check-Out",validation_X_impute$last_status)
+
 train_X_impute$last_status <- impute(train_X_impute$last_status, method = modus)
 test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
 validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
@@ -122,27 +131,27 @@ validation_X_impute$last_status_date <- validation_X_impute$arrival_date + valid
 #make columns with week, year and day for arrival date and last status date
 train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
 train_X_impute$month_arrival_date <- format(train_X_impute$arrival_date, format="%m")
-train_X_impute$day2_arrival_date <- format(train_X_impute$arrival_date, format="%d")
+#train_X_impute$day2_arrival_date <- format(train_X_impute$arrival_date, format="%d")
 
 test_X_impute$year_arrival_date <- format(test_X_impute$arrival_date, format="%Y")
 test_X_impute$month_arrival_date <- format(test_X_impute$arrival_date, format="%m")
-test_X_impute$day2_arrival_date <- format(test_X_impute$arrival_date, format="%d")
+#test_X_impute$day2_arrival_date <- format(test_X_impute$arrival_date, format="%d")
 
 validation_X_impute$year_arrival_date <- format(validation_X_impute$arrival_date, format="%Y")
 validation_X_impute$month_arrival_date <- format(validation_X_impute$arrival_date, format="%m")
-validation_X_impute$day2_arrival_date <- format(validation_X_impute$arrival_date, format="%d")
+#validation_X_impute$day2_arrival_date <- format(validation_X_impute$arrival_date, format="%d")
 
 train_X_impute$year_last_status_date <- format(train_X_impute$last_status_date, format="%Y")
 train_X_impute$month_last_status_date <- format(train_X_impute$last_status_date, format="%m")
-train_X_impute$day2_last_status_date <- format(train_X_impute$last_status_date, format="%d")
+#train_X_impute$day2_last_status_date <- format(train_X_impute$last_status_date, format="%d")
 
 test_X_impute$year_last_status_date <- format(test_X_impute$last_status_date, format="%Y")
 test_X_impute$month_last_status_date <- format(test_X_impute$last_status_date, format="%m")
-test_X_impute$day2_last_status_date <- format(test_X_impute$last_status_date, format="%d")
+#test_X_impute$day2_last_status_date <- format(test_X_impute$last_status_date, format="%d")
 
 validation_X_impute$year_last_status_date <- format(validation_X_impute$last_status_date, format="%Y")
 validation_X_impute$month_last_status_date <- format(validation_X_impute$last_status_date, format="%m")
-validation_X_impute$day2_last_status_date <- format(validation_X_impute$last_status_date, format="%d")
+#validation_X_impute$day2_last_status_date <- format(validation_X_impute$last_status_date, format="%d")
 
 train_X_impute$day_arrival_date <- as.POSIXlt(train_X_impute$arrival_date)$wday
 test_X_impute$day_arrival_date <- as.POSIXlt(test_X_impute$arrival_date)$wday
@@ -210,9 +219,12 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
+# change values bigger than 1 to 1 for car parking spaces
+#train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
+#unique(train_X_impute$car_parking_spaces)
+
 #check for outliers
 train_X_outlier <- train_X_impute
-train_X_outlier <- subset(train_X_outlier, select = -c(car_parking_spaces))
 
 handle_outlier_z <- function(col){
   col_z <- scale(col)
@@ -221,10 +233,12 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
-num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
+#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
-train_X_outlier$car_parking_spaces <- train_X_only_0_1_variables$car_parking_spaces
+# Change value of car parking spaces to 1
+train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
+
 
 # flags
 
