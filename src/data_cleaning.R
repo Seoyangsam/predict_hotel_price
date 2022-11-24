@@ -8,16 +8,29 @@ str(test_X)
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
+# Create a validation set out of the training set
+set.seed(1)
+sample_size <- floor(0.30 * nrow(train))
+validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
+train <- train[-validation_ind,]
+validation <- train[validation_ind,]
+str(validation)
+
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
+validation_X <- subset(validation, select = -c(average_daily_rate))
+str(validation_X)
 
 train_y <- train$average_daily_rate
 train_y <- gsub(' .*','',train_y) #remove the euro sign
 train_y <- as.double(train_y) #convert from chr to float
 str(train_y)
 
-
+validation_y <- validation$average_daily_rate
+validation_y <- gsub(' .*','',validation_y) #remove the euro sign
+validation_y<- as.double(validation_y) #convert from chr to float
+str(validation_y)
 
 # we drop id, booking agent and booking company
 train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
@@ -29,11 +42,6 @@ str(test_X)
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
-# Create a validation set out of the training set
-validation_X <- train_X[66437:83031,]
-train_X <- train_X[0:66436,]
-validation_y <- train_y[66437:83031]
-train_y <- train_y[0:66436]
 
 
 # create new dataframes to avoid overwriting the existing dataframes
@@ -87,9 +95,18 @@ train_X_impute$hotel_type <- impute(train_X_impute$hotel_type, method = modus)
 test_X_impute$hotel_type <- impute(test_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
 validation_X_impute$hotel_type <- impute(validation_X_impute$hotel_type, val = modus(train_X_impute$hotel_type, na.rm = T))
 
-train_X_impute$last_status <- impute(train_X_impute$last_status, method = modus)
-test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
-validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
+train_X_impute$last_status<-ifelse(is.na(train_X_impute$last_status)==TRUE & train_X_impute$canceled=="stay cancelled", "Canceled", train_X_impute$last_status)
+train_X_impute$last_status<-ifelse(is.na(train_X_impute$last_status)==TRUE & train_X_impute$canceled=="no cancellation", "Check-Out",train_X_impute$last_status)
+
+test_X_impute$last_status<-ifelse(is.na(test_X_impute$last_status)==TRUE & test_X_impute$canceled=="stay cancelled", "Canceled", test_X_impute$last_status)
+test_X_impute$last_status<-ifelse(is.na(test_X_impute$last_status)==TRUE & test_X_impute$canceled=="no cancellation", "Check-Out",test_X_impute$last_status)
+
+validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="stay cancelled", "Canceled", validation_X_impute$last_status)
+validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="no cancellation", "Check-Out",validation_X_impute$last_status)
+
+#train_X_impute$last_status <- impute(train_X_impute$last_status, method = modus)
+#test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
+#validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
 
 train_X_impute$market_segment <- impute(train_X_impute$market_segment, method = modus)
 test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
@@ -210,9 +227,12 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
+# change values bigger than 1 to 1 for car parking spaces
+#train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
+#unique(train_X_impute$car_parking_spaces)
+
 #check for outliers
 train_X_outlier <- train_X_impute
-train_X_outlier <- subset(train_X_outlier, select = -c(car_parking_spaces))
 
 handle_outlier_z <- function(col){
   col_z <- scale(col)
@@ -221,10 +241,12 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
-num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
+#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
-train_X_outlier$car_parking_spaces <- train_X_only_0_1_variables$car_parking_spaces
+# Change value of car parking spaces to 1
+train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
+
 
 # flags
 
