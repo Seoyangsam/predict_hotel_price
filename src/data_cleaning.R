@@ -1,5 +1,5 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, fileEncoding = 'latin1')
 str(train)
 
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
@@ -8,6 +8,7 @@ str(test_X)
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
+unique(train$car_parking_spaces)
 # Create a validation set out of the training set
 set.seed(1)
 sample_size <- floor(0.30 * nrow(train))
@@ -41,8 +42,6 @@ str(test_X)
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
-
-
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
