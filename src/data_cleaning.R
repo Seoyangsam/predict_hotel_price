@@ -285,5 +285,5 @@ write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ","
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
 write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
-write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F)
+write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 
