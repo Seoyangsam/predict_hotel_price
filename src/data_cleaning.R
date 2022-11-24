@@ -8,7 +8,6 @@ str(test_X)
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
-unique(train$car_parking_spaces)
 # Create a validation set out of the training set
 set.seed(1)
 sample_size <- floor(0.30 * nrow(train))
@@ -226,9 +225,9 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
-# change values bigger than 1 to 1 for car parking spaces
-#train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
-#unique(train_X_impute$car_parking_spaces)
+# change values bigger than 3 to 3 for car parking spaces
+train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 1
+unique(train_X_impute$car_parking_spaces)
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -284,6 +283,6 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
-write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
+write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 
