@@ -8,16 +8,29 @@ str(test_X)
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
+# Create a validation set out of the training set
+set.seed(1)
+sample_size <- floor(0.30 * nrow(train))
+validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
+train <- train[-validation_ind,]
+validation <- train[validation_ind,]
+str(validation)
+
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
+validation_X <- subset(validation, select = -c(average_daily_rate))
+str(validation_X)
 
 train_y <- train$average_daily_rate
 train_y <- gsub(' .*','',train_y) #remove the euro sign
 train_y <- as.double(train_y) #convert from chr to float
 str(train_y)
 
-
+validation_y <- validation$average_daily_rate
+validation_y <- gsub(' .*','',validation_y) #remove the euro sign
+validation_y<- as.double(validation_y) #convert from chr to float
+str(validation_y)
 
 # we drop id, booking agent and booking company
 train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
@@ -29,11 +42,6 @@ str(test_X)
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
 
-# Create a validation set out of the training set
-validation_X <- train_X[66437:83031,]
-train_X <- train_X[0:66436,]
-validation_y <- train_y[66437:83031]
-train_y <- train_y[0:66436]
 
 
 # create new dataframes to avoid overwriting the existing dataframes
