@@ -11,5 +11,5 @@ str(train_X_data)
 
 rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 6, importance = TRUE)
 rf.train
-yhat.rf <- predict(rf.train, newdata = Boston[-train,])
-mean((yhat.rf - boston.test)^2)
+yhat.rf <- predict(rf.train, newdata = validation_X)
+mean((yhat.rf - validation_y)^2)

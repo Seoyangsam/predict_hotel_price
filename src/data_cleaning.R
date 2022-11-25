@@ -1,5 +1,5 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, fileEncoding = 'latin1')
 str(train)
 
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
@@ -40,8 +40,6 @@ str(test_X)
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
-
-
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -226,9 +224,9 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
-# change values bigger than 1 to 1 for car parking spaces
-#train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
-#unique(train_X_impute$car_parking_spaces)
+# change values bigger than 3 to 3 for car parking spaces
+train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 1
+unique(train_X_impute$car_parking_spaces)
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -284,6 +282,6 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
-write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
-write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F)
+write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
+write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 
