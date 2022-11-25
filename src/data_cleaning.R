@@ -166,6 +166,15 @@ train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_dat
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
 validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
+# drop arrival date and last status date
+train_X_impute <- subset(train_X_impute , select = -c(arrival_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(arrival_date))
+test_X_impute <- subset(test_X_impute , select = -c(arrival_date))
+
+train_X_impute <- subset(train_X_impute , select = -c(last_status_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(last_status_date))
+test_X_impute <- subset(test_X_impute , select = -c(last_status_date))
+
 
 # impute all numerical variables
 train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, method = median)
