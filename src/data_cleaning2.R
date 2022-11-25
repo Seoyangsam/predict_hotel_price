@@ -15,6 +15,9 @@ validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
 validation <- train[validation_ind,]
 train <- train[-validation_ind,]
 
+write.table(train, file = "data/bronze/training_set.csv", sep = ",", row.names = F)
+write.table(validation, file = "data/bronze/validation_set.csv", sep = ",", row.names = F)
+
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
@@ -32,9 +35,13 @@ validation_y<- as.double(validation_y) #convert from chr to float
 str(validation_y)
 
 # we drop id, booking agent and booking company
-train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
+#new: drop nr booking changes, days in waiting list
+train_X <- subset(train_X , select = -c(id, booking_company, booking_agent, nr_booking_changes, days_in_waiting_list))
 str(train_X)
-test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
+#!!!
+validation_X <- subset(validation_X , select = -c(id, booking_company, booking_agent, nr_booking_changes, days_in_waiting_list))
+str(train_X)
+test_X <- subset(test_X, select = -c(id, booking_company, booking_agent, nr_booking_changes, days_in_waiting_list))
 str(test_X)
 
 # missing values
@@ -103,9 +110,24 @@ test_X_impute$last_status<-ifelse(is.na(test_X_impute$last_status)==TRUE & test_
 validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="stay cancelled", "Canceled", validation_X_impute$last_status)
 validation_X_impute$last_status<-ifelse(is.na(validation_X_impute$last_status)==TRUE & validation_X_impute$canceled=="no cancellation", "Check-Out",validation_X_impute$last_status)
 
-#train_X_impute$last_status <- impute(train_X_impute$last_status, method = modus)
-#test_X_impute$last_status <- impute(test_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
-#validation_X_impute$last_status <- impute(validation_X_impute$last_status, val = modus(train_X_impute$last_status, na.rm = T))
+# !!!
+# last status and canceled provide the same information so drop canceled
+train_X_impute <- subset(train_X_impute , select = -c(canceled))
+validation_X_impute <- subset(validation_X_impute , select = -c(canceled))
+test_X_impute <- subset(test_X_impute , select = -c(canceled))
+str(train_X_impute)
+# !!!
+# new column to check whether reserved room type and assigned room type are the same
+train_X_impute$desired_room <- ifelse(train_X_impute$assigned_room_type == train_X_impute$reserved_room_type,1,0)
+validation_X_impute$desired_room <- ifelse(validation_X_impute$assigned_room_type == validation_X_impute$reserved_room_type,1,0)
+test_X_impute$desired_room <- ifelse(test_X_impute$assigned_room_type == test_X_impute$reserved_room_type,1,0)
+str(train_X_impute)
+# !!!
+# drop reserved_room_type
+train_X_impute <- subset(train_X_impute , select = -c(reserved_room_type))
+validation_X_impute <- subset(validation_X_impute , select = -c(reserved_room_type))
+test_X_impute <- subset(test_X_impute , select = -c(reserved_room_type))
+str(train_X_impute)
 
 train_X_impute$market_segment <- impute(train_X_impute$market_segment, method = modus)
 test_X_impute$market_segment <- impute(test_X_impute$market_segment, val = modus(train_X_impute$market_segment, na.rm = T))
@@ -174,10 +196,6 @@ train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, m
 test_X_impute$car_parking_spaces <- impute(test_X_impute$car_parking_spaces, val = median(train_X_impute$car_parking_spaces, na.rm = T))
 validation_X_impute$car_parking_spaces <- impute(validation_X_impute$car_parking_spaces, val = median(train_X_impute$car_parking_spaces, na.rm = T))
 
-train_X_impute$days_in_waiting_list <- impute(train_X_impute$days_in_waiting_list, method = median)
-test_X_impute$days_in_waiting_list <- impute(test_X_impute$days_in_waiting_list, val = median(train_X_impute$days_in_waiting_list, na.rm = T))
-validation_X_impute$days_in_waiting_list <- impute(validation_X_impute$days_in_waiting_list, val = median(train_X_impute$days_in_waiting_list, na.rm = T))
-
 train_X_impute$nr_adults <- impute(train_X_impute$nr_adults, method = median)
 test_X_impute$nr_adults <- impute(test_X_impute$nr_adults, val = median(train_X_impute$nr_adults, na.rm = T))
 validation_X_impute$nr_adults <- impute(validation_X_impute$nr_adults, val = median(train_X_impute$nr_adults, na.rm = T))
@@ -186,6 +204,21 @@ train_X_impute$nr_children <- impute(train_X_impute$nr_children, method = median
 test_X_impute$nr_children <- impute(test_X_impute$nr_children, val = median(train_X_impute$nr_children, na.rm = T))
 validation_X_impute$nr_children <- impute(validation_X_impute$nr_children, val = median(train_X_impute$nr_children, na.rm = T))
 
+# !!!
+# code to determine nr previous bookings accurately based on previous cancellations and previous bookings not canceled
+train_X_impute$nr_previous_bookings <- ifelse(is.na(train_X_impute$nr_previous_bookings) == TRUE & is.na(train_X_impute$previous_bookings_not_canceled) == FALSE & is.na(train_X_impute$previous_cancellations) == FALSE, train_X_impute$previous_bookings_not_canceled + train_X_impute$previous_cancellations, train_X_impute$nr_previous_bookings)
+test_X_impute$nr_previous_bookings <- ifelse(is.na(test_X_impute$nr_previous_bookings) == TRUE & is.na(test_X_impute$previous_bookings_not_canceled) == FALSE & is.na(test_X_impute$previous_cancellations) == FALSE, test_X_impute$previous_bookings_not_canceled + test_X_impute$previous_cancellations, test_X_impute$nr_previous_bookings)
+validation_X_impute$nr_previous_bookings <- ifelse(is.na(validation_X_impute$nr_previous_bookings) == TRUE & is.na(validation_X_impute$previous_bookings_not_canceled) == FALSE & is.na(validation_X_impute$previous_cancellations) == FALSE, validation_X_impute$previous_bookings_not_canceled + validation_X_impute$previous_cancellations, validation_X_impute$nr_previous_bookings)
+
+train_X_impute$previous_bookings_not_canceled <- ifelse(is.na(train_X_impute$previous_bookings_not_canceled) == TRUE & is.na(train_X_impute$nr_previous_bookings) == FALSE & is.na(train_X_impute$previous_cancellations) == FALSE, train_X_impute$nr_previous_bookings - train_X_impute$previous_cancellations, train_X_impute$previous_bookings_not_canceled)
+test_X_impute$previous_bookings_not_canceled <- ifelse(is.na(test_X_impute$previous_bookings_not_canceled) == TRUE & is.na(test_X_impute$nr_previous_bookings) == FALSE & is.na(test_X_impute$previous_cancellations) == FALSE, test_X_impute$nr_previous_bookings - test_X_impute$previous_cancellations, test_X_impute$previous_bookings_not_canceled)
+validation_X_impute$previous_bookings_not_canceled <- ifelse(is.na(validation_X_impute$previous_bookings_not_canceled) == TRUE & is.na(validation_X_impute$nr_previous_bookings) == FALSE & is.na(validation_X_impute$previous_cancellations) == FALSE, validation_X_impute$nr_previous_bookings - validation_X_impute$previous_cancellations, validation_X_impute$previous_bookings_not_canceled)
+
+train_X_impute$previous_cancellations <- ifelse(is.na(train_X_impute$previous_cancellations) == TRUE & is.na(train_X_impute$nr_previous_bookings) == FALSE & is.na(train_X_impute$previous_bookings_not_canceled) == FALSE, train_X_impute$nr_previous_bookings - train_X_impute$previous_bookings_not_canceled, train_X_impute$previous_cancellations)
+test_X_impute$previous_cancellations <- ifelse(is.na(test_X_impute$previous_cancellations) == TRUE & is.na(test_X_impute$nr_previous_bookings) == FALSE & is.na(test_X_impute$previous_bookings_not_canceled) == FALSE, test_X_impute$nr_previous_bookings - test_X_impute$previous_bookings_not_canceled, test_X_impute$previous_cancellations)
+validation_X_impute$previous_cancellations <- ifelse(is.na(validation_X_impute$previous_cancellations) == TRUE & is.na(validation_X_impute$nr_previous_bookings) == FALSE & is.na(validation_X_impute$previous_bookings_not_canceled) == FALSE, validation_X_impute$nr_previous_bookings - validation_X_impute$previous_bookings_not_canceled, validation_X_impute$previous_cancellations)
+
+# if we were unable to calculate it, use median
 train_X_impute$nr_previous_bookings <- impute(train_X_impute$nr_previous_bookings, method = median)
 test_X_impute$nr_previous_bookings <- impute(test_X_impute$nr_previous_bookings, val = median(train_X_impute$nr_previous_bookings, na.rm = T))
 validation_X_impute$nr_previous_bookings <- impute(validation_X_impute$nr_previous_bookings, val = median(train_X_impute$nr_previous_bookings, na.rm = T))
@@ -197,6 +230,12 @@ validation_X_impute$previous_bookings_not_canceled <- impute(validation_X_impute
 train_X_impute$previous_cancellations <- impute(train_X_impute$previous_cancellations, method = median)
 test_X_impute$previous_cancellations <- impute(test_X_impute$previous_cancellations, val = median(train_X_impute$previous_cancellations, na.rm = T))
 validation_X_impute$previous_cancellations <- impute(validation_X_impute$previous_cancellations, val = median(train_X_impute$previous_cancellations, na.rm = T))
+
+# !!!
+# drop previous_bookings_not_canceled
+train_X_impute <- subset(train_X_impute , select = -c(previous_bookings_not_canceled))
+validation_X_impute <- subset(validation_X_impute , select = -c(previous_bookings_not_canceled))
+test_X_impute <- subset(test_X_impute , select = -c(previous_bookings_not_canceled))
 
 # Change lead time to integer to calculate mean
 train_X_impute$lead_time <- gsub("[  day(s)]",'',train_X_impute$lead_time)
@@ -217,9 +256,6 @@ train_X_impute["nr_babies"][train_X_impute["nr_babies"] == "n/a"] <- 0
 test_X_impute["nr_babies"][test_X_impute["nr_babies"] == "n/a"] <- 0
 validation_X_impute["nr_babies"][validation_X_impute["nr_babies"] == "n/a"] <- 0
 
-train_X_impute$nr_booking_changes <- impute(train_X_impute$nr_booking_changes, val = 0)
-test_X_impute$nr_booking_changes <- impute(test_X_impute$nr_booking_changes, val = 0)
-validation_X_impute$nr_booking_changes <- impute(validation_X_impute$nr_booking_changes, val = 0)
 
 # Now check again if there are missing values
 colMeans(is.na(test_X_impute))
@@ -256,10 +292,7 @@ test_X_impute <- cbind(test_X_impute,
 validation_X_impute <- cbind(validation_X_impute,
                        naFlag(df = validation_X, df_val = train_X))       
 
-#convert canceled into 1 and 0
-train_X_outlier$canceled<-ifelse(train_X_outlier$canceled=="stay cancelled",1,0)
-test_X_impute$canceled<-ifelse(test_X_impute$canceled=="stay cancelled",1,0)
-validation_X_impute$canceled<-ifelse(validation_X_impute$canceled=="stay cancelled",1,0)
+
 
 #convert deposit into 1 and 0
 train_X_outlier$deposit<-ifelse(train_X_outlier$deposit=="deposit equal to total cost of stay --- no refund",1,0)
@@ -281,9 +314,9 @@ train_X_cleaned <- train_X_outlier
 test_X_cleaned <- test_X_impute
 validation_X_cleaned <- validation_X_impute
 
-write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
-write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
-write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
+write.table(train_X_cleaned, file = "data/silver/train_X_cleaned2.csv", sep = ",", row.names = F)
+write.table(test_X_cleaned, file = "data/silver/test_X_cleaned2.csv", sep = ",", row.names = F)
+write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned2.csv", sep = ",", row.names = F)
 write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
 write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F)
 
