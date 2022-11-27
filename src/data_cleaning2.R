@@ -160,27 +160,21 @@ validation_X_impute$last_status_date <- validation_X_impute$arrival_date + valid
 #make columns with week, year and day for arrival date and last status date
 train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
 train_X_impute$month_arrival_date <- format(train_X_impute$arrival_date, format="%m")
-train_X_impute$day2_arrival_date <- format(train_X_impute$arrival_date, format="%d")
 
 test_X_impute$year_arrival_date <- format(test_X_impute$arrival_date, format="%Y")
 test_X_impute$month_arrival_date <- format(test_X_impute$arrival_date, format="%m")
-test_X_impute$day2_arrival_date <- format(test_X_impute$arrival_date, format="%d")
 
 validation_X_impute$year_arrival_date <- format(validation_X_impute$arrival_date, format="%Y")
 validation_X_impute$month_arrival_date <- format(validation_X_impute$arrival_date, format="%m")
-validation_X_impute$day2_arrival_date <- format(validation_X_impute$arrival_date, format="%d")
 
 train_X_impute$year_last_status_date <- format(train_X_impute$last_status_date, format="%Y")
 train_X_impute$month_last_status_date <- format(train_X_impute$last_status_date, format="%m")
-train_X_impute$day2_last_status_date <- format(train_X_impute$last_status_date, format="%d")
 
 test_X_impute$year_last_status_date <- format(test_X_impute$last_status_date, format="%Y")
 test_X_impute$month_last_status_date <- format(test_X_impute$last_status_date, format="%m")
-test_X_impute$day2_last_status_date <- format(test_X_impute$last_status_date, format="%d")
 
 validation_X_impute$year_last_status_date <- format(validation_X_impute$last_status_date, format="%Y")
 validation_X_impute$month_last_status_date <- format(validation_X_impute$last_status_date, format="%m")
-validation_X_impute$day2_last_status_date <- format(validation_X_impute$last_status_date, format="%d")
 
 train_X_impute$day_arrival_date <- as.POSIXlt(train_X_impute$arrival_date)$wday
 test_X_impute$day_arrival_date <- as.POSIXlt(test_X_impute$arrival_date)$wday
@@ -274,7 +268,15 @@ colMeans(is.na(validation_X_impute))
 
 # change values bigger than 1 to 1 for car parking spaces
 #train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
-#unique(train_X_impute$car_parking_spaces)
+unique(train_X_impute$car_parking_spaces)
+unique(train_X_impute$nr_adults)
+unique(train_X_impute$nr_babies)
+unique(train_X_impute$nr_children)
+unique(train_X_impute$nr_nights)
+unique(train_X_impute$nr_previous_bookings)
+unique(train_X_impute$previous_cancellations)
+unique(train_X_impute$special_requests)
+
 
 #check for outliers
 train_X_outlier <- train_X_impute
