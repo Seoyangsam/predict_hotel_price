@@ -36,6 +36,8 @@ train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
 str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
+validation_X <- subset(validation_X , select = -c(id, booking_company, booking_agent))
+str(validation_X)
 
 # missing values
 colMeans(is.na(test_X))
@@ -234,7 +236,7 @@ colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
 # change values bigger than 3 to 3 for car parking spaces
-train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 1
+train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 3
 unique(train_X_impute$car_parking_spaces)
 
 #check for outliers
@@ -247,11 +249,11 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
-#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
+num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
 # Change value of car parking spaces to 1
-train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
+# train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
 
 
 # flags

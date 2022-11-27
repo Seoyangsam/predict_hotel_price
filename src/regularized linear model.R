@@ -2,20 +2,20 @@
 #here we do lasso regression
 library(glmnet)
 #read files
-train_X <- read.csv(file = 'data/gold/train_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
+train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
-test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE, fileEncoding = 'latin1')
+validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE)
 
 # FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
 validation_X_data <- data.frame(validation_X,validation_y)
-
+str(validation_X)
 # linear regression
 lm.fit <- lm(average_daily_rate ~ ., data = train_X_data)
 lm.fit
@@ -28,7 +28,8 @@ train_y_data <- subset(train_X_data, select= c(average_daily_rate))
 
 train_X_matrix <- model.matrix(lm.fit, train_X_data)
 validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
-str(train_X_matrix)
+colnames(train_X_data)
+
 # fit a lasso regression model with CV
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
@@ -36,9 +37,8 @@ bestlam.lasso <- cv.lasso$lambda.min
 
 # make predictions on validation set
 pred.lasso.validationset <- predict(cv.lasso, s = bestlam.lasso, newx = validation_X_matrix)
-lasso.error <- mean((pred.lasso.validationset - validation.y)^2)
+lasso.error <- mean((pred.lasso.validationset - validation_y$average_daily_rate)^2)
 str(lasso.error)
-
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
@@ -72,7 +72,7 @@ bestlam.lasso <- cv.lasso$lambda.min
 pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix)
 
 # make file with id and corresponding average daily rate
-lin_submission <- data.frame(col1 = train$id, col2 = pred.lasso.testset)
+lin_submission <- data.frame(col1 = test_id, col2 = pred.lasso.testset)
 
 colnames(lin_submission) <- c("id", "average_daily_rate")
 write.table(lin_submission, file = "data/results/lin_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)

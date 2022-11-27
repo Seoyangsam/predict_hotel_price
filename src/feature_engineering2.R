@@ -83,6 +83,6 @@ colMeans(validation_X_scale[, scale_cols])
 sapply(validation_X_scale[, scale_cols], sd)
 
 #save the dataset
-write.table(train_X_scale, file = "data/gold/train_X_scale.csv", sep = ",", row.names = F)
-write.table(test_X_scale, file = "data/gold/test_X_scale.csv", sep = ",", row.names = F)
-write.table(validation_X_scale, file = "data/gold/validation_X_scale.csv", sep = ",", row.names = F)
+write.table(train_X_scale, file = "data/gold/train_X_scale2.csv", sep = ",", row.names = F)
+write.table(test_X_scale, file = "data/gold/test_X_scale2.csv", sep = ",", row.names = F)
+write.table(validation_X_scale, file = "data/gold/validation_X_scale2.csv", sep = ",", row.names = F)
