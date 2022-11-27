@@ -294,6 +294,12 @@ train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
 
 
 # flags
+# !!!
+# drop columns we do not want to flag
+train_X <- subset(train_X , select = -c(arrival_date,assigned_room_type,booking_distribution_channel,canceled,car_parking_spaces,customer_type,deposit,is_repeated_guest,last_status,last_status_date,lead_time,market_segment,meal_booked,nr_babies,nr_children,nr_nights,nr_previous_bookings,previous_bookings_not_canceled,previous_cancellations,reserved_room_type,special_requests))
+test_X <- subset(test_X , select = -c(arrival_date,assigned_room_type,booking_distribution_channel,canceled,car_parking_spaces,customer_type,deposit,is_repeated_guest,last_status,last_status_date,lead_time,market_segment,meal_booked,nr_babies,nr_children,nr_nights,nr_previous_bookings,previous_bookings_not_canceled,previous_cancellations,reserved_room_type,special_requests))
+validation_X <- subset(validation_X , select = -c(arrival_date,assigned_room_type,booking_distribution_channel,canceled,car_parking_spaces,customer_type,deposit,is_repeated_guest,last_status,last_status_date,lead_time,market_segment,meal_booked,nr_babies,nr_children,nr_nights,nr_previous_bookings,previous_bookings_not_canceled,previous_cancellations,reserved_room_type,special_requests))
+str(test_X)
 
 train_X_outlier <- cbind(train_X_outlier,
                         naFlag(df = train_X))
@@ -301,7 +307,7 @@ test_X_impute <- cbind(test_X_impute,
                        naFlag(df = test_X, df_val = train_X))
 validation_X_impute <- cbind(validation_X_impute,
                        naFlag(df = validation_X, df_val = train_X))       
-
+str(test_X_impute)
 
 
 #convert deposit into 1 and 0
