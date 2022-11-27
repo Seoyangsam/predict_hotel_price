@@ -15,9 +15,6 @@ validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
 validation <- train[validation_ind,]
 train <- train[-validation_ind,]
 
-write.table(train, file = "data/bronze/training_set.csv", sep = ",", row.names = F)
-write.table(validation, file = "data/bronze/validation_set.csv", sep = ",", row.names = F)
-
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
 str(train_X)
