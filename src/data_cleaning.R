@@ -12,9 +12,8 @@ write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 set.seed(1)
 sample_size <- floor(0.30 * nrow(train))
 validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
-train <- train[-validation_ind,]
 validation <- train[validation_ind,]
-str(validation)
+train <- train[-validation_ind,]
 
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
@@ -37,12 +36,12 @@ train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
 str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
+validation_X <- subset(validation_X , select = -c(id, booking_company, booking_agent))
+str(validation_X)
 
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
-
-
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -169,6 +168,15 @@ train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_dat
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
 validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
+# drop arrival date and last status date
+train_X_impute <- subset(train_X_impute , select = -c(arrival_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(arrival_date))
+test_X_impute <- subset(test_X_impute , select = -c(arrival_date))
+
+train_X_impute <- subset(train_X_impute , select = -c(last_status_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(last_status_date))
+test_X_impute <- subset(test_X_impute , select = -c(last_status_date))
+
 
 # impute all numerical variables
 train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, method = median)
@@ -227,9 +235,9 @@ colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
-# change values bigger than 1 to 1 for car parking spaces
-#train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
-#unique(train_X_impute$car_parking_spaces)
+# change values bigger than 3 to 3 for car parking spaces
+train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 3
+unique(train_X_impute$car_parking_spaces)
 
 #check for outliers
 train_X_outlier <- train_X_impute
@@ -241,11 +249,11 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
-#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
+num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
 # Change value of car parking spaces to 1
-train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
+# train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
 
 
 # flags
@@ -285,6 +293,6 @@ validation_X_cleaned <- validation_X_impute
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", row.names = F)
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
-write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F)
-write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F)
+write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
+write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 

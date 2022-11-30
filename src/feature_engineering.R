@@ -20,7 +20,7 @@ validation_X_ft_engineering <- validation_X_cleaned
 
 library(dummy)
 # get categories and dummies
-cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country",  "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")], p=20)
+cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country",  "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")], p=15)
 # apply on train set (exclude reference categories)
 dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
                        object = cats)
@@ -86,3 +86,4 @@ sapply(validation_X_scale[, scale_cols], sd)
 write.table(train_X_scale, file = "data/gold/train_X_scale.csv", sep = ",", row.names = F)
 write.table(test_X_scale, file = "data/gold/test_X_scale.csv", sep = ",", row.names = F)
 write.table(validation_X_scale, file = "data/gold/validation_X_scale.csv", sep = ",", row.names = F)
+
