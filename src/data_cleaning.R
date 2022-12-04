@@ -1,5 +1,5 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE, fileEncoding = 'latin1')
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
@@ -12,9 +12,8 @@ write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 set.seed(1)
 sample_size <- floor(0.30 * nrow(train))
 validation_ind <- sample(nrow(train), sample_size, replace = FALSE)
-train <- train[-validation_ind,]
 validation <- train[validation_ind,]
-str(validation)
+train <- train[-validation_ind,]
 
 #Next, we split the independent & dependent variables in the training set.
 train_X <- subset(train, select = -c(average_daily_rate))
@@ -37,6 +36,8 @@ train_X <- subset(train_X , select = -c(id, booking_company, booking_agent))
 str(train_X)
 test_X <- subset(test_X, select = -c(id, booking_company, booking_agent))
 str(test_X)
+validation_X <- subset(validation_X , select = -c(id, booking_company, booking_agent))
+str(validation_X)
 
 # missing values
 colMeans(is.na(test_X))
@@ -167,6 +168,15 @@ train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_dat
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
 validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
+# drop arrival date and last status date
+train_X_impute <- subset(train_X_impute , select = -c(arrival_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(arrival_date))
+test_X_impute <- subset(test_X_impute , select = -c(arrival_date))
+
+train_X_impute <- subset(train_X_impute , select = -c(last_status_date))
+validation_X_impute <- subset(validation_X_impute , select = -c(last_status_date))
+test_X_impute <- subset(test_X_impute , select = -c(last_status_date))
+
 
 # impute all numerical variables
 train_X_impute$car_parking_spaces <- impute(train_X_impute$car_parking_spaces, method = median)
@@ -226,7 +236,7 @@ colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
 
 # change values bigger than 3 to 3 for car parking spaces
-train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 1
+train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 3] <- 3
 unique(train_X_impute$car_parking_spaces)
 
 #check for outliers
@@ -239,11 +249,11 @@ handle_outlier_z <- function(col){
 }
 
 num.cols <- sapply(train_X_outlier, is.numeric)
-#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
+num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
 train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
 
 # Change value of car parking spaces to 1
-train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
+# train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
 
 
 # flags
