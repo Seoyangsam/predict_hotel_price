@@ -9,6 +9,7 @@ validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TR
 test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
+# FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
