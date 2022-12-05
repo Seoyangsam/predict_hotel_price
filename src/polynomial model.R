@@ -105,4 +105,37 @@ pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matri
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
+# new dataframe with train + val set and add average daily rate
+train_and_validation <- rbind(train_X, validation_X)
+dependant_y <- rbind(train_y, validation_y)
+write.table(train_and_validation, file = "data/gold/train_and_validation.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+train_val_data <- data.frame(train_and_validation, dependant_y)
+
+# POLYNOMIAL REGRESSION MODEL 
+poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
+poly.fit
+
+# prepare the data to be used with a Lasso regression model
+library(Matrix)
+require(Matrix)
+
+train_val_y_data <- subset(train_val_data, select= c(average_daily_rate))
+
+train_X_matrix <- model.matrix(poly.fit, train_val_data)
+test_set_matrix <- model.matrix(~., data = test_set)
+
+# fit a Lasso regression model with CV
+grid <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(train_X_matrix, train_val_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
+
+# make predictions on validation set
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix)
+
+# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
+poly_submission <- data.frame(col1 = test_id$x, col2 = pred.lasso.testset)
+
+colnames(lin_submission) <- c("id", "average_daily_rate")
+write.table(lin_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
