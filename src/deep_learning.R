@@ -95,45 +95,89 @@ plot(history)
 
 # 2) multilayer model (wide)
 # step 1 make model powerful enough
-modelnn <- keras_model_sequential()
-modelnn %>%
-  layer_dense(units = 60000, activation = "relu",
+widemodelnn <- keras_model_sequential()
+widemodelnn %>%
+  layer_dense(units = 70000, activation = "relu",
               input_shape =nccol(train_X_matrix)) %>%
-  layer_dense(units = 30000, activation = "relu") %>%
-  layer_dense(units = 10)
+  layer_dense(units = 35000, activation = "relu") %>%
+  layer_dense(units = 1)
 
-modelnn %>% compile(loss = "mse",
+widemodelnn %>% compile(loss = "mse",
                     optimizer = optimizer_rmsprop(),
                     metrics = list("mean_absolute_error"))
 
 # step 2 learning convergence (#epochs and batch size)
-history <- modelnn %>%
+widehistory <- widemodelnn %>%
     fit(train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
   validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
 
 # plot
-plot(history, smooth = FALSE)
+plot(widehistory)
 
 # step 3 reguralize architectrure
-regmodelnn <- keras_model_sequential()
-regmodelnn %>%
+regwidemodelnn <- keras_model_sequential()
+regwidemodelnn %>%
   layer_dense(units = 60000, activation = "relu",
               input_shape =nccol(train_X_matrix)) %>%
   layer_dropout(rate = 0.4) %>%
   layer_dense(units = 30000, activation = "relu") %>%
   layer_dropout(rate = 0.3) %>%
-  layer_dense(units = 10)
+  layer_dense(units = 1)
 
-regmodelnn %>% compile(loss = "mse",
+regwidemodelnn %>% compile(loss = "mse",
                     optimizer = optimizer_rmsprop(),
                     metrics = list("mean_absolute_error"))
 
 # step 4 learning convergence 
-reghistory <- regmodelnn %>%
+regwidehistory <- regwidemodelnn %>%
     fit(train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
   validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
 
 # plot
-plot(reghistory)
+plot(regwidehistory)
 
 # 3) multilayer model (deep)
+
+# step 1 make model powerful enough
+deepmodelnn <- keras_model_sequential()
+deepmodelnn %>%
+  layer_dense(units = 50000, activation = "relu",
+              input_shape =nccol(train_X_matrix)) %>%
+  layer_dense(units = 25000, activation = "relu") %>%
+  layer_dense(units = 12500, activation = "relu") %>%
+  layer_dense(units = 6250, activation = "relu") %>%
+  layer_dense(units = 1)
+
+deepmodelnn %>% compile(loss = "mse",
+                    optimizer = optimizer_rmsprop(),
+                    metrics = list("mean_absolute_error"))
+
+# step 2 learning convergence (#epochs and batch size)
+deephistory <- deepmodelnn %>%
+    fit(train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
+  validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
+
+# plot
+plot(deephistory)
+
+# step 3 reguralize architectrure
+regdeepmodelnn <- keras_model_sequential()
+regdeepmodelnn %>%
+  layer_dense(units = 50000, activation = "relu",
+              input_shape =nccol(train_X_matrix)) %>%
+  layer_dense(units = 25000, activation = "relu") %>%
+  layer_dense(units = 12500, activation = "relu") %>%
+  layer_dense(units = 6250, activation = "relu") %>%
+  layer_dense(units = 1)
+
+regdeepmodelnn %>% compile(loss = "mse",
+                    optimizer = optimizer_rmsprop(),
+                    metrics = list("mean_absolute_error"))
+
+# step 4 learning convergence 
+regdeephistory <- regdeepmodelnn %>%
+    fit(train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
+  validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
+
+# plot
+plot(regdeephistory)
