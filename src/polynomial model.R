@@ -1,13 +1,13 @@
 # here we will perform a polynomial regression 
 
-#read files
-train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+# read files
+train_X <- read.csv(file = 'data/gold/train_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 
-test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 # dependent and independent variables in 1 dataframe
@@ -15,45 +15,40 @@ train_X_data <- data.frame(train_X,train_y)
 validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
-# dependent and independent variables in 1 dataframe and delete arrival date and last status date
-train_X_data <- data.frame(train_X,train_y)
-train_X_data$average_daily_rate <- train_X_data$x
-train_X_data <- subset(train_X_data, select = -c(x,arrival_date,last_status_date))
+# OPTION 1: anova test to see which poly the best fit is for each variable 
+
+# nr of babies 
+poly_nrbabies_1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrbabies_2 <- lm(average_daily_rate ~ . - nr_babies + poly(nr_babies,2) , data = train_X_data)
+anova(poly_nrbabies_1,poly_nrbabies_2)
+    # not significant so we keep "nr_babies" of degree 1 
+
+# lead time 
+poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_leadtime2 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 2) , data = train_X_data)
+poly_leadtime3 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 3) , data = train_X_data)
+poly_leadtime4 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 4) , data = train_X_data)
+anova(poly_leadtime1,poly_leadtime2,poly_leadtime3,poly_leadtime4)
+    # p-value <0,05 so significant: we take degree 2 for "lead time"
+
+# nr of adults 
+poly_nradults1 <-  lm(average_daily_rate ~ . , data = train_X_data)
+poly_nradults2 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,2) , data = train_X_data)
+poly_nradults3 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,3) , data = train_X_data)
+poly_nradults4 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,4) , data = train_X_data)
+anova(poly_nradults1,poly_nradults2,poly_nradults3,poly_nradults4)
+    # p-value <0,05 so significant: we take less complex, degree 2 for "nr_adults"
 
 
-validation_X_data <- data.frame(validation_X,validation_y)
-validation_X_data$average_daily_rate <- validation_X_data$x
-validation_X_data <- subset(validation_X_data, select = -c(x,arrival_date,last_status_date))
 
-# delete arrival date and last status date from test set
-test_set <- subset(test_set, select = -c(arrival_date,last_status_date))
 
-# OPTION 1
 
-#polynomial regression 
-poly.fit <- poly ( average_daily_rate ~ . , data = train_X_data)
 
-#prepare data  
-train_X_data$average_daily_rate <- train_X_data$x
-train_X_data <- subset(train_X_data, select = -c(x,arrival_date,last_status_date))
 
-validation_X_data$average_daily_rate <- validation_X_data$x
-validation_X_data <- subset(validation_X_data, select = -c(x,arrival_date,last_status_date))
 
-# delete arrival date and last status date from test set
-test_set <- subset(test_set, select = -c(arrival_date,last_status_date))
-
-#polynomial regression 
-poly.fit1 <- lm(average_daily_rate ~ poly (train_X_data,1 ) , data = validation_X_data)
-poly.fit2 <- lm(average_daily_rate ~ poly (train_X_data,2 ) , data = validation_X_data)
-poly.fit3 <- lm(average_daily_rate ~ poly (train_X_data,3 ) , data = validation_X_data)
-poly.fit4 <- lm(average_daily_rate ~ poly (train_X_data,4 ) , data = validation_X_data)
-poly.fit5 <- lm(average_daily_rate ~ poly (train_X_data,5 ) , data = validation_X_data)
-anova(poly.fit1, poly.fit2, poly.fit3, poly.fit4, poly.fit5)
 
 
 # OPTION 2 (with k-fold cross validation)
-
 #define number of folds to use for k-fold cross-validation
 K <- 10 
 
