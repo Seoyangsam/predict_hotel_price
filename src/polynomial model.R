@@ -39,6 +39,21 @@ poly_nradults4 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,4) , d
 anova(poly_nradults1,poly_nradults2,poly_nradults3,poly_nradults4)
     # p-value <0,05 so significant: we take less complex, degree 2 for "nr_adults"
 
+# nr of children 
+poly_nrchildren1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrchildren2 <- lm(average_daily_rate ~ . - nr_children + poly(nr_children,2) , data = train_X_data)
+anova(poly_nrchildren1, poly_nrchildren2)
+    # p-value <0,05 so significant: we take degree 2 for "nr_children"
+
+# nr of nights 
+poly_nrnights1 <-  lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrnights2 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,2), data = train_X_data)
+poly_nrnights3 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,3), data = train_X_data)
+poly_nrnights4 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,4), data = train_X_data)
+anova(poly_nrnights1, poly_nrnights2,poly_nrnights3,poly_nrnights4)
+    # p-value <0,05 so significant: we take less complex, degree 2 for "nr_nights"
+
+
 
 
 
