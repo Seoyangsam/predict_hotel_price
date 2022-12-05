@@ -10,18 +10,9 @@ test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEn
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 
-# dependent and independent variables in 1 dataframe and delete arrival date and last status date
+# dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
-train_X_data$average_daily_rate <- train_X_data$x
-train_X_data <- subset(train_X_data, select = -c(x,arrival_date,last_status_date))
-
-
 validation_X_data <- data.frame(validation_X,validation_y)
-validation_X_data$average_daily_rate <- validation_X_data$x
-validation_X_data <- subset(validation_X_data, select = -c(x,arrival_date,last_status_date))
-
-# delete arrival date and last status date from test set
-test_set <- subset(test_set, select = -c(arrival_date,last_status_date))
 
 # linear regression
 lm.fit <- lm(average_daily_rate ~ ., data = train_X_data)
