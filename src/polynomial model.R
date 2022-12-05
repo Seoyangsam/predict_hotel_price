@@ -1,86 +1,141 @@
 # here we will perform a polynomial regression 
+install.packages("glmnet")
+library(glmnet)
 
-#read files
-train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+# read files
+train_X <- read.csv(file = 'data/gold/train_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 
-test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
+
+# FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
 validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
-# dependent and independent variables in 1 dataframe and delete arrival date and last status date
-train_X_data <- data.frame(train_X,train_y)
-train_X_data$average_daily_rate <- train_X_data$x
-train_X_data <- subset(train_X_data, select = -c(x,arrival_date,last_status_date))
+# ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
 
+# lead time 
+poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_leadtime2 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 2) , data = train_X_data)
+poly_leadtime3 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 3) , data = train_X_data)
+poly_leadtime4 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 4) , data = train_X_data)
+anova(poly_leadtime1,poly_leadtime2,poly_leadtime3,poly_leadtime4)
+    # p-value <0,05 so significant: we take degree 2 for "lead time"
 
-validation_X_data <- data.frame(validation_X,validation_y)
-validation_X_data$average_daily_rate <- validation_X_data$x
-validation_X_data <- subset(validation_X_data, select = -c(x,arrival_date,last_status_date))
+# nr of adults 
+poly_nradults1 <-  lm(average_daily_rate ~ . , data = train_X_data)
+poly_nradults2 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,2) , data = train_X_data)
+poly_nradults3 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,3) , data = train_X_data)
+poly_nradults4 <-  lm(average_daily_rate ~ . - nr_adults + poly(nr_adults,4) , data = train_X_data)
+anova(poly_nradults1, poly_nradults2, poly_nradults3, poly_nradults4)
+    # p-value <0,05 so significant: we take less complex, degree 2 for "nr_adults"
 
-# delete arrival date and last status date from test set
-test_set <- subset(test_set, select = -c(arrival_date,last_status_date))
+# nr of babies 
+poly_nrbabies_1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrbabies_2 <- lm(average_daily_rate ~ . - nr_babies + poly(nr_babies,2) , data = train_X_data)
+anova(poly_nrbabies_1,poly_nrbabies_2)
+    # not significant so we keep "nr_babies" of degree 1 
 
-# OPTION 1
+# nr of children 
+poly_nrchildren1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrchildren2 <- lm(average_daily_rate ~ . - nr_children + poly(nr_children,2) , data = train_X_data)
+anova(poly_nrchildren1, poly_nrchildren2)
+    # p-value <0,05 so significant: we take degree 2 for "nr_children"
 
-#polynomial regression 
-poly.fit <- poly ( average_daily_rate ~ . , data = train_X_data)
+# nr of nights 
+poly_nrnights1 <-  lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrnights2 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,2), data = train_X_data)
+poly_nrnights3 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,3), data = train_X_data)
+poly_nrnights4 <-  lm(average_daily_rate ~ . - nr_nights + poly(nr_nights,4), data = train_X_data)
+anova(poly_nrnights1, poly_nrnights2, poly_nrnights3, poly_nrnights4)
+    # p-value <0,05 so significant: we take less complex, degree 2 for "nr_nights"
 
-#prepare data  
-train_X_data$average_daily_rate <- train_X_data$x
-train_X_data <- subset(train_X_data, select = -c(x,arrival_date,last_status_date))
+# nr of previous bookings 
+poly_nrprevbookings1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_nrprevbookings2 <- lm(average_daily_rate ~ . - nr_previous_bookings + poly(nr_previous_bookings,2), data = train_X_data)
+poly_nrprevbookings3 <- lm(average_daily_rate ~ . - nr_previous_bookings + poly(nr_previous_bookings,3), data = train_X_data)
+poly_nrprevbookings4 <- lm(average_daily_rate ~ . - nr_previous_bookings + poly(nr_previous_bookings,4), data = train_X_data)
+anova(poly_nrprevbookings1, poly_nrprevbookings2, poly_nrprevbookings3, poly_nrprevbookings4)
+    # not significant so we keep "previous_bookings" of degree 1 
 
-validation_X_data$average_daily_rate <- validation_X_data$x
-validation_X_data <- subset(validation_X_data, select = -c(x,arrival_date,last_status_date))
+# previous cancellations
+poly_prevcancel1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_prevcancel2 <- lm(average_daily_rate ~ . - previous_cancellations + poly(previous_cancellations,2), data = train_X_data)
+poly_prevcancel3 <- lm(average_daily_rate ~ . - previous_cancellations + poly(previous_cancellations,3), data = train_X_data)
+anova(poly_prevcancel1, poly_prevcancel2, poly_prevcancel3)
+    # p-value <0,05 so significant: we take degree 2 for "previous_cancellations"
 
-# delete arrival date and last status date from test set
-test_set <- subset(test_set, select = -c(arrival_date,last_status_date))
+# special requests
+poly_specialrequests1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_specialrequests2 <- lm(average_daily_rate ~ . - special_requests + poly(special_requests,2), data = train_X_data)
+poly_specialrequests3 <- lm(average_daily_rate ~ . - special_requests + poly(special_requests,3), data = train_X_data)
+anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
+    # not significant so we keep "special_requests" of degree 1 
 
-#polynomial regression 
-poly.fit1 <- lm(average_daily_rate ~ poly (train_X_data,1 ) , data = validation_X_data)
-poly.fit2 <- lm(average_daily_rate ~ poly (train_X_data,2 ) , data = validation_X_data)
-poly.fit3 <- lm(average_daily_rate ~ poly (train_X_data,3 ) , data = validation_X_data)
-poly.fit4 <- lm(average_daily_rate ~ poly (train_X_data,4 ) , data = validation_X_data)
-poly.fit5 <- lm(average_daily_rate ~ poly (train_X_data,5 ) , data = validation_X_data)
-anova(poly.fit1, poly.fit2, poly.fit3, poly.fit4, poly.fit5)
+# POLYNOMIAL REGRESSION MODEL 
+poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
+poly.fit
 
+# prepare the data to be used with a Lasso regression model
+library(Matrix)
+require(Matrix)
 
-# OPTION 2 (with k-fold cross validation)
+train_y_data <- subset(train_X_data, select= c(average_daily_rate))
 
-#define number of folds to use for k-fold cross-validation
-K <- 10 
+train_X_matrix <- model.matrix(poly.fit, train_X_data)
+test_set_matrix <- model.matrix(~., data = test_set)
+validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
 
-#define degree of polynomials to fit
-degree <- 5
+colnames(validation_X_matrix)
 
-#create k equal-sized folds
-folds <- cut(seq(1,nrow(train_X_data)),breaks=K,labels=FALSE)
+# fit a Lasso regression model with CV
+grid <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
 
-#create object to hold MSE's of models
-mse = matrix(data=NA,nrow=K,ncol=degree)
+# make predictions on test set
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix )
 
-#Perform K-fold cross validation
-for(i in 1:K){
-    
-    #define training and testing data
-    testIndexes <- which(folds==i,arr.ind=TRUE)
-    testData <- train_X_data[testIndexes, ]
-    trainData <- train_X_data[-testIndexes, ]
-    
-    #use k-fold cv to evaluate models
-    for (j in 1:degree){
-        fit.train = lm(average_daily_rate ~ poly(train_X_data,j), data=trainData)
-        fit.test = predict(fit.train, newdata=testData)
-        mse[i,j] = mean((fit.test-testData$score)^2) 
-    }
-}
+# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
-#find MSE for each degree 
-colMeans(mse)
+# new dataframe with train + val set and add average daily rate
+train_and_validation <- rbind(train_X, validation_X)
+dependant_y <- rbind(train_y, validation_y)
+write.table(train_and_validation, file = "data/gold/train_and_validation.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+train_val_data <- data.frame(train_and_validation, dependant_y)
+
+# POLYNOMIAL REGRESSION MODEL 
+poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
+poly.fit
+
+# prepare the data to be used with a Lasso regression model
+library(Matrix)
+require(Matrix)
+
+train_val_y_data <- subset(train_val_data, select= c(average_daily_rate))
+
+train_X_matrix <- model.matrix(poly.fit, train_val_data)
+test_set_matrix <- model.matrix(~., data = test_set)
+
+# fit a Lasso regression model with CV
+grid <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(train_X_matrix, train_val_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
+
+# make predictions on validation set
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix)
+
+# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
+poly_submission <- data.frame(col1 = test_id$x, col2 = pred.lasso.testset)
+
+colnames(lin_submission) <- c("id", "average_daily_rate")
+write.table(lin_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
