@@ -10,7 +10,9 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 
 test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
+str(test_set)
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
+str(test_id)
 
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -87,9 +89,9 @@ anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
 poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
 poly.fit
 
-# make predictions on test set
-pred.testset <- predict(poly.fit, s = bestlam.lasso, newx = test_set_matrix )
-
+# make predictions on validation set
+pred.valset <- predict(poly.fit, newx = validation_X )
+str(pred.valset)
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
@@ -98,16 +100,16 @@ pred.testset <- predict(poly.fit, s = bestlam.lasso, newx = test_set_matrix )
 train_val_data <- data.frame(train_and_validation, dependant_y)
 
 # POLYNOMIAL REGRESSION MODEL 
-poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
-poly.fit
+poly.fit2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
+poly.fit2
 
-# make predictions on validation set
-pred.testset <- predict(poly.fit, s = bestlam.lasso, newx = test_set_matrix)
-
+# make predictions on test set
+pred.testset <- predict(poly.fit2, newx = test_set)
+str(pred.testset)
 
 
 # FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
-poly_submission <- data.frame(col1 = test_id$x, col2 = pred.lasso.testset)
+poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 
 colnames(lin_submission) <- c("id", "average_daily_rate")
 write.table(lin_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
