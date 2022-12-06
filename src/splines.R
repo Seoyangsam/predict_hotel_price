@@ -16,8 +16,8 @@ validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
 # regression spline 
-library (splines)
-smooth.spline (average_daily_rate)
+library(splines)
+#smooth.spline(average_daily_rate)
  
 fit <- lm(average_daily_rate ~ bs(train_X_data, knots = c()) , data = validation_X_data)
 pred <- predict(fit, newdata = list(train_X_data = train_X_data.grid), se = T)
@@ -26,10 +26,10 @@ fit2 <- lm(average_daily_rate ~ ns(train_X_data, df = 4), data = validation_X_da
 pred2 <- predict(fit2, newdata = list(train_X_data = train_X_data.grid), se = T)
 
 #smoothing spline
-fit <- smooth.spline(train_X_data, average_daily_rate, df = ?)
-fit2 <- smooth.spline(train_X_data, average_daily_rate, cv = TRUE) 
+#fit <- smooth.spline(train_X_data, average_daily_rate, df = ?)
+fit2 <- smooth.spline(train_X, train_y, cv = TRUE) 
 fit2$df 
 
 #local regression 
-fit <- loess(average_daily_rate ~ train_X_data, span = ? , data = validation_X_data)
-fit2 <- loess(average_daily_rate ~ train_X_data , span = ? , data = validation_X_data)
+#fit <- loess(average_daily_rate ~ train_X_data, span = ? , data = validation_X_data)
+#fit2 <- loess(average_daily_rate ~ train_X_data , span = ? , data = validation_X_data)

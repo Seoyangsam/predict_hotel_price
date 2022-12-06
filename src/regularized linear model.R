@@ -45,6 +45,7 @@ pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matri
 train_and_validation <- rbind(train_X, validation_X)
 dependant_y <- rbind(train_y, validation_y)
 write.table(train_and_validation, file = "data/gold/train_and_validation.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(dependant_y, file = "data/gold/dependant_y.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 train_val_data <- data.frame(train_and_validation, dependant_y)
 

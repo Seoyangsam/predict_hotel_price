@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
 str(test_X)
 
 test_id <- test_X$id
@@ -274,24 +274,21 @@ unique(train_X_impute$nr_previous_bookings)
 unique(train_X_impute$previous_cancellations)
 unique(train_X_impute$special_requests)
 
+train_X_outlier <- train_X_impute
+validation_X_outlier <- validation_X_impute
+test_X_outlier <- test_X_impute
+
 
 #check for outliers
-train_X_outlier <- train_X_impute
+train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 3] <- 3
+train_X_outlier$lead_time[train_X_outlier$lead_time > 365] <- 365
+train_X_outlier$nr_adults[train_X_outlier$nr_adults > 10] <- 10
+train_X_outlier$nr_nights[train_X_outlier$nr_nights > 21] <- 21
+train_X_outlier$nr_nights[train_X_outlier$nr_nights > 5] <- 5
+train_X_outlier$nr_previous_bookings[train_X_outlier$nr_previous_bookings > 15] <- 15
+train_X_outlier$previous_cancellations[train_X_outlier$previous_cancellations > 10] <- 10
 
-handle_outlier_z <- function(col){
-  col_z <- scale(col)
-  ifelse(abs(col_z)>3,
-         sign(col_z)*3*attr(col_z,"scaled:scale") + attr(col_z,"scaled:center"), col)
-}
-
-num.cols <- sapply(train_X_outlier, is.numeric)
-#num.cols[names(num.cols) %in% c("car_parking_spaces")] <- FALSE
-train_X_outlier[, num.cols] <-  sapply(train_X_outlier[, num.cols], FUN = handle_outlier_z)
-
-# Change value of car parking spaces to 1
-train_X_outlier$car_parking_spaces[train_X_outlier$car_parking_spaces > 0] <- 1
-
-
+unique(train_X_outlier$nr_adults)
 # flags
 # !!!
 # drop columns we do not want to flag
@@ -328,6 +325,8 @@ validation_X_impute$hotel_type<-ifelse(validation_X_impute$hotel_type=="City Hot
 train_X_cleaned <- train_X_outlier
 test_X_cleaned <- test_X_impute
 validation_X_cleaned <- validation_X_impute
+
+unique(train_X_outlier$nr_children)
 
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned2.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned2.csv", sep = ",", row.names = F)

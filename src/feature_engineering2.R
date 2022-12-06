@@ -59,7 +59,7 @@ test_X_scale <- test_X_ft_engineering
 validation_X_scale <- validation_X_ft_engineering
 
 # get all numeric columns for scaling
-scale_cols <- c("lead_time","nr_adults","nr_babies","nr_children","nr_nights","nr_previous_bookings","previous_cancellations","special_requests")
+scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_babies","nr_children","nr_nights","nr_previous_bookings","previous_cancellations","special_requests")
 
 # apply on training set
 mean_train <- colMeans(train_X_scale[, scale_cols])
