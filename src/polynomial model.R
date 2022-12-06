@@ -10,9 +10,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 
 test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
-str(test_set)
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-str(test_id)
 
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -25,6 +23,13 @@ validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
+
+# days in waiting list 
+poly_waitinglist1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_waitinglist2 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,2) , data = train_X_data)
+poly_waitinglist3 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,3) , data = train_X_data)
+poly_waitinglist4 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,4) , data = train_X_data)
+anova(poly_waitinglist1, poly_waitinglist2, poly_waitinglist3, poly_waitinglist4)
 
 # lead time 
 poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
