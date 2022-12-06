@@ -6,14 +6,32 @@ validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRU
 test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
+
+# install package
+install.packages("keras")
+
+# load keras + create r-reticulate environment
+library(keras)
+install_keras() # if it asks to install miniconda, agree by typing "Y"
+
+# R starts a new session
+
+# check environments
+reticulate::conda_list() # you should see an r-reticulate environment!
+# e.g. C:\\Users\\abthuy\\AppData\\Local\\r-miniconda\\envs\\r-reticulate\\python.exe
+
+
+
 # installation
 install.packages("reticulate")
 install.packages("keras")
 install.packages("tensorflow")
+install.packages("ggplot2")
 
 library(reticulate)
 library(keras)
 library(tensorflow)
+library(ggplot2)
 
 install.packages("ISLR2")
 library(ISLR2)
@@ -46,18 +64,24 @@ validation_X_data <- data.frame(validation_X,validation_y)
 # matrix
 library(Matrix)
 require(Matrix)
-train_X_matrix <- model.matrix(average_daily_rate ~. -1, data = train_X_data)
+train_X_matrix <- model.matrix(average_daily_rate ~. -1 , data = train_X_data)
+train_X_array <- array_reshape(train_X, dim = dim(train_X))
+train_Y <- train_X_data$average_daily_rate 
+train_Y_array <- array_reshape(train_y, dim = dim(train_y))
 validation_X_matrix <- model.matrix(average_daily_rate ~. -1, data = validation_X_data)
-
+validation_X_array <- array_reshape(validation_X,dim = dim(validation_X))
+validation_Y <- validation_X_data$average_daily_rate
+validation_Y_array <- array_reshape(validation_y,dim = dim(validation_y))
+str(validation_y)
 # 1) single layer model structure
-
+dim(train_X)
 # number of neurons in hidden layer -> mean of #input neurons + #output neurons
 # step 1 make architecture powerful enough
 modnn <- keras_model_sequential() %>%
   layer_dense(units = 29062, activation = "relu",
               input_shape = ncol(train_X_matrix)) %>%
   layer_dense(units = 1)
-
+summary(modnn)
 modnn %>% compile(loss = "mse",
                    optimizer = optimizer_rmsprop(),
                    metrics = list("mean_absolute_error"))
@@ -65,10 +89,10 @@ modnn %>% compile(loss = "mse",
 # step 2 learning convergence (#epochs and batch size)
 # fit the model
 history <- modnn %>% fit(
-  train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
-  validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
+  train_X_array, train_Y_array, epochs = 100, batch_size = 800,
+  validation_data = list(validation_X_array,validation_Y_array))
 ?fit.keras.engine.training.Model
-
+str(train_X_data)
 # plot mean absolute error of training and test data
 plot(history)
 
