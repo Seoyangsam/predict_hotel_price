@@ -90,7 +90,7 @@ poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_c
 poly.fit
 
 # make predictions on validation set
-pred.valset <- predict(poly.fit, newx = validation_X )
+pred.valset <- predict(poly.fit, newdata = validation_X )
 str(pred.valset)
 
 
@@ -104,13 +104,13 @@ poly.fit2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_
 poly.fit2
 
 # make predictions on test set
-pred.testset <- predict(poly.fit2, newx = test_set)
+pred.testset <- predict(poly.fit2, newdata = test_set)
 str(pred.testset)
 
 
 # FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
 poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 
-colnames(lin_submission) <- c("id", "average_daily_rate")
-write.table(lin_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+colnames(poly_submission) <- c("id", "average_daily_rate")
+write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
