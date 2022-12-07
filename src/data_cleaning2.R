@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
 test_id <- test_X$id
@@ -44,8 +44,6 @@ str(test_X)
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
-
-
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -262,7 +260,7 @@ validation_X_impute["nr_babies"][validation_X_impute["nr_babies"] == "n/a"] <- 0
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-
+str(test_X_impute)
 # change values bigger than 1 to 1 for car parking spaces
 #train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
 unique(train_X_impute$car_parking_spaces)
