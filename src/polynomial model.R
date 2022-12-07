@@ -1,5 +1,4 @@
 # here we will perform a polynomial regression 
-install.packages("glmnet")
 library(glmnet)
 
 # read files
@@ -25,11 +24,11 @@ str(validation_X)
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
 
 # days in waiting list 
-poly_waitinglist1 <- lm(average_daily_rate ~ . , data = train_X_data)
-poly_waitinglist2 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,2) , data = train_X_data)
-poly_waitinglist3 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,3) , data = train_X_data)
-poly_waitinglist4 <- lm(average_daily_rate ~ . - days_in_waiting_list + poly(days_in_waiting_list,4) , data = train_X_data)
-anova(poly_waitinglist1, poly_waitinglist2, poly_waitinglist3, poly_waitinglist4)
+poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
+poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
+poly_parkingspaces4 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,4) , data = train_X_data)
+anova(poly_parkingspaces1, poly_parkingspaces2, poly_parkingspaces3, poly_parkingspaces4)
 
 # lead time 
 poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)

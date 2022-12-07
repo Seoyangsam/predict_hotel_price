@@ -1,5 +1,4 @@
 # here we will perform a polynomial regression 
-install.packages("glmnet")
 library(glmnet)
 
 # read files
@@ -23,6 +22,13 @@ validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
+
+# days in waiting list 
+poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
+poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
+poly_parkingspaces4 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,4) , data = train_X_data)
+anova(poly_parkingspaces1, poly_parkingspaces2, poly_parkingspaces3, poly_parkingspaces4)
 
 # lead time 
 poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
@@ -97,13 +103,13 @@ train_X_matrix <- model.matrix(poly.fit, train_X_data)
 test_set_matrix <- model.matrix(~., data = test_set)
 validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
 colnames(validation_X_matrix)
+
 # fit a lasso regression model with CV
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
 bestlam.lasso <- cv.lasso$lambda.min
 
 # make predictions on test set
-
 pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix )
 
 # make predictions on validation set
