@@ -7,21 +7,6 @@ test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEn
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 
-# install package
-install.packages("keras")
-
-# load keras + create r-reticulate environment
-library(keras)
-install_keras() # if it asks to install miniconda, agree by typing "Y"
-
-# R starts a new session
-
-# check environments
-reticulate::conda_list() # you should see an r-reticulate environment!
-# e.g. C:\\Users\\abthuy\\AppData\\Local\\r-miniconda\\envs\\r-reticulate\\python.exe
-
-
-
 # installation
 install.packages("reticulate")
 install.packages("keras")
@@ -74,7 +59,7 @@ validation_Y <- validation_X_data$average_daily_rate
 validation_Y_array <- array_reshape(validation_y,dim = dim(validation_y))
 str(validation_y)
 # 1) single layer model structure
-
+train_X_matrix
 # number of neurons in hidden layer -> mean of #input neurons + #output neurons
 # step 1 make architecture powerful enough
 modnn <- keras_model_sequential() %>%
@@ -89,10 +74,10 @@ modnn %>% compile(loss = "mse",
 # step 2 learning convergence (#epochs and batch size)
 # fit the model
 history <- modnn %>% fit(
-  train_X_array, train_Y_array, epochs = 50, batch_size = 600,
-  validation_data = list(validation_X_array,validation_Y_array))
+  train_X_matrix, train_Y, epochs = 50, batch_size = 600,
+  validation_data = list(validation_X,validation_Y))
 ?fit.keras.engine.training.Model
-str(train_X_data)
+
 # plot mean absolute error of training and test data
 plot(history)
 
