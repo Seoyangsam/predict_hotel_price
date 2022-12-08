@@ -1,5 +1,4 @@
 # here we will perform a polynomial regression 
-install.packages("glmnet")
 library(glmnet)
 
 # read files
@@ -10,9 +9,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
 
 test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
-str(test_set)
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-str(test_id)
 
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -25,6 +22,13 @@ validation_X_data <- data.frame(validation_X,validation_y)
 str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
+
+# number of car parking spaces  
+poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
+poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
+poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
+anova(poly_parkingspaces1, poly_parkingspaces2, poly_parkingspaces3)
+    # not significant so we keep "nr_babies" of degree 1 
 
 # lead time 
 poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
@@ -86,7 +90,7 @@ anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
 
 
 # POLYNOMIAL REGRESSION MODEL 
-poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
+poly.fit <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
 poly.fit
 
 # make predictions on validation set
@@ -100,7 +104,7 @@ str(pred.valset)
 train_val_data <- data.frame(train_and_validation, dependant_y)
 
 # POLYNOMIAL REGRESSION MODEL 
-poly.fit2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
+poly.fit2 <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
 poly.fit2
 
 # make predictions on test set
