@@ -14,15 +14,33 @@ validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRU
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
-write.table(train_X_data, file = "data/results/train_X_data.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-write.table(train_X_data, file = "data/results/probeersel.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+#write.table(train_X_data, file = "data/results/train_X_data.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+#write.table(train_X_data, file = "data/results/probeersel.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# average daily rate as vector and dataframe into matrix
+average_daily_rate <- train_y[['average_daily_rate']]
+train_X_matrix <- data.matrix(train_X)
+
 validation_X_data <- data.frame(validation_X,validation_y)
 
-ctrl <- trainControl(method = "cv", number=5) 
+ctrl <- trainControl(method = "cv", number=2) 
 
-SVRGridCoarse <- expand.grid(.sigma=c(0.001, 0.01, 0.1), .C=c(10,100,1000))
-SVRFitCoarse <- train(x = train_X, y = as.factor(train_y), method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+SVRGridCoarse <- expand.grid(.sigma=c(0.01, 0.1), .C=c(100,1000))
+
+# first way: gives error
+VRFitCoarse <- train(x = train_X, y = train_y, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+# second way
+SVRFitCoarse <- train(x = train_X_matrix, y = average_daily_rate, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+# third way
 SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+
+
+
+
+
+
+
+
 
 
 # LINEAR KERNEL

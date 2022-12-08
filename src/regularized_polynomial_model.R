@@ -23,7 +23,7 @@ str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
 
-# days in waiting list 
+# car parking spaces  
 poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
 poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
 poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
@@ -93,28 +93,13 @@ anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
 poly.fit <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
 str(poly.fit)
 
-# prepare the data to be used with a lasso regression model
-library(Matrix)
-require(Matrix)
-
-train_y_data <- subset(train_X_data, select= c(average_daily_rate))
-
-train_X_matrix <- model.matrix(poly.fit, train_X_data)
-test_set_matrix <- model.matrix(~., data = test_set)
-validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
-colnames(validation_X_matrix)
-
-# fit a lasso regression model with CV
-grid <- 10 ^ seq(4, -2, length = 100)
-cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
-bestlam.lasso <- cv.lasso$lambda.min
-
-# make predictions on test set
-pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix ) #error
-
 # make predictions on validation set
-pred.valset <- predict(poly.fit, newdata = validation_X )
+pred.valset <- predict(poly.fit, newdata = validation_X)
 str(pred.valset)
+
+# MSE 
+pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
+write.table(pred_valset_error, file = "data/results/regpolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
