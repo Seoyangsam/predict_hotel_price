@@ -131,8 +131,9 @@ pred.testset <- predict(poly.fit2, newdata = test_set)
 str(pred.testset)
 
 
-# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE
+# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
 poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 
 colnames(poly_submission) <- c("id", "average_daily_rate")
 write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
