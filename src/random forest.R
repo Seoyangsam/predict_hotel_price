@@ -13,6 +13,7 @@ unique(train_X_data$country)
 train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
 validation_X <-as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE,levels = levels(train_X_data))
 
+# Hyperparemeter tuning with mtry
 library(caret)
 library(e1071)
 control <- trainControl(method='repeatedcv',
@@ -40,7 +41,8 @@ rf.train
 yhat.rf <- predict(rf.train, newdata = validation_X)
 
 #calculate the rmse
-sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
+rf_error <- sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
+write.table(rf_error, file = "data/results/rf_error.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 importance(rf.train)
 
