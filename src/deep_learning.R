@@ -50,21 +50,20 @@ validation_X_data <- data.frame(validation_X,validation_y)
 library(Matrix)
 require(Matrix)
 train_X_matrix <- model.matrix(average_daily_rate ~. -1 , data = train_X_data)
-train_X_array <- array_reshape(train_X, dim = dim(train_X))
+#train_X_array <- array_reshape(train_X, dim = dim(train_X))
 train_Y <- train_X_data$average_daily_rate 
-train_Y_array <- array_reshape(train_y, dim = dim(train_y))
+#train_Y_array <- array_reshape(train_y, dim = dim(train_y))
 validation_X_matrix <- model.matrix(average_daily_rate ~. -1, data = validation_X_data)
-validation_X_array <- array_reshape(validation_X,dim = dim(validation_X))
+#validation_X_array <- array_reshape(validation_X,dim = dim(validation_X))
 validation_Y <- validation_X_data$average_daily_rate
-validation_Y_array <- array_reshape(validation_y,dim = dim(validation_y))
-str(validation_y)
+#validation_Y_array <- array_reshape(validation_y,dim = dim(validation_y))
+str(train_X)
 # 1) single layer model structure
-train_X_matrix
 # number of neurons in hidden layer -> mean of #input neurons + #output neurons
 # step 1 make architecture powerful enough
 modnn <- keras_model_sequential() %>%
-  layer_dense(units = 500, activation = "relu",
-              input_shape = ncol(train_X)) %>%
+  layer_dense(units = 5000, activation = "relu",
+              input_shape = ncol(train_X_matrix)) %>%
   layer_dense(units = 1)
 summary(modnn)
 modnn %>% compile(loss = "mse",
@@ -74,8 +73,10 @@ modnn %>% compile(loss = "mse",
 # step 2 learning convergence (#epochs and batch size)
 # fit the model
 history <- modnn %>% fit(
-  train_X_matrix, train_Y, epochs = 50, batch_size = 600,
-  validation_data = list(validation_X,validation_Y))
+  train_X_matrix, train_Y, epochs =100 , batch_size = 600,
+  validation_data = list(validation_X_matrix,validation_Y))
+
+
 ?fit.keras.engine.training.Model
 
 # plot mean absolute error of training and test data
@@ -95,8 +96,8 @@ modnn %>% compile(loss = "mse",
 # step 4 learning convergence
 # fit the model
 history <- modnn %>% fit(
-  train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
-  validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
+  train_X_matrix, train_Y, epochs = 100, batch_size = 1000,
+  validation_data = list(validation_X_matrix,validation_Y))
 ?fit.keras.engine.training.Model
 
 # plot mean absolute error of training and test data
@@ -106,9 +107,9 @@ plot(history)
 # step 1 make model powerful enough
 widemodelnn <- keras_model_sequential()
 widemodelnn %>%
-  layer_dense(units = 70000, activation = "relu",
-              input_shape =nccol(train_X_matrix)) %>%
-  layer_dense(units = 35000, activation = "relu") %>%
+  layer_dense(units = 30000, activation = "relu",
+              input_shape = ncol(train_X_matrix)) %>%
+  layer_dense(units = 15000, activation = "relu") %>%
   layer_dense(units = 1)
 
 widemodelnn %>% compile(loss = "mse",
@@ -117,8 +118,8 @@ widemodelnn %>% compile(loss = "mse",
 
 # step 2 learning convergence (#epochs and batch size)
 widehistory <- widemodelnn %>%
-    fit(train_X_data[-average_daily_rate,], train_X_data[average_daily_rate,], epochs = 300, batch_size = 500,
-  validation_data = list(validation_X_data[-average_daily_rate,], validation_X_data[average_daily_rate,]))
+    fit(train_X_matrix, train_Y, epochs = 100, batch_size = 800,
+  validation_data = list(validation_X_matrix,validation_Y))
 
 # plot
 plot(widehistory)

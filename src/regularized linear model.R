@@ -1,12 +1,11 @@
-
 #here we do lasso regression
 library(glmnet)
 #read files
-train_X <- read.csv(file = 'data/gold/train_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
+train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/gold/validation_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
-test_set <- read.csv(file = 'data/gold/test_X_scale2.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 # FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
@@ -36,7 +35,8 @@ bestlam.lasso <- cv.lasso$lambda.min
 
 # make predictions on test set
 
-pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix )
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix)
+sqrt(mean((pred.lasso.testset - validation_y$average_daily_rate)^2))
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
@@ -51,7 +51,7 @@ train_val_data <- data.frame(train_and_validation, dependant_y)
 
 # linear regression
 lm.fit <- lm(average_daily_rate ~ ., data = train_val_data)
-lm.fit
+
 
 # prepare the data to be used with a lasso regression model
 library(Matrix)

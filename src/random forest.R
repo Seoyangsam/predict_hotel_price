@@ -1,5 +1,4 @@
 library(randomForest)
-library(dummy)
 set.seed(1)
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
@@ -8,19 +7,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 
 train_X_data <- data.frame(train_X,train_y)
-str(train_X_data)
-
-# Kepp top 15 values for country
-cat <- categories(train_X_data[("country")], p = 15)
-shouldBecomeOther<-!(train_X_data$country %in% c("Portugal", "United Kingdom", "France", "Spain", "Germany", "Italy", "Ireland","Belgium" , "Brazil", "United States", "Netherlands", "Switzerland", "Austria", "Sweden"))
-train_X_data$country[shouldBecomeOther]<- "other"
-str(train_X_data$country)
 unique(train_X_data$country)
-shouldBecomeOther
-
-cat <- categories(validation_X[("country")], p = 15)
-prin
-print(validation_X$country)
 
 # Convert all columns to factor
 train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
@@ -32,24 +19,31 @@ control <- trainControl(method='repeatedcv',
                         number=10,
                         repeats=3)
 
-metric <- "Accuracy"
+metric <- "RMSE"
 set.seed(123)
 mtry <- sqrt(ncol(train_X))
 tunegrid <- expand.grid(.mtry=mtry)
 rf_default <- train(average_daily_rate~.,
                       data=train_X_data,
                       method='rf',
-                      metric='Accuracy',
+                      metric="RMSE",
                       tuneGrid=tunegrid,
-                      trControl=control)
+                      trControl=control,
+                      ntree = 15)
+
 print(rf_default)
 
-sapply(lapply(train_X_data, unique), length)
-str(train_X_data)
 
 # Random forest
 rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 7, importance = TRUE, ntree = 15)
 rf.train
 yhat.rf <- predict(rf.train, newdata = validation_X)
-mean((yhat.rf - validation_y$average_daily_rate)^2)
+sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
+
+importance(rf.train)
+
+varImpPlot(rf.train,
+           sort = T,
+           n.var = 10,
+           main = "Top 10 Variable Importance")
 
