@@ -51,7 +51,7 @@ train_val_data <- data.frame(train_and_validation, dependant_y)
 
 # linear regression
 lm.fit <- lm(average_daily_rate ~ ., data = train_val_data)
-lm.fit
+
 
 # prepare the data to be used with a lasso regression model
 library(Matrix)
