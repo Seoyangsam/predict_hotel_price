@@ -27,8 +27,8 @@ str(validation_X)
 poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
 poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
 poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
-poly_parkingspaces4 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,4) , data = train_X_data)
-anova(poly_parkingspaces1, poly_parkingspaces2, poly_parkingspaces3, poly_parkingspaces4)
+anova(poly_parkingspaces1, poly_parkingspaces2, poly_parkingspaces3)
+    # not significant so we keep "car_parking_spaces" of degree 1 
 
 # lead time 
 poly_leadtime1 <- lm(average_daily_rate ~ . , data = train_X_data)
@@ -36,7 +36,7 @@ poly_leadtime2 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 2) , d
 poly_leadtime3 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 3) , data = train_X_data)
 poly_leadtime4 <- lm(average_daily_rate ~ . - lead_time + poly(lead_time, 4) , data = train_X_data)
 anova(poly_leadtime1,poly_leadtime2,poly_leadtime3,poly_leadtime4)
-    # p-value <0,05 so significant: we take degree 2 for "lead time"
+    # p-value <0,05 so significant: we take degree 2 for "lead_time"
 
 # nr of adults 
 poly_nradults1 <-  lm(average_daily_rate ~ . , data = train_X_data)
@@ -90,7 +90,7 @@ anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
 
 
 # POLYNOMIAL REGRESSION MODEL 
-poly.fit <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
+poly.fit <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
 str(poly.fit)
 
 # prepare the data to be used with a lasso regression model
@@ -110,7 +110,7 @@ cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1
 bestlam.lasso <- cv.lasso$lambda.min
 
 # make predictions on test set
-pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix )
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix ) #error
 
 # make predictions on validation set
 pred.valset <- predict(poly.fit, newdata = validation_X )
@@ -123,7 +123,7 @@ str(pred.valset)
 train_val_data <- data.frame(train_and_validation, dependant_y)
 
 # POLYNOMIAL REGRESSION MODEL 
-poly.fit2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
+poly.fit2 <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1)  + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
 poly.fit2
 
 # make predictions on test set
