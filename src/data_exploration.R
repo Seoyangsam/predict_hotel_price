@@ -1,10 +1,10 @@
 # DATA EXPLORATION 
 
 # we read our data
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
 test_id <- test_X$id
@@ -29,27 +29,26 @@ hist(test_X$nr_previous_bookings)
 hist(test_X$nr_booking_changes)
 
 # box plots
-boxplot(test_X$car_parking_spaces)
-boxplot(test_X$days_in_waiting_list)
-boxplot(test_X$nr_adults)
-boxplot(test_X$nr_booking_changes) 
-boxplot(test_X$nr_nights)
-boxplot(test_X$nr_previous_bookings)
-boxplot(test_X$special_requests)
+boxplot(train$car_parking_spaces)
+boxplot(train$days_in_waiting_list)
+boxplot(train$nr_adults)
+boxplot(train$nr_adults)
+boxplot(train$nr_booking_changes) 
+boxplot(train$nr_nights)
+boxplot(train$nr_previous_bookings)
+boxplot(train$special_requests)
 
-boxplot(test_X$nr_previous_bookings, main = "Number of previous bookings of the client", xlab = "Number of bookings", col = "blue", border = "blue", horizontal = TRUE, notch = TRUE)
+boxplot(train$nr_previous_bookings, main = "Number of previous bookings of the client", xlab = "Number of bookings", col = "blue", border = "blue", horizontal = TRUE, notch = TRUE)
 
 # bar charts 
-barplot(test_X$car_parking_spaces)
-barplot(test_X$days_in_waiting_list)
-barplot(test_X$nr_adults)
-barplot(test_X$nr_booking_changes) 
-barplot(test_X$nr_nights)
-barplot(test_X$nr_previous_bookings)
-barplot(test_X$special_requests, horiz = TRUE)
+barplot(train$car_parking_spaces)
+barplot(train$days_in_waiting_list)
+barplot(train$nr_adults)
+barplot(train$nr_booking_changes) 
+barplot(train$nr_nights)
+barplot(train$nr_previous_bookings)
+barplot(train$special_requests, horiz = TRUE)
 
 # scatter plots
 plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
-
-
 
