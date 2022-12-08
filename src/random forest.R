@@ -38,11 +38,12 @@ print(rf_default)
 rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 7, importance = TRUE, ntree = 15)
 rf.train
 yhat.rf <- predict(rf.train, newdata = validation_X)
-mean((yhat.rf - validation_y$average_daily_rate)^2)
+sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
 
-varImpPlot(rf_default,
+importance(rf.train)
+
+varImpPlot(rf.train,
            sort = T,
            n.var = 10,
            main = "Top 10 Variable Importance")
 
-importance(rf_default)
