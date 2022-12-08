@@ -8,6 +8,13 @@ str(test_X)
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
+# Kepp top 15 values for country
+library(dummy)
+cat <- categories(train[("country")], p = 14)
+shouldBecomeOther<-!(train$country %in% c("Portugal", "United Kingdom", "France", "Spain", "Germany", "Italy", "Ireland","Belgium" , "Brazil", "United States", "Netherlands", "Switzerland", "Austria", "Sweden"))
+train$country[shouldBecomeOther]<- "other"
+unique(train$country)
+
 # Create a validation set out of the training set
 set.seed(1)
 sample_size <- floor(0.30 * nrow(train))
@@ -504,6 +511,7 @@ test_X_cleaned <- test_X_impute
 validation_X_cleaned <- validation_X_impute
 
 unique(train_X_outlier$nr_children)
+unique(train_X_cleaned$country)
 
 write.table(train_X_cleaned, file = "data/silver/train_X_cleaned2.csv", sep = ",", row.names = F)
 write.table(test_X_cleaned, file = "data/silver/test_X_cleaned2.csv", sep = ",", row.names = F)
