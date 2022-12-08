@@ -21,7 +21,21 @@ validation_X_data <- data.frame(validation_X,validation_y)
 model_gbm = gbm(average_daily_rate ~.,
                 data = train_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost
-                cv.folds = 10,
+                cv.folds = 3,
                 shrinkage = .01,
                 n.minobsinnode = 10,
-                n.trees = 500)
+                interaction.depth = 6,
+                n.trees = 10000)
+
+ntree_opt_cv <- gbm.perf(model_gbm, method = "cv")
+
+val_prediction <- predict(object = model_gbm, newdata = validation_X_data, n.trees = ntree_opt_cv, type = "response")
+
+gbm.error <- sqrt(mean((val_prediction - validation_y$average_daily_rate)^2))
+gbm.error
+
+# make file with id and corresponding average daily rate
+gbm_submission <- data.frame(col1 = test_id$x, col2 = val_prediction)
+
+colnames(gbm_submission) <- c("id", "average_daily_rate")
+write.table(gbm_submission, file = "data/results/gbm_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)

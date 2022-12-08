@@ -2,6 +2,7 @@
 # here we will perform GAM 
 install.packages("gam")
 library(gam)
+library(glmnet)
 
 # read files
 train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
@@ -10,7 +11,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE, fileEncoding = 'latin1')
+validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE)
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
 
@@ -26,13 +27,34 @@ fit_nr_previous_bookings <- smooth.spline(train_X_data$nr_previous_bookings, tra
 fit_previous_cancellations <- smooth.spline(train_X_data$previous_cancellations, train_X_data$average_daily_rate, cv = FALSE, tol=0.1)
 fit_special_requests <- smooth.spline(train_X_data$special_requests, train_X_data$average_daily_rate, cv = FALSE)
 
+# SMOOTHING SPLINES 
 # FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
 
 # GAM
 gam <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + s(lead_time, fit_lead_time$df) + s(nr_adults, fit_nr_adults$df) + s(nr_nights, fit_nr_nights$df) + s(nr_previous_bookings, fit_nr_previous_bookings$df) + s(previous_cancellations, fit_previous_cancellations$df) + s(special_requests, fit_special_requests$df), data = train_X_data)
 
-# predict on validation set
-preds <- predict(gam, newdata = validation_X)
+# prepare the data to be used with a lasso regression model
+library(Matrix)
+require(Matrix)
+
+train_y_data <- subset(train_X_data, select= c(average_daily_rate))
+
+train_X_matrix <- model.matrix(gam, train_X_data)
+test_set_matrix <- model.matrix(~., data = test_set)
+validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
+colnames(validation_X_matrix)
+
+# fit a lasso regression model with CV
+grid <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
+
+# make predictions on test set
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix) #error
+
+# make predictions on validation set
+pred.valset <- predict(gam, newdata = validation_X)
+str(pred.valset)
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
@@ -63,8 +85,32 @@ write.table(gam_submission, file = "data/results/gam_submission.csv", sep = ",",
 # GAM
 gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + lo(lead_time, span =0.5) + lo(nr_adults, span=0.5) + lo(nr_babies, span=0.5) + lo(nr_children, span=0.5) + lo(nr_nights, span=0.5) + lo(nr_previous_bookings, span=0.5) + lo(previous_cancellations, span=0.5) + lo(special_requests, span=0.5), data = train_X_data)
 
-# predict on validation set
-preds <- predict(gam2, newdata = validation_X)
+# prepare the data to be used with a lasso regression model
+library(Matrix)
+require(Matrix)
+
+train_y_data <- subset(train_X_data, select= c(average_daily_rate))
+
+train_X_matrix <- model.matrix(gam2, train_X_data)
+test_set_matrix <- model.matrix(~., data = test_set)
+validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
+colnames(validation_X_matrix)
+
+# fit a lasso regression model with CV
+grid <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
+
+# make predictions on test set
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix) #error
+
+# make predictions on validation set
+pred.valset <- predict(gam2, newdata = validation_X)
+str(pred.valset)
+
+# MSE 
+sqrt(mean((pred.lasso.testset - validation_y$average_daily_rate)^2))
+
 
 # SECOND STEP
 

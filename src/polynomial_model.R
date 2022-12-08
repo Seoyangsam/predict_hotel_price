@@ -97,6 +97,9 @@ poly.fit
 pred.valset <- predict(poly.fit, newdata = validation_X )
 str(pred.valset)
 
+# MSE 
+sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
+
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
