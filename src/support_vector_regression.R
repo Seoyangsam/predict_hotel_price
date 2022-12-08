@@ -18,10 +18,10 @@ write.table(train_X_data, file = "data/results/train_X_data.csv", sep = ",", row
 write.table(train_X_data, file = "data/results/probeersel.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 validation_X_data <- data.frame(validation_X,validation_y)
 
-ctrl <- trainControl(method = "cv", number=10) 
+ctrl <- trainControl(method = "cv", number=5) 
 
-SVRGridCoarse <- expand.grid(.sigma=c(0.001, 0.01, 0.1, 1, 10), .C=c(0.1,1,10,100,1000))
-#SVRFitCoarse <- train(x = train_X, y = train_X_data$average_daily_rate, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+SVRGridCoarse <- expand.grid(.sigma=c(0.001, 0.01, 0.1), .C=c(10,100,1000))
+SVRFitCoarse <- train(x = train_X, y = as.factor(train_y), method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 
 
