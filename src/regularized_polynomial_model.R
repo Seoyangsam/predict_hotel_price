@@ -23,7 +23,7 @@ str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
 
-# days in waiting list 
+# car parking spaces  
 poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
 poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
 poly_parkingspaces3 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,3) , data = train_X_data)
@@ -110,10 +110,10 @@ cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1
 bestlam.lasso <- cv.lasso$lambda.min
 
 # make predictions on test set
-pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix ) #error
+pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matrix) #error
 
 # make predictions on validation set
-pred.valset <- predict(poly.fit, newdata = validation_X )
+pred.valset <- predict(poly.fit, newdata = validation_X)
 str(pred.valset)
 
 
@@ -131,9 +131,8 @@ pred.testset <- predict(poly.fit2, newdata = test_set)
 str(pred.testset)
 
 
-# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
+# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE
 poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 
 colnames(poly_submission) <- c("id", "average_daily_rate")
 write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
