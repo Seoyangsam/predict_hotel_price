@@ -12,6 +12,8 @@ train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 validation_X_ft_engineering <- validation_X_cleaned
 
+
+
 #integer encoding for meal_booked, save for later
 #union(unique(train_X$meal_booked), unique(test_X$meal_booked))
 #meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
@@ -20,29 +22,28 @@ validation_X_ft_engineering <- validation_X_cleaned
 
 library(dummy)
 # get categories and dummies
-cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country",  "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")], p=15)
+cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "country",  "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked", "year_arrival_date", "month_arrival_date", "day_arrival_date", "year_last_status_date", "month_last_status_date", "day_last_status_date")], p=15)
 # apply on train set (exclude reference categories)
-dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
+dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked", "year_arrival_date", "month_arrival_date", "day_arrival_date", "year_last_status_date", "month_last_status_date", "day_last_status_date")],
                        object = cats)
-str(dummies_train)
-dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB. , day_arrival_date_monday, year_arrival_date_year_2015, month_arrival_date_January, year_last_status_date_year_2015, month_last_status_date_January, day_last_status_date_monday))
 # apply on test set (exclude reference categories)
-dummies_test <- dummy(test_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
+dummies_test <- dummy(test_X_ft_engineering[, c("assigned_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked", "year_arrival_date", "month_arrival_date", "day_arrival_date", "year_last_status_date", "month_last_status_date", "day_last_status_date")],
                        object = cats)
-dummies_test <- subset(dummies_test, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_test <- subset(dummies_test, select = -c(assigned_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB., year_arrival_date_year_2015, month_arrival_date_January, day_arrival_date_monday, year_last_status_date_year_2015, month_last_status_date_January, day_last_status_date_monday))
 # apply on validation set (exclude reference categories)
-dummies_validation <- dummy(validation_X_ft_engineering[, c("assigned_room_type", "reserved_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked")],
+dummies_validation <- dummy(validation_X_ft_engineering[, c("assigned_room_type", "country", "booking_distribution_channel", "customer_type", "last_status", "market_segment", "meal_booked", "year_arrival_date", "month_arrival_date", "day_arrival_date", "year_last_status_date", "month_last_status_date", "day_last_status_date")],
                        object = cats)
-dummies_validation <- subset(dummies_validation, select = -c(assigned_room_type_A, reserved_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB.))
+dummies_validation <- subset(dummies_validation, select = -c(assigned_room_type_A, country_Portugal, booking_distribution_channel_Corporate, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB., year_arrival_date_year_2015, month_arrival_date_January, day_arrival_date_monday, year_last_status_date_year_2015, month_last_status_date_January, day_last_status_date_monday))
 
 ## merge with overall training set
-train_X_ft_engineering <- subset(train_X_ft_engineering, select = -c(assigned_room_type, reserved_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
+train_X_ft_engineering <- subset(train_X_ft_engineering, select = -c(assigned_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked, year_arrival_date, month_arrival_date, day_arrival_date, year_last_status_date, month_last_status_date, day_last_status_date))
 train_X_ft_engineering <- cbind(train_X_ft_engineering, dummies_train)
 ## merge with overall test set
-test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room_type, reserved_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
+test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked, year_arrival_date, month_arrival_date, day_arrival_date, year_last_status_date, month_last_status_date, day_last_status_date))
 test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
 ## merge with overall validation set
-validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(assigned_room_type, reserved_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked))
+validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(assigned_room_type, country, booking_distribution_channel, customer_type, last_status, market_segment, meal_booked, year_arrival_date, month_arrival_date, day_arrival_date, year_last_status_date, month_last_status_date, day_last_status_date))
 validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_validation)
 
 #convert the predictors to factors
@@ -59,7 +60,7 @@ test_X_scale <- test_X_ft_engineering
 validation_X_scale <- validation_X_ft_engineering
 
 # get all numeric columns for scaling
-scale_cols <- c("days_in_waiting_list", "lead_time","nr_adults","nr_babies","nr_booking_changes","nr_children","nr_nights","nr_previous_bookings","previous_bookings_not_canceled","previous_cancellations","special_requests")
+scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_babies","nr_children","nr_nights","nr_previous_bookings","previous_cancellations","special_requests")
 
 # apply on training set
 mean_train <- colMeans(train_X_scale[, scale_cols])
@@ -86,4 +87,3 @@ sapply(validation_X_scale[, scale_cols], sd)
 write.table(train_X_scale, file = "data/gold/train_X_scale.csv", sep = ",", row.names = F)
 write.table(test_X_scale, file = "data/gold/test_X_scale.csv", sep = ",", row.names = F)
 write.table(validation_X_scale, file = "data/gold/validation_X_scale.csv", sep = ",", row.names = F)
-
