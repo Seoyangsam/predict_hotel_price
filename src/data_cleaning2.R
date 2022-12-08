@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
 str(test_X)
 
 test_id <- test_X$id
@@ -44,6 +44,8 @@ str(test_X)
 # missing values
 colMeans(is.na(test_X))
 colMeans(is.na(train_X))
+
+
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_impute <- train_X
@@ -179,6 +181,163 @@ train_X_impute$day_last_status_date <- as.POSIXlt(train_X_impute$last_status_dat
 test_X_impute$day_last_status_date <- as.POSIXlt(test_X_impute$last_status_date)$wday
 validation_X_impute$day_last_status_date <- as.POSIXlt(validation_X_impute$last_status_date)$wday
 
+# days
+
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 2] <- "monday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 3] <- "tuesday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 4] <- "wednesday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 5] <- "thursday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 6] <- "friday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 0] <- "saturday"
+train_X_impute$day_arrival_date[train_X_impute$day_arrival_date == 1] <- "sunday"
+
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 2] <- "monday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 3] <- "tuesday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 4] <- "wednesday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 5] <- "thursday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 6] <- "friday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 0] <- "saturday"
+test_X_impute$day_arrival_date[test_X_impute$day_arrival_date == 1] <- "sunday"
+
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 2] <- "monday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 3] <- "tuesday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 4] <- "wednesday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 5] <- "thursday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 6] <- "friday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 0] <- "saturday"
+validation_X_impute$day_arrival_date[validation_X_impute$day_arrival_date == 1] <- "sunday"
+
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 2] <- "monday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 3] <- "tuesday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 4] <- "wednesday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 5] <- "thursday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 6] <- "friday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 0] <- "saturday"
+train_X_impute$day_last_status_date[train_X_impute$day_last_status_date == 1] <- "sunday"
+
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 2] <- "monday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 3] <- "tuesday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 4] <- "wednesday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 5] <- "thursday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 6] <- "friday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 0] <- "saturday"
+test_X_impute$day_last_status_date[test_X_impute$day_last_status_date == 1] <- "sunday"
+
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 2] <- "monday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 3] <- "tuesday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 4] <- "wednesday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 5] <- "thursday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 6] <- "friday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 0] <- "saturday"
+validation_X_impute$day_last_status_date[validation_X_impute$day_last_status_date == 1] <- "sunday"
+
+# months
+
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "01"] <- "January"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "02"] <- "February"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "03"] <- "March"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "04"] <- "April"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "05"] <- "May"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "06"] <- "June"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "07"] <- "July"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "08"] <- "August"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "09"] <- "September"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "10"] <- "October"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "11"] <- "November"
+train_X_impute$month_arrival_date[train_X_impute$month_arrival_date == "12"] <- "December"
+
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "01"] <- "January"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "02"] <- "February"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "03"] <- "March"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "04"] <- "April"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "05"] <- "May"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "06"] <- "June"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "07"] <- "July"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "08"] <- "August"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "09"] <- "September"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "10"] <- "October"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "11"] <- "November"
+test_X_impute$month_arrival_date[test_X_impute$month_arrival_date == "12"] <- "December"
+
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "01"] <- "January"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "02"] <- "February"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "03"] <- "March"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "04"] <- "April"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "05"] <- "May"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "06"] <- "June"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "07"] <- "July"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "08"] <- "August"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "09"] <- "September"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "10"] <- "October"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "11"] <- "November"
+validation_X_impute$month_arrival_date[validation_X_impute$month_arrival_date == "12"] <- "December"
+
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "01"] <- "January"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "02"] <- "February"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "03"] <- "March"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "04"] <- "April"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "05"] <- "May"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "06"] <- "June"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "07"] <- "July"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "08"] <- "August"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "09"] <- "September"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "10"] <- "October"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "11"] <- "November"
+train_X_impute$month_last_status_date[train_X_impute$month_last_status_date == "12"] <- "December"
+
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "01"] <- "January"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "02"] <- "February"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "03"] <- "March"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "04"] <- "April"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "05"] <- "May"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "06"] <- "June"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "07"] <- "July"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "08"] <- "August"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "09"] <- "September"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "10"] <- "October"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "11"] <- "November"
+test_X_impute$month_last_status_date[test_X_impute$month_last_status_date == "12"] <- "December"
+
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "01"] <- "January"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "02"] <- "February"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "03"] <- "March"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "04"] <- "April"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "05"] <- "May"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "06"] <- "June"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "07"] <- "July"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "08"] <- "August"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "09"] <- "September"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "10"] <- "October"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "11"] <- "November"
+validation_X_impute$month_last_status_date[validation_X_impute$month_last_status_date == "12"] <- "December"
+
+train_X_impute$year_arrival_date[train_X_impute$year_arrival_date == 2015] <- "year_2015"
+train_X_impute$year_arrival_date[train_X_impute$year_arrival_date == 2016] <- "year_2016"
+train_X_impute$year_arrival_date[train_X_impute$year_arrival_date == 2017] <- "year_2017"
+
+test_X_impute$year_arrival_date[test_X_impute$year_arrival_date == 2015] <- "year_2015"
+test_X_impute$year_arrival_date[test_X_impute$year_arrival_date == 2016] <- "year_2016"
+test_X_impute$year_arrival_date[test_X_impute$year_arrival_date == 2017] <- "year_2017"
+
+validation_X_impute$year_arrival_date[validation_X_impute$year_arrival_date == 2015] <- "year_2015"
+validation_X_impute$year_arrival_date[validation_X_impute$year_arrival_date == 2016] <- "year_2016"
+validation_X_impute$year_arrival_date[validation_X_impute$year_arrival_date == 2016] <- "year_2017"
+
+train_X_impute$year_last_status_date[train_X_impute$year_last_status_date == 2015] <- "year_2015"
+train_X_impute$year_last_status_date[train_X_impute$year_last_status_date == 2016] <- "year_2016"
+train_X_impute$year_last_status_date[train_X_impute$year_last_status_date == 2017] <- "year_2017"
+
+test_X_impute$year_last_status_date[test_X_impute$year_last_status_date == 2015] <- "year 2015"
+test_X_impute$year_last_status_date[test_X_impute$year_last_status_date == 2016] <- "year 2016"
+test_X_impute$year_last_status_date[test_X_impute$year_last_status_date == 2017] <- "year 2017"
+
+validation_X_impute$year_last_status_date[validation_X_impute$year_last_status_date == 2015] <- "year 2015"
+validation_X_impute$year_last_status_date[validation_X_impute$year_last_status_date == 2016] <- "year 2016"
+validation_X_impute$year_last_status_date[validation_X_impute$year_last_status_date == 2017] <- "year 2017"
+
+
+
+
 # !!!
 # drop arrival date and last status date
 train_X_impute <- subset(train_X_impute , select = -c(arrival_date))
@@ -260,7 +419,7 @@ validation_X_impute["nr_babies"][validation_X_impute["nr_babies"] == "n/a"] <- 0
 colMeans(is.na(test_X_impute))
 colMeans(is.na(train_X_impute))
 colMeans(is.na(validation_X_impute))
-str(test_X_impute)
+
 # change values bigger than 1 to 1 for car parking spaces
 #train_X_impute$car_parking_spaces[train_X_impute$car_parking_spaces > 1] <- 1
 unique(train_X_impute$car_parking_spaces)
@@ -286,7 +445,27 @@ train_X_outlier$nr_nights[train_X_outlier$nr_nights > 5] <- 5
 train_X_outlier$nr_previous_bookings[train_X_outlier$nr_previous_bookings > 15] <- 15
 train_X_outlier$previous_cancellations[train_X_outlier$previous_cancellations > 10] <- 10
 
+# still working on
+train_X_data <- data.frame(train_X_outlier,train_y)
+test_complementary <- train_X_data[train_X_outlier$market_segment == "Complementary", ]
+str(test_complementary)
+test1 <- test_complementary[test_complementary$train_y == 0, ]
+test3 <- test_complementary[test_complementary$train_y == 70, ]
+str(test1)
+str(test_complementary) 
+str(test3)
+# test_complementary has 340obs, test1 has 309obs
+write.table(test_complementary, file = "data/silver/test_complementary.csv", sep = ",", row.names = F)
+test_complementary2 <- train_X_data[train_X_outlier$market_segment != "Complementary", ]
+test2 <- test_complementary2[test_complementary2$train_y == 0, ]
+# 614 obs in test2 
+str(test2)
+unique(test_complementary2$train_y)
+unique(test_complementary$train_y)
+str(test_complementary2)
+
 unique(train_X_outlier$nr_adults)
+unique(train_X_outlier$meal_booked)
 # flags
 # !!!
 # drop columns we do not want to flag
@@ -331,4 +510,3 @@ write.table(test_X_cleaned, file = "data/silver/test_X_cleaned2.csv", sep = ",",
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned2.csv", sep = ",", row.names = F)
 write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
-
