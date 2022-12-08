@@ -98,8 +98,8 @@ pred.valset <- predict(poly.fit, newdata = validation_X)
 str(pred.valset)
 
 # MSE 
-sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-
+pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
+write.table(pred_valset_error, file = "data/results/regpolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
