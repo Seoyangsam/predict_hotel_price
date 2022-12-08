@@ -28,6 +28,7 @@ train_y_data <- subset(train_X_data, select= c(average_daily_rate))
 train_X_matrix <- model.matrix(lm.fit, train_X_data)
 validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
 colnames(validation_X_matrix)
+
 # fit a lasso regression model with CV
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)

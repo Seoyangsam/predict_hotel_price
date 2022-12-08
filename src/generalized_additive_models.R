@@ -108,6 +108,10 @@ pred.lasso.testset <- predict(cv.lasso, s = bestlam.lasso, newx = test_set_matri
 pred.valset <- predict(gam2, newdata = validation_X)
 str(pred.valset)
 
+# MSE 
+sqrt(mean((pred.lasso.testset - validation_y$average_daily_rate)^2))
+
+
 # SECOND STEP
 
 train_val_data <- data.frame(train_and_validation, dependant_y)

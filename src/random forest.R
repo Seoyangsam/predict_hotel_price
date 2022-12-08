@@ -35,9 +35,11 @@ print(rf_default)
 
 
 # Random forest
-rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 7, importance = TRUE, ntree = 15)
+rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 10, importance = TRUE, ntree = 15)
 rf.train
 yhat.rf <- predict(rf.train, newdata = validation_X)
+
+#calculate the rmse
 sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
 
 importance(rf.train)
