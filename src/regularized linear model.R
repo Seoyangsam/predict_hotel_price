@@ -81,3 +81,4 @@ lin_submission <- data.frame(col1 = test_id$x, col2 = pred.lasso.testset)
 
 colnames(lin_submission) <- c("id", "average_daily_rate")
 write.table(lin_submission, file = "data/results/lin_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
