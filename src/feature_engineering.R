@@ -87,3 +87,4 @@ sapply(validation_X_scale[, scale_cols], sd)
 write.table(train_X_scale, file = "data/gold/train_X_scale.csv", sep = ",", row.names = F)
 write.table(test_X_scale, file = "data/gold/test_X_scale.csv", sep = ",", row.names = F)
 write.table(validation_X_scale, file = "data/gold/validation_X_scale.csv", sep = ",", row.names = F)
+

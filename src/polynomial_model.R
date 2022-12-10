@@ -122,3 +122,4 @@ poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 colnames(poly_submission) <- c("id", "average_daily_rate")
 write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
+
