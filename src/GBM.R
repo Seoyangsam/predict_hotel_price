@@ -17,6 +17,8 @@ library(caret)
 train_X_data <- data.frame(train_X,train_y)
 validation_X_data <- data.frame(validation_X,validation_y)
 
+# FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
+
 # gbm model
 model_gbm = gbm(average_daily_rate ~.,
                 data = train_X_data,
@@ -24,8 +26,8 @@ model_gbm = gbm(average_daily_rate ~.,
                 cv.folds = 3,
                 shrinkage = .01,
                 n.minobsinnode = 10,
-                interaction.depth = 6,
-                n.trees = 10000)
+                interaction.depth = 10,
+                n.trees = 3000)
 
 ntree_opt_cv <- gbm.perf(model_gbm, method = "cv")
 
@@ -34,8 +36,29 @@ val_prediction <- predict(object = model_gbm, newdata = validation_X_data, n.tre
 gbm.error <- sqrt(mean((val_prediction - validation_y$average_daily_rate)^2))
 gbm.error
 
-# make file with id and corresponding average daily rate
-gbm_submission <- data.frame(col1 = test_id$x, col2 = val_prediction)
+# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
-colnames(gbm_submission) <- c("id", "average_daily_rate")
-write.table(gbm_submission, file = "data/results/gbm_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+train_and_validation_X <- rbind(train_X, validation_X)
+dependent_y <- rbind(train_y, validation_y)
+
+train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
+# gbm model
+final_model_gbm = gbm(average_daily_rate ~.,
+                data = train_and_validation_X_data,
+                distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost
+                cv.folds = 3,
+                shrinkage = .01,
+                n.minobsinnode = 10,
+                interaction.depth = 6,
+                n.trees = 5000)
+
+
+ntree_opt_cv <- gbm.perf(final_model_gbm, method = "cv")
+
+test_prediction <- predict(object = final_model_gbm, newdata = test_set, n.trees = ntree_opt_cv, type = "response")
+
+# make file with id and corresponding average daily rate
+final_gbm_submission <- data.frame(col1 = test_id$x, col2 = test_prediction)
+
+colnames(final_gbm_submission) <- c("id", "average_daily_rate")
+write.table(final_gbm_submission, file = "data/results/gbm_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
