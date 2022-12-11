@@ -26,8 +26,8 @@ model_gbm = gbm(average_daily_rate ~.,
                 cv.folds = 3,
                 shrinkage = .01,
                 n.minobsinnode = 10,
-                interaction.depth = 6,
-                n.trees = 8000)
+                interaction.depth = 10,
+                n.trees = 3000)
 
 ntree_opt_cv <- gbm.perf(model_gbm, method = "cv")
 
