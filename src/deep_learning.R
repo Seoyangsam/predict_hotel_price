@@ -154,14 +154,12 @@ plot(regwidehistory)
 # step 1 make model powerful enough
 deepmodelnn <- keras_model_sequential()
 deepmodelnn %>%
-  layer_dense(units = 170, activation = "relu",
+  layer_dense(units = 300, activation = "relu",
               input_shape =ncol(train_X_matrix)) %>%
+  layer_dense(units = 225, activation = "relu") %>%
   layer_dense(units = 150, activation = "relu") %>%
-  layer_dense(units = 120, activation = "relu") %>%
-  layer_dense(units = 100, activation = "relu") %>%
   layer_dense(units = 90, activation = "relu") %>%
-  layer_dense(units = 80, activation = "relu") %>%
-  layer_dense(units = 75, activation = "relu") %>%
+
   layer_dense(units = 1, activation = "linear")
 
 deepmodelnn %>% compile(loss = "mse",
@@ -170,7 +168,7 @@ deepmodelnn %>% compile(loss = "mse",
 
 # step 2 learning convergence (#epochs and batch size)
 deephistory <- deepmodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 36,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 24,
   validation_data = list(validation_X_matrix,validation_Y))
  
 # plot
