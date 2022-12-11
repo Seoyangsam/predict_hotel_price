@@ -64,7 +64,7 @@ validation_Y <- validation_X_data$average_daily_rate
 modnn <- keras_model_sequential() %>%
   layer_dense(units = 5000, activation = "relu",
               input_shape = ncol(train_X_matrix)) %>%
-  layer_dense(units = 1)
+  layer_dense(units = 1, activation = "linear")
 summary(modnn)
 modnn %>% compile(loss = "mse",
                    optimizer = optimizer_rmsprop(),
@@ -87,7 +87,7 @@ modnn <- keras_model_sequential() %>%
   layer_dense(units = 29062, activation = "relu",
               input_shape = ncol(train_X_matrix)) %>%
   layer_dropout(rate = 0.4) %>%
-  layer_dense(units = 1)
+  layer_dense(units = 1, activation = "linear")
 
 modnn %>% compile(loss = "mse",
                    optimizer = optimizer_rmsprop(),
@@ -110,7 +110,7 @@ widemodelnn %>%
   layer_dense(units = 10000, activation = "relu",
               input_shape = ncol(train_X_matrix)) %>%
   layer_dense(units = 5000, activation = "relu") %>%
-  layer_dense(units = 1)
+  layer_dense(units = 1, activation = "linear")
 
 widemodelnn %>% compile(loss = "mse",
                     optimizer = optimizer_rmsprop(),
@@ -118,7 +118,7 @@ widemodelnn %>% compile(loss = "mse",
 
 # step 2 learning convergence (#epochs and batch size)
 widehistory <- widemodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 100, batch_size = 800,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 800,
   validation_data = list(validation_X_matrix,validation_Y))
 
 # plot
@@ -133,7 +133,7 @@ regwidemodelnn %>%
   layer_dropout(rate = 0.4) %>%
   layer_dense(units = 5000, activation = "relu") %>%
   layer_dropout(rate = 0.3) %>%
-  layer_dense(units = 1)
+  layer_dense(units = 1, activation = "linear")
 
 regwidemodelnn %>% compile(loss = "mse",
                     optimizer = optimizer_rmsprop(),
@@ -154,34 +154,51 @@ plot(regwidehistory)
 # step 1 make model powerful enough
 deepmodelnn <- keras_model_sequential()
 deepmodelnn %>%
-  layer_dense(units = 5000, activation = "relu",
+  layer_dense(units = 170, activation = "relu",
               input_shape =ncol(train_X_matrix)) %>%
-  layer_dense(units = 2500, activation = "relu") %>%
-  layer_dense(units = 1250, activation = "relu") %>%
-  layer_dense(units = 625, activation = "relu") %>%
-  layer_dense(units = 1)
+  layer_dense(units = 150, activation = "relu") %>%
+  layer_dense(units = 120, activation = "relu") %>%
+  layer_dense(units = 100, activation = "relu") %>%
+  layer_dense(units = 90, activation = "relu") %>%
+  layer_dense(units = 80, activation = "relu") %>%
+  layer_dense(units = 75, activation = "relu") %>%
+  layer_dense(units = 1, activation = "linear")
 
 deepmodelnn %>% compile(loss = "mse",
-                    optimizer = optimizer_rmsprop(),
+                    optimizer = optimizer_rmsprop(),                     # can change learning rate: learning_rate = ...
                     metrics = list("mean_absolute_error"))
 
 # step 2 learning convergence (#epochs and batch size)
 deephistory <- deepmodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 500,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 36,
   validation_data = list(validation_X_matrix,validation_Y))
-
+ 
 # plot
 plot(deephistory)
 
 # step 3 reguralize architectrure
 regdeepmodelnn <- keras_model_sequential()
 regdeepmodelnn %>%
-  layer_dense(units = 50000, activation = "relu",
-              input_shape =nccol(train_X_matrix)) %>%
-  layer_dense(units = 25000, activation = "relu") %>%
-  layer_dense(units = 12500, activation = "relu") %>%
-  layer_dense(units = 6250, activation = "relu") %>%
-  layer_dense(units = 1)
+  layer_dense(units = 170, activation = "relu",
+              input_shape = ncol(train_X_matrix)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #kernel_constraint=max_norm(2.)
+  layer_dense(units = 150, activation = "relu") %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 120, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 100, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 90, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+    layer_dense(units = 80, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+    layer_dense(units = 75, activation = "relu") %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 1, activation = "linear")
 
 regdeepmodelnn %>% compile(loss = "mse",
                     optimizer = optimizer_rmsprop(),
@@ -189,8 +206,10 @@ regdeepmodelnn %>% compile(loss = "mse",
 
 # step 4 learning convergence 
 regdeephistory <- regdeepmodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 300, batch_size = 500,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 8,
   validation_data = list(validation_X_matrix,validation_Y))
 
 # plot
 plot(regdeephistory)
+
+# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
