@@ -12,8 +12,6 @@ train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 validation_X_ft_engineering <- validation_X_cleaned
 
-
-
 #integer encoding for meal_booked, save for later
 #union(unique(train_X$meal_booked), unique(test_X$meal_booked))
 #meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!

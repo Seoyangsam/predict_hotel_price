@@ -22,27 +22,49 @@ control <- trainControl(method='repeatedcv',
 
 metric <- "RMSE"
 set.seed(123)
-mtry <- sqrt(ncol(train_X))
-tunegrid <- expand.grid(.mtry=mtry)
+mtry_values <- sqrt(ncol(train_X))
+tunegrid <- expand.grid(mtry = mtry_values)
 rf_default <- train(average_daily_rate~.,
                       data=train_X_data,
                       method='rf',
                       metric="RMSE",
                       tuneGrid=tunegrid,
                       trControl=control,
-                      ntree = 15)
-
+                      ntree=10)
 print(rf_default)
 
 
-# Random forest
-rf.train <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 10, importance = TRUE, ntree = 15)
+# retrain Random forest
+
+updated_hyperparams <- list(mtry=5)
+rf.train <- train(average_daily_rate~.,
+                  data=train_X_data,
+                  method='rf',
+                  metric="RMSE",
+                  trControl=trainControl(method = "cv"),
+                  ntree=10,
+                  tuneGrid=updated_hyperparams)
+
+hyperparams <- list(
+  ntree = 500,  # number of trees in the forest
+  mtry = 5      # number of variables to consider at each split
+)
+model <- train(
+  average_daily_rate~.,
+  data=train_X_data,
+  method = "rf",
+  trControl = trainControl(method = "cv", number = 10),
+  tuneGrid = hyperparams
+)
 rf.train
 yhat.rf <- predict(rf.train, newdata = validation_X)
-
+str(yhat.rf)
+sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
 #calculate the rmse
 rf_error <- sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))
 write.table(rf_error, file = "data/results/rf_error.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+mae <- mean(abs(predictions - test_data$target))
 
 importance(rf.train)
 
