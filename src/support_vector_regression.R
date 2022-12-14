@@ -1,5 +1,5 @@
 install.packages("e1071")
-install.packages("caret")
+install.packages("caret", dependencies = TRUE)
 library(e1071)
 library(caret)
 
