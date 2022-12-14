@@ -1,14 +1,17 @@
-# read data
-train_X <- read.csv(file = 'data/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
-train_y <- read.csv(file = 'data/train_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_y <- read.csv(file = 'data/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
-test_set <- read.csv(file = 'data/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
-test_id <- read.csv(file = 'data/test_id.csv', header = TRUE, fileEncoding = 'latin1')
+# GBM
 
 install.packages('gbm')
 library(gbm)
 library(caret)
+
+# read data
+train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE)
+validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
+
 
 # create 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
@@ -87,12 +90,17 @@ model_gbm <- gbm(average_daily_rate ~.,
 
 val_prediction <- predict(object = model_gbm, newdata = validation_X, type = "response")
 
+# MSE & MAE 
 gbm_RMSE <- sqrt(mean((val_prediction - validation_y$average_daily_rate)^2))
+print(gbm_RMSE) # 43.50409
 gbm_MAE <- mae(validation_y$average_daily_rate, val_prediction)
+print(gbm_MAE) # 19.9034
+
 summary(val_prediction)
 
 write.table(gbm_RMSE, file = "data/results/GBM_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 write.table(gbm_MAE, file = "data/results/GBM_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
