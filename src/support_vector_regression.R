@@ -23,18 +23,18 @@ train_X_matrix <- data.matrix(train_X)
 
 validation_X_data <- data.frame(validation_X,validation_y)
 
-ctrl <- trainControl(method = "cv", number=2) 
+ctrl <- trainControl(method = "cv", number=5, verboseIter = TRUE)
 
-SVRGridCoarse <- expand.grid(.sigma=c(0.01,0.1,1) , .C=c(1,10,100))
+SVRGridCoarse <- expand.grid(.sigma=0.1 , .C=10)
 
 # first way: gives error
 #VRFitCoarse <- train(x = train_X, y = train_y, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 # second way
-SVRFitCoarse <- train(x = train_X, y = average_daily_rate, method="svmLinear", trControl=ctrl, type="eps-svr")
+SVRFitCoarse <- train(x = train_X, y = average_daily_rate, method="svmRadial", metric = "RMSE", tuneGrid=SVRGridCoarse, type="eps-svr", verbose = TRUE)
 # third way
 #SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 
-
+SVRFitCoarse$finalModel
 
 
 
