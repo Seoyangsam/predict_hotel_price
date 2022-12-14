@@ -103,6 +103,10 @@ write.table(pred_valset_error, file = "data/results/polynomial_model_RMSE.csv", 
 pred_valset_mae <- mae(train_y$average_daily_rate, predict(poly.fit))
 write.table(pred_valset_mae, file = "data/results/polynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
+# adjsted R squared 
+pred_valset_adjR <- summary(poly.fit)$adj.r.squared
+write.table(pred_valset_adjR, file = "data/results/polynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 

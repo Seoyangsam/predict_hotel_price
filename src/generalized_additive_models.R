@@ -64,6 +64,10 @@ write.table(pred_valset_error, file = "data/results/smooothingspline_model_RMSE.
 pred_valset_mae <- mae(train_y$average_daily_rate, predict(gam))
 write.table(pred_valset_mae, file = "data/results/smoothingspline_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
+# adjsted R squared 
+pred_valset_adjR <- summary(gam)$adj.r.squared
+write.table(pred_valset_adjR, file = "data/results/smoothingspline_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
@@ -123,6 +127,10 @@ write.table(pred_valset_error, file = "data/results/localreg_model_RMSE.csv", se
 # MAE 
 pred_valset_mae <- mae(train_y$average_daily_rate, predict(gam2))
 write.table(pred_valset_mae, file = "data/results/localreg_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# adjsted R squared 
+pred_valset_adjR <- summary(gam2)$adj.r.squared
+write.table(pred_valset_adjR, file = "data/results/localreg_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 
