@@ -111,17 +111,15 @@ train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
 # gbm model
 final_model_gbm = gbm(average_daily_rate ~.,
                 data = train_and_validation_X_data,
-                distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost
-                cv.folds = 3,
-                shrinkage = .01,
-                n.minobsinnode = 10,
-                interaction.depth = 6,
-                n.trees = 5000)
+                distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost           
+                shrinkage = .1,
+                n.minobsinnode = 5,
+                interaction.depth = 10,
+                n.trees = 4000)
 
 
-ntree_opt_cv <- gbm.perf(final_model_gbm, method = "cv")
 
-test_prediction <- predict(object = final_model_gbm, newdata = test_set, n.trees = ntree_opt_cv, type = "response")
+test_prediction <- predict(object = final_model_gbm, newdata = test_set, type = "response")
 
 # make file with id and corresponding average daily rate
 final_gbm_submission <- data.frame(col1 = test_id$x, col2 = test_prediction)
