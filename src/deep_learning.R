@@ -8,25 +8,24 @@ test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncodin
 
 
 # installation
-install.packages("reticulate")
+install.packages("reticulate", dependencies = TRUE)
 install.packages("keras")
 install.packages("tensorflow")
 install.packages("ggplot2")
+install.packages("ISLR2")
 
 library(reticulate)
 library(keras)
 library(tensorflow)
 library(ggplot2)
-
-install.packages("ISLR2")
 library(ISLR2)
 
-tryCatch(
-  remove.packages(c("keras", "tensorflow", "reticulate")),
-  error = function(e) "Some or all packages not previously installed, that's ok!"
-)
+#tryCatch(
+#  remove.packages(c("keras", "tensorflow", "reticulate")),
+#  error = function(e) "Some or all packages not previously installed, that's ok!"
+#)
 
-install.packages("keras", repos = 'https://cloud.r-project.org')
+#install.packages("keras", repos = 'https://cloud.r-project.org')
 
 write('RETICULATE_AUTOCONFIGURE=FALSE', file = "~/.Renviron", append = TRUE)
 write(sprintf('RETICULATE_MINICONDA_PATH=%s',
@@ -210,4 +209,122 @@ regdeephistory <- regdeepmodelnn %>%
 # plot
 plot(regdeephistory)
 
+
+# 3) multilayer model (wide + deep)
+
+# step 1 make model powerful enough
+deepmodelnn <- keras_model_sequential()
+deepmodelnn %>%
+  layer_dense(units = 1000, activation = "relu",
+              input_shape =ncol(train_X_matrix)) %>%
+  layer_dense(units = 800, activation = "relu") %>%
+  layer_dense(units = 600, activation = "relu") %>%
+  layer_dense(units = 400, activation = "relu") %>%
+  layer_dense(units = 200, activation = "relu") %>%
+  layer_dense(units = 100, activation = "relu") %>%
+  layer_dense(units = 80, activation = "relu") %>%
+  layer_dense(units = 40, activation = "relu") %>%
+  layer_dense(units = 1, activation = "linear")
+
+deepmodelnn %>% compile(loss = "mse",
+                    optimizer = optimizer_adam(),                     # can change learning rate: learning_rate = ...
+                    metrics = list("mean_absolute_error"))
+
+# step 2 learning convergence (#epochs and batch size)
+deephistory <- deepmodelnn %>%
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 32,
+  validation_data = list(validation_X_matrix,validation_Y))
+ 
+# plot
+plot(deephistory)
+
+# step 3 reguralize architectrure
+regdeepmodelnn <- keras_model_sequential()
+regdeepmodelnn %>%
+  layer_dense(units = 1400, activation = "relu",
+              input_shape = ncol(train_X_matrix), constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #kernel_constraint=max_norm(2.)
+  layer_dense(units = 1100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 500, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 250, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 50, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 20, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 1, activation = "linear")
+
+regdeepmodelnn %>% compile(loss = "mse",
+                    optimizer = optimizer_adam(learning_rate = 0.001),
+                    metrics = list("mean_absolute_error")
+                    )
+
+# step 4 learning convergence 
+regdeephistory <- regdeepmodelnn %>%
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 64,
+  validation_data = list(validation_X_matrix,validation_Y))
+
+# plot
+plot(regdeephistory)
+
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
+
+train_and_validation_X <- rbind(train_X, validation_X)
+dependent_y <- rbind(train_y, validation_y)
+
+train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
+
+train_and_validation_X_matrix <- model.matrix(average_daily_rate~. -1, data = train_and_validation_X_data)
+train_and_validation_Y <- dependent_y$average_daily_rate
+
+test_set_matrix <- model.matrix(~.-1 , data = test_set)
+
+regfinaldeepmodelnn <- keras_model_sequential()
+regfinaldeepmodelnn %>%
+  layer_dense(units = 1000, activation = "relu",
+              input_shape = ncol(train_X_matrix), constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #kernel_constraint=max_norm(2.)
+  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 600, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 400, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 80, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 1, activation = "linear")
+
+regfinaldeepmodelnn %>% compile(loss = "mse",
+                    optimizer = optimizer_adam(learning_rate = 0.001),
+                    metrics = list("mean_absolute_error"))
+
+regfinaldeepmodelnn %>%
+    fit(train_and_validation_X_matrix, train_and_validation_Y, epochs = 150, batch_size = 64)
+
+y_test_pred <- regfinaldeepmodelnn %>% predict(test_set_matrix)
+str(test)
+# make file with id and corresponding average daily rate
+final_deep_learning_submission <- data.frame(col1 = test_id$x, col2 = y_test_pred)
+
+colnames(final_deep_learning_submission) <- c("id", "average_daily_rate")
+write.table(final_deep_learning_submission, file = "data/results/deep_learning_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)

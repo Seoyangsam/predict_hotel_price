@@ -47,9 +47,10 @@ params <- list(
   boosting_type = "gbdt",
   objective = "regression",
   metric ="RMSE",
-  learning_rate = 0.01,
-  num_leaves = 100,
-  max_depth = 8,
+  learning_rate = c(0.01,0.1,0.3),
+  num_leaves = c(50,100,150),
+  max_depth = c(6,8,10),
+  min_data_in_leaf = c(10,50,100),
   early_stopping_rounds = 10,
   force_col_wise = TRUE,
   verboseIter = TRUE

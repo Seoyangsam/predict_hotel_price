@@ -78,6 +78,25 @@ gbm_tune = train(average_daily_rate ~ ., data = train_X_data,
 
 print(gbm_tune)
 
+# 4: tune n.minobsinnode + interaction depth
+cv_5 = trainControl(method = "cv", number = 5, verboseIter = TRUE)
+
+gbm_grid =  expand.grid(interaction.depth = 10:13,
+                        n.trees = 4000,
+                        shrinkage = 0.1,
+                        n.minobsinnode = c(3,5,7))
+
+
+gbm_tune = train(average_daily_rate ~ ., data = train_X_data,
+                      method = "gbm",
+                      distribution = "gaussian",
+                      train.fraction = 0.5,
+                      trControl = cv_5,
+                      verbose = TRUE,
+                      tuneGrid = gbm_grid)
+
+print(gbm_tune)
+
 # gbm model with optimal parameters
 model_gbm <- gbm(average_daily_rate ~.,
                 data = train_X_data,
