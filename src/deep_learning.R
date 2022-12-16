@@ -165,11 +165,19 @@ plot(regwidehistory)
 # step 1 make model powerful enough
 deepmodelnn <- keras_model_sequential()
 deepmodelnn %>%
-  layer_dense(units = 100, activation = "relu",
+  layer_dense(units = 1200, activation = "relu",
               input_shape =ncol(train_X_matrix)) %>%
-  layer_dense(units = 90, activation = "relu") %>%
-  layer_dense(units = 85, activation = "relu") %>%
+  layer_dense(units = 1100, activation = "relu") %>%
+  layer_dense(units = 1000, activation = "relu") %>%
+  layer_dense(units = 950, activation = "relu") %>%
+  layer_dense(units = 900, activation = "relu") %>%
+  layer_dense(units = 800, activation = "relu") %>%
+  layer_dense(units = 600, activation = "relu") %>%
+  layer_dense(units = 400, activation = "relu") %>%
+  layer_dense(units = 200, activation = "relu") %>%
+  layer_dense(units = 100, activation = "relu") %>%
   layer_dense(units = 80, activation = "relu") %>%
+  layer_dense(units = 40, activation = "relu") %>%
   layer_dense(units = 1, activation = "linear")
 
 deepmodelnn %>% compile(loss = "mse",
@@ -178,39 +186,56 @@ deepmodelnn %>% compile(loss = "mse",
 
 # step 2 learning convergence (#epochs and batch size)
 deephistory <- deepmodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 32,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 64,
   validation_data = list(validation_X_matrix,validation_Y))
  
 # plot
 plot(deephistory)
 
 # step 3 reguralize architectrure
-
 regdeepmodelnn <- keras_model_sequential()
 regdeepmodelnn %>%
-  layer_dense(units = 100, activation = "relu",
-              input_shape = ncol(train_X_matrix)) %>%
-  layer_dropout(rate = 0.3) %>%
-  #kernel_constraint=max_norm(2) %>%
+  layer_dense(units = 1200, activation = "relu",
+              input_shape = ncol(train_X_matrix), constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  #kernel_constraint=max_norm(2.)
+  layer_dense(units = 1100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
   #max_norm(3) %>%
-  layer_dense(units = 90, activation = "relu") %>%
-  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 1000, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
   #max_norm(3) %>%
-  layer_dense(units = 85, activation = "relu") %>%
-  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 950, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
   #max_norm(3) %>%
-  layer_dense(units = 80, activation = "relu") %>%
-  layer_dropout(rate = 0.3) %>%
-
+  layer_dense(units = 900, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 600, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 400, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 80, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
+  layer_dropout(rate = 0.4) %>%
   layer_dense(units = 1, activation = "linear")
 
 regdeepmodelnn %>% compile(loss = "mse",
-                    optimizer = optimizer_adam(learning_rate = 0.00001),
-                    metrics = list("mean_absolute_error"))
+                    optimizer = optimizer_adam(learning_rate = 0.001),
+                    metrics = list("mean_absolute_error")
+                    )
 
 # step 4 learning convergence 
 regdeephistory <- regdeepmodelnn %>%
-    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 128,
+    fit(train_X_matrix, train_Y, epochs = 150, batch_size = 64,
   validation_data = list(validation_X_matrix,validation_Y))
 
 # plot
