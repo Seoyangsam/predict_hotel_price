@@ -1,8 +1,8 @@
 #First we read our datas
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE, fileEncoding = 'latin1')
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
 test_id <- test_X$id
@@ -10,6 +10,7 @@ write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
 
 # Kepp top 15 values for country
 library(dummy)
+install.packages("dummy")
 cat <- categories(train[("country")], p = 14)
 shouldBecomeOther<-!(train$country %in% c("Portugal", "United Kingdom", "France", "Spain", "Germany", "Italy", "Ireland","Belgium" , "Brazil", "United States", "Netherlands", "Switzerland", "Austria", "Sweden"))
 train$country[shouldBecomeOther]<- "other"
@@ -142,6 +143,8 @@ validation_X_impute$market_segment <- impute(validation_X_impute$market_segment,
 # string to date object
 
 #library(tidyverse)
+install.packages("lubridate")
+install.packages("nycflights13")
 library(lubridate)
 library(nycflights13)
 
@@ -151,6 +154,7 @@ validation_X_impute$arrival_date <- mdy(validation_X_impute$arrival_date)
 #devtools::install_github("tidyverse/tidyverse")
 
 library(anytime)
+install.packages("anytime")
 
 # impute missing values for last status date as arrival date + nr nights
 #train_X_impute$arrival_date <- anydate(train_X_impute$arrival_date)
@@ -522,3 +526,5 @@ write.table(test_X_cleaned, file = "data/silver/test_X_cleaned.csv", sep = ",", 
 write.table(validation_X_cleaned, file = "data/silver/validation_X_cleaned.csv", sep = ",", row.names = F)
 write.table(train_y, file = "data/gold/train_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
 write.table(validation_y, file = "data/gold/validation_y.csv", sep = ",", row.names = F, col.names = c("average_daily_rate"))
+
+

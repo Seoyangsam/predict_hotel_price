@@ -1,4 +1,6 @@
 # here we will perform a polynomial regression 
+install.packages("Metrics")
+library(Metrics)
 library(glmnet)
 
 # read files
@@ -14,15 +16,13 @@ test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncodin
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
 
-# FIRST STEP: TRAIN ON TRAINING SET AND PREDICT ON VALIDATION SET
+# FIRST STEP:
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
 validation_X_data <- data.frame(validation_X,validation_y)
-str(validation_X)
 
 # ANOVA TEST FOR EACH VARIABLE TO SEE WHICH POLY FITS BEST PER VARIABLE  
-
 # car parking spaces  
 poly_parkingspaces1 <- lm(average_daily_rate ~ . , data = train_X_data)
 poly_parkingspaces2 <- lm(average_daily_rate ~ . - car_parking_spaces + poly(car_parking_spaces,2) , data = train_X_data)
@@ -89,36 +89,99 @@ anova(poly_specialrequests1, poly_specialrequests2, poly_specialrequests3)
     # not significant so we keep "special_requests" of degree 1 
 
 
-# POLYNOMIAL REGRESSION MODEL 
-poly.fit <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_X_data)    
-str(poly.fit)
+
+# POLYNOMIAL REGRESSION MODEL WITH RIDGE PENALTY
+poly.fit_ridge1 <- lm(average_daily_rate ~ . + I(lead_time^2) + I(nr_adults^2) + I(nr_children^2) + I(nr_nights^2) + I(previous_cancellations^2) , data = train_X_data)    
+
+# prepare data 
+library(Matrix)
+require(Matrix)
+
+train_y_data <- subset(train_X_data, select= c(average_daily_rate))
+ridge_matrix <- model.matrix(poly.fit_ridge1)
+
+# fit a ridge regression model with CV
+grid1 <- 10 ^ seq(4, -2, length = 100)
+cv.ridge <- cv.glmnet(ridge_matrix, train_y_data$average_daily_rate ,alpha = 0, lambda = grid1, nfolds = 5)
+bestlam.ridge <- cv.ridge$lambda.min
 
 # make predictions on validation set
-pred.valset <- predict(poly.fit, newdata = validation_X)
-str(pred.valset)
+pred.valset <- predict(poly.fit_ridge1, newdata = validation_X)
 
 # MSE 
-pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/regpolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+pred_valset_mse <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
+write.table(pred_valset_mse, file = "data/results/ridgepolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# MAE 
+pred_valset_mae <- mae(train_y$average_daily_rate, predict(poly.fit_ridge1))
+write.table(pred_valset_mae, file = "data/results/ridgepolynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# adjsted R squared 
+pred_valset_adjR <- summary(poly.fit_ridge1)$adj.r.squared
+write.table(pred_valset_adjR, file = "data/results/ridgepolynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
-# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
-
-# new dataframe with train + val set and add average daily rate
+# SECOND STEP
 train_val_data <- data.frame(train_and_validation, dependant_y)
 
-# POLYNOMIAL REGRESSION MODEL 
-poly.fit2 <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1)  + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_babies,1) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
-poly.fit2
+# POLY  
+poly.fit_ridge2 <- lm(average_daily_rate ~ . + I(lead_time^2) + I(nr_adults^2) + I(nr_children^2) + I(nr_nights^2) + I(previous_cancellations^2) , data = train_X_data)
 
-# make predictions on test set
-pred.testset <- predict(poly.fit2, newdata = test_set)
-str(pred.testset)
+# predict on test set
+pred.testset <- predict(poly.fit_ridge2, newdata = test_set)
 
-
-# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
+# make file with id and corresponding average daily rate
 poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
 
 colnames(poly_submission) <- c("id", "average_daily_rate")
-write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(poly_submission, file = "data/results/regpoly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
+
+
+
+# POLYNOMIAL REGRESSION WITH LASSO PENALTY 
+poly.fit_lasso1 <- lm(average_daily_rate ~ . + I(lead_time^2) + I(nr_adults^2) + I(nr_children^2) + I(nr_nights^2) + I(previous_cancellations^2) , data = train_X_data)    
+
+# prepare data 
+library(Matrix)
+require(Matrix)
+
+train_y_data <- subset(train_X_data, select= c(average_daily_rate))
+lasso_matrix <- model.matrix(poly.fit_lasso1)
+
+# fit a lasso regression model with CV
+grid2 <- 10 ^ seq(4, -2, length = 100)
+cv.lasso <- cv.glmnet(lasso_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid2, nfolds = 5)
+bestlam.lasso <- cv.lasso$lambda.min
+
+# make predictions on validation set
+pred.valset <- predict(poly.fit_lasso1, newdata = validation_X)
+
+# MSE 
+pred_valset_mse <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
+write.table(pred_valset_mse, file = "data/results/lassopolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# MAE 
+pred_valset_mae <- mae(train_y$average_daily_rate, predict(poly.fit_lasso1))
+write.table(pred_valset_mae, file = "data/results/lassopolynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+# adjsted R squared 
+pred_valset_adjR <- summary(poly.fit_lasso1)$adj.r.squared
+write.table(pred_valset_adjR, file = "data/results/lassopolynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+
+
+# SECOND STEP
+train_val_data <- data.frame(train_and_validation, dependant_y)
+
+# POLY  
+poly.fit_lasso2 <- lm(average_daily_rate ~ . + I(lead_time^2) + I(nr_adults^2) + I(nr_children^2) + I(nr_nights^2) + I(previous_cancellations^2) , data = train_X_data)
+
+# predict on test set
+pred.testset <- predict(poly.fit_lasso2, newdata = test_set)
+
+# make file with id and corresponding average daily rate
+poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
+
+colnames(poly_submission) <- c("id", "average_daily_rate")
+write.table(poly_submission, file = "data/results/regpoly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)

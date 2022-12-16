@@ -1,5 +1,5 @@
 install.packages("e1071")
-install.packages("caret")
+install.packages("caret", dependencies = TRUE)
 library(e1071)
 library(caret)
 
@@ -10,7 +10,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE, fileEncoding = 'latin1')
+validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE)
 
 # dependent and independent variables in 1 dataframe
 train_X_data <- data.frame(train_X,train_y)
@@ -23,18 +23,42 @@ train_X_matrix <- data.matrix(train_X)
 
 validation_X_data <- data.frame(validation_X,validation_y)
 
-ctrl <- trainControl(method = "cv", number=2) 
+ctrl <- trainControl(method = "cv", number=5, verboseIter = TRUE)
 
-SVRGridCoarse <- expand.grid(.sigma=c(0.01, 0.1), .C=c(100,1000))
+SVRGrid <- expand.grid(.sigma=0.1 , .C=10)
 
 # first way: gives error
-VRFitCoarse <- train(x = train_X, y = train_y, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+#VRFitCoarse <- train(x = train_X, y = train_y, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 # second way
-SVRFitCoarse <- train(x = train_X_matrix, y = average_daily_rate, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+SVRFit <- train(
+    x = train_X, 
+    y = average_daily_rate, 
+    method="svmRadial", 
+    metric = "RMSE", 
+    cost = 10,
+    .sigma = 0.1,
+    tuneGrid=SVRGrid, 
+    type="eps-svr", 
+    verbose = TRUE
+    )
+
+prediction <- predict(object = SVRFit, newdata = validation_X)
+
+# MSE & MAE 
+svr_RMSE <- sqrt(mean((prediction - validation_y$average_daily_rate)^2))
+print(gbm_RMSE)
+svr_MAE <- mae(validation_y$average_daily_rate, prediction)
+print(gbm_MAE)
+
+summary(prediction)
+
+write.table(gbm_RMSE, file = "data/results/SVR_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(gbm_MAE, file = "data/results/SVR_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 # third way
-SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
+#SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 
-
+SVRFitCoarse$finalModel
 
 
 
