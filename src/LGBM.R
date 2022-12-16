@@ -23,7 +23,7 @@ validation_X <- as.matrix(validation_X)
 train_y <- as.matrix(train_y)
 validation_y <- as.matrix(validation_y)
 
-dtrain <- lgb.Dataset(data = train_X_data)
+dtrain <- lgb.Dataset(data = train_X_data, label = train_y)
 dtrain <- lgb.Dataset.construct(data = dtrain)
 
 dvalid <- lgb.Dataset(data = validation_X_data)
@@ -46,20 +46,17 @@ dvalid_y <- lgb.Dataset.construct(data = dvalid_y)
 params <- list(
   boosting_type = "gbdt",
   objective = "regression",
-  metric ="RMSE",
-  learning_rate = 0.01,
-  num_leaves = 100,
-  max_depth = 8,
+  metric = "mse",
+  learning_rate = 0.1,               # seq(0.1,0.3,0.09),
+  num_leaves = 40 ,                #seq(40,120,40),
+  max_depth = 5,                     #seq(4, 10, 2),
   early_stopping_rounds = 10,
-  force_col_wise = TRUE,
   verboseIter = TRUE
 )
 
 results <- lgb.cv(
   params= params, 
-  data = dtrain_X,
-  label = dtrain_y,
-  stratified = TRUE,
+  data = dtrain,
   nrounds = 1000,
   nfold = 5
   )
