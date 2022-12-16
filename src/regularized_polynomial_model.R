@@ -169,6 +169,8 @@ write.table(pred_valset_mae, file = "data/results/lassopolynomial_model_MAE.csv"
 pred_valset_adjR <- summary(poly.fit_lasso1)$adj.r.squared
 write.table(pred_valset_adjR, file = "data/results/lassopolynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
+
+
 # SECOND STEP
 train_val_data <- data.frame(train_and_validation, dependant_y)
 
