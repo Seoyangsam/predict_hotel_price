@@ -53,7 +53,7 @@ GBM
 
 LGBM
 
-# What we do:
+# What we did:
 
 1.Data preprocessing
 
