@@ -1,5 +1,8 @@
+
+install.packages('randomForest')
 library(randomForest)
 set.seed(1)
+
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
