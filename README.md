@@ -4,27 +4,26 @@ This is the repository for our group assignment of machine learning course. The 
 
 # Structure 
 
-we stored our data in the data folder as structure below: 
+We stored our data in the data folder as structure below: 
+- bronze:
+original dataset 
+
+- silver:
+dataet after cleaning 
+
+- gold:
+dataset after cleaning and feature engineering 
 
 - results:
 results of diffirent models 
-
-- Gold:
-dataset after cleaning and feature engineering 
-
-- Silver:
-dataet after cleaning 
-
-- Bronze:
-original dataset 
 
 In src, we have our R code, as below:
 
 - data preprocessing:
 
-data_cleaning
-
 data_exploration
+
+data_cleaning
 
 feature_engineering
 
