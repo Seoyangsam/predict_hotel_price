@@ -24,7 +24,7 @@ cats <- categories(train_X_ft_engineering[, c("assigned_room_type","customer_typ
 # apply on train set (exclude reference categories)
 dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "customer_type", "last_status", "market_segment", "meal_booked", "month_arrival_date", "day_arrival_date")],
                        object = cats)
-dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB. , day_arrival_date_monday, month_arrival_date_January))
+dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, customer_type_Contract, last_status_Canceled, market_segment_Aviation, meal_booked_bed...breakfast..BB. , month_arrival_date_January, day_arrival_date_monday))
 # apply on test set (exclude reference categories)
 dummies_test <- dummy(test_X_ft_engineering[, c("assigned_room_type", "customer_type", "last_status", "market_segment", "meal_booked", "month_arrival_date", "day_arrival_date")],
                        object = cats)

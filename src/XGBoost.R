@@ -1,14 +1,12 @@
 # Load the caret package
 library(caret)
-install.packages("xgboost")
-library(xgboost)
 
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_X <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
-
+ncol(train_X)
 # Make the dataframe to train the model
 train_X<- data.frame(train_X,train_y)
 validation_X<- data.frame(validation_X,validation_y)
@@ -17,7 +15,7 @@ validation_X<- data.frame(validation_X,validation_y)
 combined <- rbind(train_X, validation_X)
 
 # Create a vector of labels for stratified sampling
-labels <- as.factor(combined$booking_distribution_channel)
+labels <- as.factor(combined$assigned_room_type)
 set.seed(1)
 # Split the combined dataset into a new training and validation set using stratified sampling
 validation <- createDataPartition(labels, p = 0.3, list = FALSE)
@@ -35,7 +33,7 @@ train_X_data <- data.frame(train_X,train_y)
 
 str(train_X_data)
 # get all numeric columns for scaling
-scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_babies","nr_children","nr_nights","nr_previous_bookings","previous_cancellations","special_requests")
+scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_children","nr_nights","special_requests", "nr_previous_bookings", "previous_cancellations")
 
 # apply on training set
 mean_train <- colMeans(train_X[, scale_cols])
@@ -73,3 +71,11 @@ predictions <- predict(model, validation_X)
 
 rf_error <- sqrt(mean((predictions - validation_y)^2))
 rf_error
+
+mae <- mean(abs(predictions - validation_y))
+mae
+
+data_frame <- data.frame(rf_error = rf_error,
+  mae = mae
+)
+write.table(data_frame, file = "data/results/xgboost_error.csv", sep = ",", row.names = FALSE, col.names=TRUE)
