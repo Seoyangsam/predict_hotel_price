@@ -50,7 +50,7 @@ library(caret)
 set.seed(123)
 mtry_values <- c(sqrt(ncol(train_X)), ncol(train_X), 0.5*ncol(train_X))
 tunegrid <- expand.grid(mtry = mtry_values)
-rf_default <- train(average_daily_rate~.,
+rf_default <- train(train_y~.,
                       data=train_X_data,
                       method='rf',
                       metric="RMSE",
