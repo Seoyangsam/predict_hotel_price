@@ -46,7 +46,7 @@ pred_valset_mse <- sqrt(mean((pred.lasso.valset - validation_y$average_daily_rat
 write.table(pred_valset_mse, file = "data/results/lin_model_lasso_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, pred.lasso.valset)
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.lasso.valset)
 write.table(pred_valset_mae, file = "data/results/lin_model_lasso_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
