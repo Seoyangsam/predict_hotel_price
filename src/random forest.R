@@ -50,6 +50,10 @@ rf.train <- train(average_daily_rate~.,
                       min.node.size = 1000,
                       ntree=500)
 print(rf.train)
+
+rf_model <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 5, ntree = 500)
+yhat.rf <- predict(rf_model, newdata = validation_X)
+
 yhat.rf <- predict(rf.train, newdata = validation_X)
 
 #calculate the rmse
@@ -66,9 +70,7 @@ adj_r_squared <- 1 - (1 - r_squared) * (n - 1) / (n - p - 1)
 adj_r_squared
 
 data_frame <- data.frame(
-  rf_error = rf_error,
-  mae = mae,
-  adj_r_squared = adj_r_squared
+  rf_error = rf_error
 )
 write.table(data_frame, file = "data/results/rf_error.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
