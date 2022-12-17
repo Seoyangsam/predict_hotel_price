@@ -1,3 +1,8 @@
+
+install.packages('randomForest')
+library(randomForest)
+set.seed(1)
+
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -20,7 +25,7 @@ train_X_data <- data.frame(train_X,train_y)
 
 # Convert all columns to factor
 train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
-validation_X <-as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE,levels = levels(train_X_data))
+validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,levels = levels(train_X_data))
 
 # Hyperparemeter tuning with mtry
 library(randomForest)

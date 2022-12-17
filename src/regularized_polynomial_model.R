@@ -113,12 +113,9 @@ pred_valset_mse <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
 write.table(pred_valset_mse, file = "data/results/ridgepolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, predict(poly.fit_ridge1))
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
 write.table(pred_valset_mae, file = "data/results/ridgepolynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
-# adjsted R squared 
-pred_valset_adjR <- summary(poly.fit_ridge1)$adj.r.squared
-write.table(pred_valset_adjR, file = "data/results/ridgepolynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 # SECOND STEP
@@ -162,12 +159,8 @@ pred_valset_mse <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
 write.table(pred_valset_mse, file = "data/results/lassopolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, predict(poly.fit_lasso1))
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
 write.table(pred_valset_mae, file = "data/results/lassopolynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-# adjsted R squared 
-pred_valset_adjR <- summary(poly.fit_lasso1)$adj.r.squared
-write.table(pred_valset_adjR, file = "data/results/lassopolynomial_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 
