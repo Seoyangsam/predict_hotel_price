@@ -21,6 +21,7 @@ original dataset
 In src, we have our R code, as below:
 
 - data preprocessing:
+
 data_cleaning
 
 data_exploration
@@ -28,6 +29,7 @@ data_exploration
 feature_engineering
 
 - models:
+
 support_vector_regression
 
 regularized_polynomial_model
