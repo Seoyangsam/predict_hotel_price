@@ -46,11 +46,12 @@ rf.train <- train(average_daily_rate~.,
                       method='rf',
                       metric="RMSE",
                       tuneGrid=updated_mtry,
-                      trControl=trainControl(method="cv", number=10),
-                      min.node.size = 1000,
+                      trControl=trainControl(method="cv", number=5),
                       ntree=500)
 print(rf.train)
-yhat.rf <- predict(rf.train, newdata = validation_X)
+
+rf_model <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 5, ntree = 500)
+yhat.rf <- predict(rf_model, newdata = validation_X)
 
 #calculate the rmse
 rf_error <- sqrt(mean((yhat.rf - validation_y$average_daily_rate)^2))

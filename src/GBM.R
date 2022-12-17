@@ -102,7 +102,7 @@ model_gbm <- gbm(average_daily_rate ~.,
                 data = train_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost
                 shrinkage = 0.1,
-                n.minobsinnode = 5,
+                n.minobsinnode = 4,
                 interaction.depth = 10,
                 n.trees = 4000)
 
@@ -132,7 +132,7 @@ final_model_gbm = gbm(average_daily_rate ~.,
                 data = train_and_validation_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost           
                 shrinkage = .1,
-                n.minobsinnode = 5,
+                n.minobsinnode = 4,
                 interaction.depth = 10,
                 n.trees = 4000)
 

@@ -1,5 +1,6 @@
 # Load the caret package
 library(caret)
+install.packages("xgboost")
 library(xgboost)
 
 # Read files

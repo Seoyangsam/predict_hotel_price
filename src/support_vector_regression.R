@@ -39,7 +39,7 @@ SVRFit$bestTune
 SVRFit$bestTune$sigma
 SVRFit$bestTune$C
 
-SVR_final_model <- svm(average_daily_rate~ ., data = train_X_data, kernel = "radial", cost = SVRFit$bestTune$C , sigma = SVRFit$bestTune$sigma)
+SVR_final_model <- svm(average_daily_rate~ ., data = train_X_data, kernel = "radial", cost = 10 , sigma = 0.01)
 prediction <- predict(object = SVR_final_model, newdata = validation_X)
 
 # MSE & MAE 
@@ -57,6 +57,24 @@ write.table(svr_MAE, file = "data/results/SVR_MAE.csv", sep = ",", row.names = F
 #SVRFitCoarse <- train(average_daily_rate ~ . , data = train_X_data, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 
 SVRFitCoarse$finalModel
+
+
+train_and_validation_X <- rbind(train_X, validation_X)
+dependent_y <- rbind(train_y, validation_y)
+
+train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
+
+# svr model
+svr_test_set <- svm(average_daily_rate~ ., data = train_and_validation_X_data, kernel = "radial", cost = 10 , sigma = 0.01)
+
+prediction <- predict(object = svr_test_set, newdata = test_set)
+
+# make file with id and corresponding average daily rate
+svr_submission <- data.frame(col1 = test_id$x, col2 = prediction)
+
+colnames(svr_submission) <- c("id", "average_daily_rate")
+write.table(svr_submission, file = "data/results/svr_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 
 
 
