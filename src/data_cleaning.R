@@ -35,7 +35,7 @@ train_y <- train$average_daily_rate
 train_y <- gsub(' .*','',train_y) #remove the euro sign
 train_y <- as.double(train_y) #convert from chr to float
 str(train_y)
-train_y
+
 validation_y <- validation$average_daily_rate
 validation_y <- gsub(' .*','',validation_y) #remove the euro sign
 validation_y<- as.double(validation_y) #convert from chr to float
