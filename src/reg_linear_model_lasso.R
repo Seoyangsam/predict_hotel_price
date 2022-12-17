@@ -33,6 +33,7 @@ validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_d
 colnames(validation_X_matrix)
 
 # fit a lasso regression model with CV
+set.seed(30)
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
 bestlam.lasso <- cv.lasso$lambda.min
@@ -43,11 +44,11 @@ str(pred.lasso.valset)
 
 # MSE
 pred_valset_mse <- sqrt(mean((pred.lasso.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_mse, file = "data/results/lin_model_lasso_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mse, file = "data/results/lin_model_lasso_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
 pred_valset_mae <- mae(validation_y$average_daily_rate, pred.lasso.valset)
-write.table(pred_valset_mae, file = "data/results/lin_model_lasso_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mae, file = "data/results/lin_model_lasso_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 
@@ -76,6 +77,7 @@ train_X_matrix2 <- model.matrix(lm.fit2, train_val_data)
 test_set_matrix <- model.matrix(~., data = test_set)
 
 # fit a lasso regression model with CV
+set.seed(30)
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix2, train_val_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
 bestlam.lasso <- cv.lasso$lambda.min
