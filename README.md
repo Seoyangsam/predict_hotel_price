@@ -17,13 +17,52 @@ dataet after cleaning
 
 - Bronze:
 original dataset 
- 
+
+In src, we have our R code, as below:
+
+- data preprocessing:
+data_cleaning
+
+data_exploration
+
+feature_engineering
+
+- models:
+support_vector_regression
+
+regularized_polynomial_model
+
+reg_linear_model_ridge
+
+reg_linear_model_lasso
+
+random forest
+
+polynomial_model
+
+light_GBM
+
+generalized_additive_models
+
+deep_learning
+
+XGBoost
+
+GBM
+
+LGBM
+
 # What we do:
 
 1.Data preprocessing
 
 2.Create the linear baseline 
 
-3.Build other models
+3.Build other models with hyperparameter tuning 
+
+4.Select best model and retain the model 
 
 Except the R code, we also have the technical report. 
+
+
+# What we fund:
