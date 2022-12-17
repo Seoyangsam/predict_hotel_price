@@ -51,8 +51,8 @@ train_and_validation_X <- rbind(train_X, validation_X)
 dependent_y <- rbind(train_y, validation_y)
 
 train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
-
-# matrix
+str(validation_X_data)
+ # matrix
 library(Matrix)
 require(Matrix)
 train_X_matrix <- model.matrix(average_daily_rate ~. -1 , data = train_X_data)

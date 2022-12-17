@@ -168,13 +168,13 @@ validation_X_impute$last_status_date <- validation_X_impute$arrival_date + valid
 
 
 #make columns with week, year and day for arrival date and last status date
-train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
+#train_X_impute$year_arrival_date <- format(train_X_impute$arrival_date, format="%Y")
 train_X_impute$month_arrival_date <- format(train_X_impute$arrival_date, format="%m")
 
-test_X_impute$year_arrival_date <- format(test_X_impute$arrival_date, format="%Y")
+#test_X_impute$year_arrival_date <- format(test_X_impute$arrival_date, format="%Y")
 test_X_impute$month_arrival_date <- format(test_X_impute$arrival_date, format="%m")
 
-validation_X_impute$year_arrival_date <- format(validation_X_impute$arrival_date, format="%Y")
+#validation_X_impute$year_arrival_date <- format(validation_X_impute$arrival_date, format="%Y")
 validation_X_impute$month_arrival_date <- format(validation_X_impute$arrival_date, format="%m")
 
 #train_X_impute$year_last_status_date <- format(train_X_impute$last_status_date, format="%Y")
