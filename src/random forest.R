@@ -12,7 +12,7 @@ validation_X<- data.frame(validation_X,validation_y)
 combined <- rbind(train_X, validation_X)
 
 # Create a vector of labels for stratified sampling
-labels <- as.factor(combined$booking_distribution_channel)
+labels <- as.factor(combined$assigned_room_type)
 set.seed(1)
 # Split the combined dataset into a new training and validation set using stratified sampling
 validation <- createDataPartition(labels, p = 0.3, list = FALSE)
@@ -23,13 +23,11 @@ train_X <- subset(train_X1, select = -c(average_daily_rate))
 validation_X <- subset(validation_X1, select = -c(average_daily_rate))
 
 validation_y <- validation_X1$average_daily_rate
-validation_y
 train_y <- train_X1$average_daily_rate
-train_y
 train_X_data <- data.frame(train_X,train_y)
 str(train_X_data)
 # get all numeric columns for scaling
-scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_babies","nr_children","nr_nights","nr_previous_bookings","previous_cancellations","special_requests")
+scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_children","nr_nights","special_requests", "nr_previous_bookings", "previous_cancellations")
 
 # apply on training set
 mean_train <- colMeans(train_X[, scale_cols])
@@ -64,7 +62,7 @@ print(rf_default)
 
 # retrain Random forest
 set.seed(123)
-updated_mtry <- expand.grid(mtry=28)
+updated_mtry <- expand.grid(mtry=4)
 rf.train <- train(train_y~.,
                       data=train_X_data,
                       method='rf',
