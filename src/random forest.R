@@ -1,3 +1,8 @@
+
+install.packages('randomForest')
+library(randomForest)
+set.seed(1)
+
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -20,7 +25,7 @@ train_X_data <- data.frame(train_X,train_y)
 
 # Convert all columns to factor
 train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
-validation_X <-as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE,levels = levels(train_X_data))
+validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,levels = levels(train_X_data))
 
 # Hyperparemeter tuning with mtry
 library(randomForest)
@@ -46,8 +51,9 @@ rf.train <- train(average_daily_rate~.,
                       method='rf',
                       metric="RMSE",
                       tuneGrid=updated_mtry,
-                      trControl=trainControl(method="cv", number=5),
-                      ntree=500)
+                      trControl=trainControl(method="cv", number=10),
+                      min.node.size = 500,
+                      ntree=100)
 print(rf.train)
 
 rf_model <- randomForest(average_daily_rate ~ ., data = train_X_data, mtry = 5, ntree = 500)
@@ -67,9 +73,7 @@ adj_r_squared <- 1 - (1 - r_squared) * (n - 1) / (n - p - 1)
 adj_r_squared
 
 data_frame <- data.frame(
-  rf_error = rf_error,
-  mae = mae,
-  adj_r_squared = adj_r_squared
+  rf_error = rf_error
 )
 write.table(data_frame, file = "data/results/rf_error.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
