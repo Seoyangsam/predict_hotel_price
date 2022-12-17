@@ -47,8 +47,8 @@ rf.train <- train(average_daily_rate~.,
                       metric="RMSE",
                       tuneGrid=updated_mtry,
                       trControl=trainControl(method="cv", number=10),
-                      min.node.size = 1000,
-                      ntree=500)
+                      min.node.size = 500,
+                      ntree=100)
 print(rf.train)
 yhat.rf <- predict(rf.train, newdata = validation_X)
 

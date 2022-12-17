@@ -48,13 +48,11 @@ validation_X[, scale_cols] <- scale(validation_X[, scale_cols], center = mean_tr
 train_X <- as.data.frame(unclass(train_X), stringsAsFactors = TRUE)
 validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,levels = levels(train_X))
 
-
-
 # Create the grid of values to search over
 tuning_grid <- expand.grid(nrounds = 100,
                            max_depth = 3,
                            eta = 0.1,
-                           gamma = 0,
+                           gamma = 0.2,
                            colsample_bytree = 0.5,
                            min_child_weight = 1,
                            subsample = 0.5)
@@ -62,13 +60,13 @@ tuning_grid <- expand.grid(nrounds = 100,
 # Fit the model using 5-fold cross-validation
 model <- train(train_y ~ ., data = train_X_data,
                method = "xgbTree",
-               trControl = trainControl(method = "cv", number = 5),
+               trControl = trainControl(method = "cv", number = 10),
                tuneGrid = tuning_grid,
                )
 
 # Print the best hyperparameters found by the grid search
 print(model)
-validation_y
+
 # Use the trained model to make predictions on the test set
 predictions <- predict(model, validation_X)
 
