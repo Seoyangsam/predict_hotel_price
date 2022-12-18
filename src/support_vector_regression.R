@@ -30,16 +30,13 @@ SVRGrid <- expand.grid(.sigma=0.1 , .C=10)
 # first way: gives error
 #VRFitCoarse <- train(x = train_X, y = train_y, method="svmRadial", tuneGrid=SVRGridCoarse, trControl=ctrl, type="eps-svr")
 # second way
-SVRFit <- train(
-    x = train_X, 
+SVRFit <- train( x = train_X,
     y = average_daily_rate, 
     method="svmRadial", 
     metric = "RMSE", 
     cost = 10,
-    .sigma = 0.1,
-    tuneGrid=SVRGrid, 
-    type="eps-svr", 
-    verbose = TRUE
+    sigma = 0.01,
+    type="eps-svr"
     )
 
 prediction <- predict(object = SVRFit, newdata = validation_X)
