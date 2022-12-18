@@ -29,7 +29,7 @@ train_X_matrix <- model.matrix(lm.fit, train_X_data)
 validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
 colnames(validation_X_matrix)
 
-# fit a lasso regression model with CV
+# fit a ridge regression model with CV
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.ridge <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 0, lambda = grid, nfolds = 5)
 bestlam.ridge <- cv.ridge$lambda.min
