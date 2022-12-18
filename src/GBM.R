@@ -2,7 +2,8 @@
 #install.packages('gbm')
 library(gbm)
 library(caret)
-
+library(Metrics)
+install.packages("Metrics")
 # read data
 train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE)
@@ -101,9 +102,9 @@ model_gbm <- gbm(average_daily_rate ~.,
                 data = train_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost
                 shrinkage = 0.1,
-                n.minobsinnode = 4,
+                n.minobsinnode = 5,
                 interaction.depth = 10,
-                n.trees = 4000)
+                n.trees = 2250)
 
 
 val_prediction <- predict(object = model_gbm, newdata = validation_X, type = "response")
@@ -131,10 +132,9 @@ final_model_gbm = gbm(average_daily_rate ~.,
                 data = train_and_validation_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost           
                 shrinkage = .1,
-                n.minobsinnode = 4,
+                n.minobsinnode = 5,
                 interaction.depth = 10,
-                n.trees = 4000)
-
+                n.trees = 2250)
 
 
 test_prediction <- predict(object = final_model_gbm, newdata = test_set, type = "response")
