@@ -1,5 +1,9 @@
 set.seed(1)
 
+# import libraris
+library(randomForest)
+library(caret)
+
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -47,8 +51,6 @@ train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
 validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,levels = levels(train_X_data))
 
 # Hyperparemeter tuning with mtry
-library(randomForest)
-library(caret)
 mtry_values <- c(sqrt(ncol(train_X)), ncol(train_X), 0.5*ncol(train_X))
 tunegrid <- expand.grid(mtry = mtry_values)
 rf_default <- train(train_y~.,
