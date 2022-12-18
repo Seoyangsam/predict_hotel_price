@@ -1,9 +1,9 @@
-# read data
-train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+# read data: we will start from the data cleaning and do the feature engineering here
+train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
-validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
-test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+validation_X_cleaned <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
+test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
 # packages
@@ -12,61 +12,91 @@ library(caret)
 library(lightgbm)
 library(Metrics)
 
-train_X_data <- data.frame(train_X,train_y)
+# integer encoding for meal booked
 
-validation_X_data <- data.frame(validation_X,validation_y)
+train_X_ft_engineering <- train_X_cleaned
+test_X_ft_engineering <- test_X_cleaned
+validation_X_ft_engineering <- validation_X_cleaned
+
+union(unique(train_X_ft_engineering$meal_booked), unique(test_X_ft_engineering$meal_booked))
+meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
+train_X_ft_engineering$meal_booked <- as.numeric(factor(train_X_ft_engineering$meal_booked, levels = meal_booked_levels))
+validation_X_ft_engineering$meal_booked <- as.numeric(factor(validation_X_ft_engineering$meal_booked, levels = meal_booked_levels))
+test_X_ft_engineering$meal_booked <- as.numeric(factor(test_X_ft_engineering$meal_booked, levels = meal_booked_levels))
+
+# dummy encoding
+library(dummy)
+# get categories and dummies
+cats <- categories(train_X_ft_engineering[, c("assigned_room_type", "customer_type", "last_status", "market_segment", "month_arrival_date", "day_arrival_date")], p=15)
+# apply on train set (exclude reference categories)
+dummies_train <- dummy(train_X_ft_engineering[, c("assigned_room_type", "customer_type", "last_status", "market_segment", "month_arrival_date", "day_arrival_date")],
+                       object = cats)
+dummies_train <- subset(dummies_train, select = -c(assigned_room_type_A, customer_type_Contract, last_status_Canceled, market_segment_Aviation, day_arrival_date_monday, month_arrival_date_January))
+# apply on test set (exclude reference categories)
+dummies_test <- dummy(test_X_ft_engineering[, c("assigned_room_type", "customer_type","last_status", "market_segment", "month_arrival_date", "day_arrival_date")],
+                       object = cats)
+dummies_test <- subset(dummies_test, select = -c(assigned_room_type_A, customer_type_Contract, last_status_Canceled, market_segment_Aviation, month_arrival_date_January, day_arrival_date_monday))
+# apply on validation set (exclude reference categories)
+dummies_validation <- dummy(validation_X_ft_engineering[, c("assigned_room_type", "customer_type", "last_status", "market_segment", "month_arrival_date", "day_arrival_date")],
+                       object = cats)
+dummies_validation <- subset(dummies_validation, select = -c(assigned_room_type_A, customer_type_Contract, last_status_Canceled, market_segment_Aviation, month_arrival_date_January, day_arrival_date_monday))
+
+## merge with overall training set
+train_X_ft_engineering <- subset(train_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, month_arrival_date, day_arrival_date))
+train_X_ft_engineering <- cbind(train_X_ft_engineering, dummies_train)
+## merge with overall test set
+test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, month_arrival_date, day_arrival_date))
+test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
+## merge with overall validation set
+validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, month_arrival_date, day_arrival_date))
+validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_validation)
+
+
+# create new dataframes to avoid overwriting the existing dataframes
+train_X_scale <- train_X_ft_engineering
+test_X_scale <- test_X_ft_engineering
+validation_X_scale <- validation_X_ft_engineering
+
+# get all numeric columns for scaling
+scale_cols <- c("car_parking_spaces","lead_time","nr_adults","nr_children","nr_nights","special_requests", "nr_previous_bookings", "previous_cancellations")
+
+# apply on training set
+mean_train <- colMeans(train_X_scale[, scale_cols])
+sd_train <- sapply(train_X_scale[, scale_cols], sd)
+train_X_scale[, scale_cols] <- scale(train_X_scale[, scale_cols], center = TRUE, scale = TRUE)
+
+# apply on test set
+test_X_scale[, scale_cols] <- scale(test_X_scale[, scale_cols], center = mean_train, scale = sd_train)
+
+# apply on validation set
+validation_X_scale[, scale_cols] <- scale(validation_X_scale[, scale_cols], center = mean_train, scale = sd_train)
+
+# now, we check the distributions
+colMeans(train_X_scale[, scale_cols])
+sapply(train_X_scale[, scale_cols], sd)
+
+colMeans(test_X_scale[, scale_cols])
+sapply(test_X_scale[, scale_cols], sd)
+
+colMeans(validation_X_scale[, scale_cols])
+sapply(validation_X_scale[, scale_cols], sd)
+
+
+train_X_data <- data.frame(train_X_scale,train_y)
+
+validation_X_data <- data.frame(validation_X_scale,validation_y)
 
 train_X_data <- as.matrix(train_X_data)
-validation_X_data <- as.matrix(validation_X_data) 
-train_X <- as.matrix(train_X) 
-validation_X <- as.matrix(validation_X) 
+#validation_X_data <- as.matrix(validation_X_data) 
+train_X_scale <- as.matrix(train_X_scale) 
+validation_X_scale <- as.matrix(validation_X_scale) 
 train_y <- as.matrix(train_y)
-validation_y <- as.matrix(validation_y)
+#validation_y <- as.matrix(validation_y)
 
-dtrain <- lgb.Dataset(data = train_X_data, label = train_y)
+dtrain <- lgb.Dataset(data = train_X_scale, label = train_y)
 dtrain <- lgb.Dataset.construct(data = dtrain)
 
-dvalid <- lgb.Dataset(data = validation_X_data)
-dvalid <- lgb.Dataset.construct(data = dvalid)
-
-dtrain_X <- lgb.Dataset(data = train_X)
-dtrain_X <- lgb.Dataset.construct(data = dtrain_X)
-
-dvalid_X <- lgb.Dataset(data = validation_X)
-dvalid_X <- lgb.Dataset.construct(data = dvalid_X)
-
-dtrain_y <- lgb.Dataset(data = train_y)
-dtrain_y <- lgb.Dataset.construct(data = dtrain_y)
-
-dvalid_y <- lgb.Dataset(data = validation_y)
-dvalid_y <- lgb.Dataset.construct(data = dvalid_y)
-
-
-# hyperparameter tuning
-params <- list(
-  boosting_type = "gbdt",
-  objective = "regression",
-  metric = "mse",
-  learning_rate = 0.1,               # seq(0.1,0.3,0.09),
-  num_leaves = 40 ,                #seq(40,120,40),
-  max_depth = 5,                     #seq(4, 10, 2),
-  early_stopping_rounds = 10,
-  verboseIter = TRUE
-)
-
-results <- lgb.cv(
-  params= params, 
-  data = dtrain,
-  nrounds = 1000,
-  nfold = 5
-  )
-
-# optimal values for parameters
-optimal_learning_rate <- results$params$learning_rate
-
-optimal_num_leaves <- results$params$num_leaves
-optimal_max_depth <- results$params$max_depth 
-
+# Hyperparameter tuning for learning rate, num_leaves, max_depth, lambda_l1 and nrounds
 # Train the LightGBM model using the training data and optimal parameters
 params_optimal <- list(
   tree_learner = "serial",
@@ -74,74 +104,58 @@ params_optimal <- list(
   boosting_type = "gbdt",
   objective = "regression",
   metrics = "l2",
-  learning_rate = optimal_learning_rate,
-  num_leaves = optimal_num_leaves,
-  max_depth = optimal_max_depth
-)
+  learning_rate = 0.15,
+  num_leaves = 80,
+  max_depth = 12,
+  lambda_l1 = 0.01)
 
-lgb <- lgbm.train(params = params_optimal, data = dtrain, label = train_y, nrounds = 100, task = "regression")
+lgb <- lgb.train(params = params_optimal, data = dtrain, nrounds = 800, task = "regression")
 
 # Use the trained model to make predictions on the test data
-predictions <- lgbm.predict(lgb, validation_X)
+predictions <- predict(lgb, validation_X_scale)
 
 # Evaluate the predictions using an appropriate metric
 LGBM_RMSE <- sqrt(mean((predictions - validation_y$average_daily_rate)^2))
 LGBM_MAE <- mae(validation_y$average_daily_rate, predictions)
 summary(predictions)
 
+write.table(LGBM_RMSE, file = "data/results/LGBM_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(LGBM_MAE, file = "data/results/LGBM_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
-# manier 2
-ctrl <- trainControl(method = "cv", number = 5, verboseIter = TRUE)
+# step 2: retrain on val+train set and predict on test set
+validation_y <- as.matrix(validation_y)
+validation_X_data <- as.matrix(validation_X_data)
 
-params <- list(
+train_and_validation_X <- rbind(train_X_scale, validation_X_scale)
+train_val_y <- rbind(train_y, validation_y)
+
+train_and_validation_X_data <- data.frame(train_and_validation_X, train_val_y)
+
+dtrain_and_val <- lgb.Dataset(data = train_and_validation_X, label = train_val_y)
+dtrain_and_val <- lgb.Dataset.construct(data = dtrain_and_val)
+
+test_X_scale <- as.matrix(test_X_scale)
+
+# lgbm model
+params_optimal <- list(
   tree_learner = "serial",
   task = "train",
   boosting_type = "gbdt",
   objective = "regression",
   metrics = "l2",
-  learning_rate = c(0.01, 0.1, 0.3),
-  num_leaves = c(50, 100, 150),
-  max_depth = c(6, 8, 10)
+  learning_rate = 0.15,
+  num_leaves = 80,
+  max_depth = 12,
+  lambda_l1 = 0.01
 )
 
-tuned_model <- train(
-  average_daily_rate ~ ., 
-  data = train_X_data,
-  method = "LGBMModel",
-  metric = "RMSE",
-  trControl = ctrl,
-  tuneGrid = params,
-  verboseIter = TRUE,
-  nrounds = 100
-)
+lgb_final_model <- lgb.train(params = params_optimal, data = dtrain_and_val, nrounds = 800, task = "regression")
 
-print(tuned_model$bestTune)
 
-final_model <- LGBModel(
-  average_daily_rate ~ ., 
-  data = train_X_data,
-  learning_rate = tuned_model$bestTune$learning_rate,
-  num_leaves = tuned_model$bestTune$num_leaves,
-  max_depth = tuned_model$bestTune$max_depth,
-  tree_learner = "serial",
-  task = "train",
-  boosting_type = "gbdt",
-  objective = "regression",
-  metrics = "l2",
-  verboseIter = TRUE,
-  nrounds = 100
-)
+pred_test_set <- predict(lgb_final_model, test_X_scale)
 
-predictions <- lgb.predict(final_model, validation_X)
+# make file with id and corresponding average daily rate
+lgbm_submission <- data.frame(col1 = test_id$x, col2 = pred_test_set)
 
-# Evaluate the predictions using an appropriate metric
-LGBM_RMSE <- sqrt(mean((predictions - validation_y$average_daily_rate)^2))
-LGBM_MAE <- mae(validation_y$average_daily_rate, predictions)
-summary(predictions)
-
-X <- as.matrix(train_X_data[,-1])
-y <- as.matrix(train_X_data[,1])
-X <- lgb.Dataset(data = X)
-X <- lgb.Dataset.construct(data = X)
-y <- lgb.Dataset(data = y)
-y <- lgb.Dataset.construct(data = y)
+colnames(lgbm_submission) <- c("id", "average_daily_rate")
+write.table(lgbm_submission, file = "data/results/LGBM_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)

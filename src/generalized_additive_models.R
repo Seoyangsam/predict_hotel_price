@@ -11,7 +11,7 @@ validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fil
 validation_X <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_set <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
-validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE)
+validation_set <- read.csv(file = 'data/bronze/validation_set.csv', header = TRUE, fileEncoding = 'latin1')
 train_and_validation <- read.csv(file = 'data/gold/train_and_validation.csv', header = TRUE, fileEncoding = 'latin1')
 dependant_y <- read.csv(file = 'data/gold/dependant_y.csv', header = TRUE, fileEncoding = 'latin1')
 
@@ -45,6 +45,7 @@ validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_d
 colnames(validation_X_matrix)
 
 # fit a lasso regression model with CV
+set.seed(30)
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
 bestlam.lasso <- cv.lasso$lambda.min
@@ -58,15 +59,12 @@ str(pred.valset)
 
 # MSE 
 pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/smooothingspline_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_error, file = "data/results/smooothingspline_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, predict(gam))
-write.table(pred_valset_mae, file = "data/results/smoothingspline_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
+write.table(pred_valset_mae, file = "data/results/smoothingspline_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
-# adjsted R squared 
-pred_valset_adjR <- summary(gam)$adj.r.squared
-write.table(pred_valset_adjR, file = "data/results/smoothingspline_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
@@ -95,7 +93,7 @@ write.table(gam_submission, file = "data/results/gam_submission.csv", sep = ",",
 # FIRST STEP
 
 # GAM
-gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + lo(lead_time, span =0.5) + lo(nr_adults, span=0.5) + lo(nr_babies, span=0.5) + lo(nr_children, span=0.5) + lo(nr_nights, span=0.5) + lo(nr_previous_bookings, span=0.5) + lo(previous_cancellations, span=0.5) + lo(special_requests, span=0.5), data = train_X_data)
+gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + lo(lead_time, span =0.5) + lo(nr_adults, span=0.5) + lo(nr_children, span=0.5) + lo(nr_nights, span=0.5) + lo(nr_previous_bookings, span=0.5) + lo(previous_cancellations, span=0.5) + lo(special_requests, span=0.5), data = train_X_data)
 
 # prepare the data to be used with a lasso regression model
 library(Matrix)
@@ -109,6 +107,7 @@ validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_d
 colnames(validation_X_matrix)
 
 # fit a lasso regression model with CV
+set.seed(30)
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.lasso <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 1, lambda = grid, nfolds = 5)
 bestlam.lasso <- cv.lasso$lambda.min
@@ -122,15 +121,11 @@ str(pred.valset)
 
 # MSE 
 pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/localreg_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_error, file = "data/results/localreg_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, predict(gam2))
-write.table(pred_valset_mae, file = "data/results/localreg_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-# adjsted R squared 
-pred_valset_adjR <- summary(gam2)$adj.r.squared
-write.table(pred_valset_adjR, file = "data/results/localreg_model_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
+write.table(pred_valset_mae, file = "data/results/localreg_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 
@@ -149,3 +144,4 @@ local_reg_submission <- data.frame(col1 = test_id$x, col2 = preds)
 
 colnames(local_reg_submission) <- c("id", "average_daily_rate")
 write.table(local_reg_submission, file = "data/results/local_reg_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+

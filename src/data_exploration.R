@@ -87,17 +87,6 @@ getMode(train$meal_booked) # "bed & breakfast (BB)"
 getMode(train$average_daily_rate) # "62 \ 200"
 
 
-
-
-
-
-
-
-
-
-
-
-
 # correlation 
 c <- select(test_X, c(previous_cancellations, nr_previous_bookings, nr_booking_changes, previous_bookings_not_canceled))
 correlation <- cor(c)

@@ -29,7 +29,8 @@ train_X_matrix <- model.matrix(lm.fit, train_X_data)
 validation_X_matrix <- model.matrix(average_daily_rate ~., data = validation_X_data)
 colnames(validation_X_matrix)
 
-# fit a ridge regression model with CV
+# fit a lasso regression model with CV
+set.seed(30)
 grid <- 10 ^ seq(4, -2, length = 100)
 cv.ridge <- cv.glmnet(train_X_matrix, train_y_data$average_daily_rate ,alpha = 0, lambda = grid, nfolds = 5)
 bestlam.ridge <- cv.ridge$lambda.min
@@ -40,15 +41,13 @@ str(pred.ridge.valset)
 
 # MSE
 pred_valset_mse <- sqrt(mean((pred.ridge.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_mse, file = "data/results/lin_model_ridge_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mse, file = "data/results/lin_model_ridge_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
-pred_valset_mae <- mae(train_y$average_daily_rate, predict(lm.fit))
-write.table(pred_valset_mae, file = "data/results/lin_model_ridge_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+pred_valset_mae <- mae(validation_y$average_daily_rate, pred.ridge.valset)
+write.table(pred_valset_mae, file = "data/results/lin_model_ridge_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
-# adjsted R squared 
-pred_valset_adjR <- summary(lm.fit)$adj.r.squared
-write.table(pred_valset_adjR, file = "data/results/lin_model_ridge_adjR.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
 
 # slightly better than regularized linear model with lasso
 
