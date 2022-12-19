@@ -85,3 +85,9 @@ We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metric
 | Deep Learning                 | 40.3360880601974    | 14.3416    |
 
 Based on this table, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  
+
+# Authors 
+Hanne Van Impe
+Sien Van Herreweghe 
+Ruben Mertens
+Robert Xu 
