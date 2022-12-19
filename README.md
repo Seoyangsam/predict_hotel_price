@@ -67,4 +67,22 @@ Except the R code, we also have the technical report.
 
 
 # What we fund:
-Looking at our results(as stored in results folder), we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  This however does not mean these models were the easiest to work with if we take a look at the computing time. Like already said, both the SVR and GBM model took up a great amount of time when they were ran. So although the performances of the 3 last mentioned models are quite similar, we would still opt for light GBM since this model could be ran very easily and quickly.  
+
+We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metrics. 
+
+| Model                         | RMSE     | MAE      |
+|-------------------------------|----------|----------|
+| Linear model (Ridge)          | Cell 2   | Cell 3   |
+| Linear model (Lasso)          | Cell 5   | Cell 6   |
+| Polynomial model              | Cell 8   | Cell 9   |
+| Polynomial model(Ridge)       | Cell 8   | Cell 9   |
+| Polynomial model(Lasso)       | Cell 8   | Cell 9   |
+| Smoothing Spline model (Lasso)| Cell 8   | Cell 9   |
+| Local Regression model (Lasso)| Cell 8   | Cell 9   |
+| Random Forest                 | Cell 8   | Cell 9   |
+| Support Vector Regression     | Cell 8   | Cell 9   |
+| Gradient Boosting Machine     | Cell 8   | Cell 9   |
+| Light GBM                     | Cell 8   | Cell 9   |
+| Deep Learning                 | Cell 8   | Cell 9   |
+
+Based on this, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  This however does not mean these models were the easiest to work with if we take a look at the computing time. Like already said, both the SVR and GBM model took up a great amount of time when they were ran. So although the performances of the 3 last mentioned models are quite similar, we would still opt for light GBM since this model could be ran very easily and quickly.  
