@@ -55,12 +55,14 @@ LGBM
 
 # What we did:
 
-1.Data preprocessing
+1.Data preprocessing 
 
 2.Create the linear baseline 
 
 3.Build other models with hyperparameter tuning 
 
 4.Select best model and retrain the model 
+
+5.Submission on Kaggle
 
 Besides our R code, we also provided a technical report. 
