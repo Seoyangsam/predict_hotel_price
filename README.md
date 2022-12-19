@@ -75,19 +75,19 @@ We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metric
 | Linear model (Lasso)          | 45.984102829997 | 23.0158781113198|
 | Polynomial model              | 46.0840812969587| 23.0672143396751|
 | Polynomial model(Ridge)       | 46.0840812969586| 23.0672143396752|
-| Polynomial model(Lasso)       | 47.8232444073485   | 24.2590743626255  |
-| Smoothing Spline model (Lasso)| 45.9833172300957    | 23.0179371917265   |
-| Local Regression model (Lasso)| 45.9833172300958    | 23.0179371917263    |
-| Random Forest                 | 41.70826            | 16.94994    |
-| Support Vector Regression     | 41.3513970085533    | 15.5208363929206    |
-| Gradient Boosting Machine     | 40.0568441506894    | 14.7029830342072   |
-| Light GBM                     | 39.7645296838941    | 13.3646612615321    |
-| Deep Learning                 | 40.3360880601974    | 14.3416    |
+| Polynomial model(Lasso)       | 47.8232444073485| 24.2590743626255|
+| Smoothing Spline model (Lasso)| 45.9833172300957| 23.0179371917265|
+| Local Regression model (Lasso)| 45.9833172300958| 23.0179371917263|
+| Random Forest                 | 41.70826        | 16.94994        |
+| Support Vector Regression     | 41.3513970085533| 15.5208363929206|
+| Gradient Boosting Machine     | 40.0568441506894| 14.7029830342072|
+| Light GBM                     | 39.7645296838941| 13.3646612615321|
+| Deep Learning                 | 40.3360880601974| 14.3416         |
 
 Based on this table, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  
 
 # Authors 
-Hanne Van Impe
-Sien Van Herreweghe 
-Ruben Mertens
+Hanne Van Impe<br>
+Sien Van Herreweghe<br> 
+Ruben Mertens<br>
 Robert Xu 
