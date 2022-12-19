@@ -1,5 +1,6 @@
 # Load the caret package
 library(caret)
+set.seed(1)
 
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
@@ -16,7 +17,7 @@ combined <- rbind(train_X, validation_X)
 
 # Create a vector of labels for stratified sampling
 labels <- as.factor(combined$assigned_room_type)
-set.seed(1)
+
 # Split the combined dataset into a new training and validation set using stratified sampling
 validation <- createDataPartition(labels, p = 0.3, list = FALSE)
 validation_X1<- combined[validation, ]
@@ -49,7 +50,7 @@ validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,leve
 
 # Create the grid of values to search over
 tuning_grid <- expand.grid(nrounds = 100,
-                           max_depth = 3,
+                           max_depth = 1,
                            eta = 0.1,
                            gamma = 0.2,
                            colsample_bytree = 0.5,
@@ -61,6 +62,7 @@ model <- train(train_y ~ ., data = train_X_data,
                method = "xgbTree",
                trControl = trainControl(method = "cv", number = 10),
                tuneGrid = tuning_grid,
+               verbose = FALSE,
                )
 
 # Print the best hyperparameters found by the grid search
