@@ -315,12 +315,14 @@ plot(regdeephistory)
 # step 1 make model powerful enough
 deepmodelnn <- keras_model_sequential()
 deepmodelnn %>%
-  layer_dense(units = 600, activation = "relu",
+  layer_dense(units = 1000, activation = "relu",
               input_shape =ncol(train_X_matrix)) %>%
-  layer_dense(units = 500, activation = "relu") %>%
-  layer_dense(units = 350, activation = "relu") %>%
+  layer_dense(units = 800, activation = "relu") %>%
+  layer_dense(units = 600, activation = "relu") %>%
+  layer_dense(units = 400, activation = "relu") %>%
   layer_dense(units = 200, activation = "relu") %>%
   layer_dense(units = 100, activation = "relu") %>%
+  layer_dense(units = 80, activation = "relu") %>%
   layer_dense(units = 40, activation = "relu") %>%
   layer_dense(units = 1, activation = "linear")
 
