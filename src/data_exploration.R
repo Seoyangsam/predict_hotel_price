@@ -9,6 +9,8 @@ library(dplyr)
 train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 str(train)
 
+train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
+
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 str(test_X)
 
@@ -153,3 +155,23 @@ ggplot(df, aes(x=team)) +
 # scatter plots
 plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
 
+
+# distribution of dependent variable
+hist(train_y$average_daily_rate)
+
+# scaled distribution of dependent variable
+mean_train <- colMeans(train_y)
+sd_train <- sapply(train_y, sd)
+
+train_y_scaled <- scale(train_y, center = TRUE, scale = TRUE)
+str(train_y_scaled)
+hist(train_y_scaled)
+
+# take log of dependent variable to make it normal distribution 
+train_y_normal <- log(train_y)
+str(train_y_normal)
+hist(train_y_normal$average_daily_rate)
+
+# power transform dependent variable to make it more left skewed (<1)
+train_y_transform <- sqrt(train_y)
+hist(train_y_transform$average_daily_rate)
