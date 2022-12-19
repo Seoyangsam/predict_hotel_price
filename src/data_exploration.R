@@ -7,12 +7,9 @@ library(dplyr)
 
 # we read our data
 train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
-str(train)
-
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
-str(test_X)
 
-test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE)
+train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
@@ -97,14 +94,16 @@ correlation <- cor(c)
 round(correlation,2)
 
 # histograms 
-hist(test_X$car_parking_spaces)
-hist(test_X$days_in_waiting_list)
-hist(test_X$nr_adults)
-hist(test_X$nr_children)
-hist(test_X$special_requests)
-hist(test_X$nr_nights)
-hist(test_X$nr_previous_bookings)
-hist(test_X$nr_booking_changes)
+hist(train$car_parking_spaces)
+hist(train$days_in_waiting_list)
+hist(train$nr_adults)
+hist(train$nr_children)
+hist(train$special_requests)
+hist(train$nr_nights)
+hist(train$nr_previous_bookings)
+hist(train$nr_booking_changes)
+# hist(train$average_daily_rate)
+hist(train_y$average_daily_rate, col = "darkseagreen2", main = " ", xlab = "Average daily rate", ylab = "Frequency")
 
 # box plots
 boxplot(train$car_parking_spaces)
@@ -126,30 +125,4 @@ barplot(train$nr_booking_changes)
 barplot(train$nr_nights)
 barplot(train$nr_previous_bookings)
 barplot(train$special_requests, horiz = TRUE)
-
-df <- data.frame(reservedRoomType = c(train$reserved_room_type),
-                assigned = c(train$assigned_room_type),
-                customerType = c(train$customer_type),
-                arrivalDate = c(train$arrival_date),
-                bookingAgent = c(train$booking_agent),
-                bookingCompany = c(train$booking_company),
-                distributionChannel = c(train$booking_distribution_channel),
-                canceled = c(train$canceled),
-)
-        
-ggplot(df, aes(x = Assigned_room_type))
-geom_bar()
-
-#create data frame
-df <- data.frame(result = c('W', 'L', 'W', 'W', 'W', 'L', 'W', 'L', 'W', 'L'),
-                 team = c('B', 'B', 'B', 'B', 'D', 'A', 'A', 'A', 'C', 'C'),
-                 points = c(12, 28, 19, 22, 32, 45, 22, 28, 13, 19),
-                 rebounds = c(5, 7, 7, 12, 11, 4, 10, 7, 8, 8))
-
-#create bar chart of teams
-ggplot(df, aes(x=team)) +
-  geom_bar()
-
-# scatter plots
-plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
 
