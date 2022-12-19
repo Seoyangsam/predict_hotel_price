@@ -99,30 +99,8 @@ pred.valset <- predict(poly.fit, newdata = validation_X )
 
 # MSE 
 pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/polynomial_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_error, file = "data/results/polynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
 pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
-write.table(pred_valset_mae, file = "data/results/polynomial_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-
-
-# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
-
-# new dataframe with train + val set and add average daily rate
-train_val_data <- data.frame(train_and_validation, dependant_y)
-
-# POLYNOMIAL REGRESSION MODEL 
-poly.fit2 <- lm(average_daily_rate ~ . - car_parking_spaces - lead_time - nr_adults - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + poly(car_parking_spaces,1) + poly(lead_time,2) + poly(nr_adults,2) + poly(nr_children,2) + poly(nr_nights,2) + poly(nr_previous_bookings,1) + poly(previous_cancellations,2) + poly(special_requests,1) , data = train_val_data)
-
-# make predictions on test set
-pred.testset <- predict(poly.fit2, newdata = test_set)
-
-
-# FILE WITH ID AND CORRESPONDING AVERAGE DAILY RATE 
-poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
-
-colnames(poly_submission) <- c("id", "average_daily_rate")
-write.table(poly_submission, file = "data/results/poly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-
+write.table(pred_valset_mae, file = "data/results/polynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)

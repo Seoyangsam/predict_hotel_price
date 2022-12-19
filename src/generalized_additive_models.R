@@ -1,6 +1,5 @@
 
 # here we will perform GAM 
-install.packages("gam")
 library(gam)
 library(glmnet)
 
@@ -59,38 +58,15 @@ str(pred.valset)
 
 # MSE 
 pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/smooothingspline_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_error, file = "data/results/smoothingspline_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
 pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
-write.table(pred_valset_mae, file = "data/results/smoothingspline_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-
-
-# SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
-
-# new dataframe with train + val set and add average daily rate
-train_and_validation <- rbind(train_X, validation_X)
-dependant_y <- rbind(train_y, validation_y)
-
-train_val_data <- data.frame(train_and_validation, dependant_y)
-
-# GAM with new training data
-gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + s(lead_time, fit_lead_time$df) + s(nr_adults, fit_nr_adults$df) + s(nr_nights, fit_nr_nights$df) + s(nr_previous_bookings, fit_nr_previous_bookings$df) + s(previous_cancellations, fit_previous_cancellations$df) + s(special_requests, fit_special_requests$df), data = train_val_data)
-
-# predict on test set
-preds <- predict(gam, newdata = test_set)
-
-# make file with id and corresponding average daily rate
-gam_submission <- data.frame(col1 = test_id$x, col2 = preds)
-
-colnames(gam_submission) <- c("id", "average_daily_rate")
-write.table(gam_submission, file = "data/results/gam_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mae, file = "data/results/smoothingspline_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 
 ## LOCAL REGRESSION
-# FIRST STEP
 
 # GAM
 gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + lo(lead_time, span =0.5) + lo(nr_adults, span=0.5) + lo(nr_children, span=0.5) + lo(nr_nights, span=0.5) + lo(nr_previous_bookings, span=0.5) + lo(previous_cancellations, span=0.5) + lo(special_requests, span=0.5), data = train_X_data)
@@ -121,27 +97,9 @@ str(pred.valset)
 
 # MSE 
 pred_valset_error <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_error, file = "data/results/localreg_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_error, file = "data/results/localreg_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
 pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
-write.table(pred_valset_mae, file = "data/results/localreg_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
-
-
-
-# SECOND STEP
-
-train_val_data <- data.frame(train_and_validation, dependant_y)
-
-# GAM
-gam2 <- lm(average_daily_rate ~ . - lead_time - nr_adults - nr_babies - nr_children - nr_nights - nr_previous_bookings - previous_cancellations - special_requests + lo(lead_time, span =0.5) + lo(nr_adults, span=0.5) + lo(nr_babies, span=0.5) + lo(nr_children, span=0.5) + lo(nr_nights, span=0.5) + lo(nr_previous_bookings, span=0.5) + lo(previous_cancellations, span=0.5) + lo(special_requests, span=0.5), data = train_val_data)
-
-# predict on test set
-preds <- predict(gam2, newdata = test_set)
-
-# make file with id and corresponding average daily rate
-local_reg_submission <- data.frame(col1 = test_id$x, col2 = preds)
-
-colnames(local_reg_submission) <- c("id", "average_daily_rate")
-write.table(local_reg_submission, file = "data/results/local_reg_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mae, file = "data/results/localreg_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 

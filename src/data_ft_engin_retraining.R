@@ -9,12 +9,6 @@ str(test_X_cleaned)
 train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 
-#integer encoding for meal_booked, save for later
-#union(unique(train_X$meal_booked), unique(test_X$meal_booked))
-#meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
-#train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
-#test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
-
 library(dummy)
 # get categories and dummies
 cats <- categories(train_X_ft_engineering[, c("assigned_room_type","customer_type", "last_status", "market_segment", "meal_booked", "month_arrival_date", "day_arrival_date")], p=15)
@@ -33,15 +27,6 @@ train_X_ft_engineering <- cbind(train_X_ft_engineering, dummies_train)
 ## merge with overall test set
 test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, meal_booked, month_arrival_date, day_arrival_date))
 test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
-
-
-#convert the predictors to factors
-#train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)] <- lapply(train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)], as.factor)
-#str(train_X_ft_engineering)
-#test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)] <- lapply(test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)], as.factor)
-#str(test_X_ft_engineering)
-#validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)] <- lapply(validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)], as.factor)
-#str(validation_X_ft_engineering)
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_scale <- train_X_ft_engineering

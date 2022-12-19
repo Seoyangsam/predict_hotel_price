@@ -7,14 +7,9 @@ library(dplyr)
 
 # we read our data
 train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
-str(train)
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
 
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
-
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
-str(test_X)
-
-test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE)
 
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
@@ -109,6 +104,8 @@ hist(train$nr_previous_bookings)
 hist(train$nr_booking_changes)
 # hist(train$average_daily_rate)
 hist(train_y$average_daily_rate, col = "darkseagreen2", main = " ", xlab = "Average daily rate", ylab = "Frequency")
+train_y_transform <- sqrt(train_y)
+hist(train_y_transform$average_daily_rate, col = "darkseagreen2", main = " ", xlab = "Square root of Average daily rate", ylab = "Frequency")
 
 # box plots
 boxplot(train$car_parking_spaces)
@@ -157,26 +154,3 @@ ggplot(df, aes(x=team)) +
 # scatter plots
 plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
 
-# Density curve average daily rate
-plot_y <- ggplot(train, aes(x=average_daily_rate)) + geom_density()
-plot_y
-
-# distribution of dependent variable
-hist(train_y$average_daily_rate)
-
-# scaled distribution of dependent variable
-mean_train <- colMeans(train_y)
-sd_train <- sapply(train_y, sd)
-
-train_y_scaled <- scale(train_y, center = TRUE, scale = TRUE)
-str(train_y_scaled)
-hist(train_y_scaled)
-
-# take log of dependent variable to make it normal distribution 
-train_y_normal <- log(train_y)
-str(train_y_normal)
-hist(train_y_normal$average_daily_rate)
-
-# power transform dependent variable to make it more left skewed (<1)
-train_y_transform <- sqrt(train_y)
-hist(train_y_transform$average_daily_rate)
