@@ -83,7 +83,7 @@ Below is the perfermance comparision of different models on validation set. We u
 | Support Vector Regression     | 41.3513970085533| 15.5208363929206|
 | Gradient Boosting Machine     | 40.0568441506894| 14.7029830342072|
 | Light GBM                     | 39.7322809704038| 13.4160055318152|
-| XGBoost.                      | 39.7322809704038| 13.4160055318152|
+| XGBoost                       | 39.7322809704038| 13.4160055318152|
 | Deep Learning                 | 40.3360880601974| 14.3416000000000|
 
 Based on this table, we decided that light GBM and XGBoost model were the best fit for our data since these model’s errors were the lowest.  
