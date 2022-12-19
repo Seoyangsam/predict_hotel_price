@@ -72,17 +72,17 @@ We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metric
 
 | Model                         | RMSE     | MAE      |
 |-------------------------------|----------|----------|
-| Linear model (Ridge)          | Cell 2   | Cell 3   |
-| Linear model (Lasso)          | Cell 5   | Cell 6   |
-| Polynomial model              | Cell 8   | Cell 9   |
-| Polynomial model(Ridge)       | Cell 8   | Cell 9   |
+| Linear model (Ridge)          | 45.9838087301083| 23.0158474776116|
+| Linear model (Lasso)          | 45.984102829997 | 23.0158781113198|
+| Polynomial model              | 46.0840812969587| 23.0672143396751|
+| Polynomial model(Ridge)       | 46.0840812969586| 23.0672143396752|
 | Polynomial model(Lasso)       | Cell 8   | Cell 9   |
-| Smoothing Spline model (Lasso)| Cell 8   | Cell 9   |
-| Local Regression model (Lasso)| Cell 8   | Cell 9   |
-| Random Forest                 | Cell 8   | Cell 9   |
-| Support Vector Regression     | Cell 8   | Cell 9   |
-| Gradient Boosting Machine     | Cell 8   | Cell 9   |
-| Light GBM                     | Cell 8   | Cell 9   |
-| Deep Learning                 | Cell 8   | Cell 9   |
+| Smoothing Spline model (Lasso)| 45.9833172300957    | 23.0179371917265   |
+| Local Regression model (Lasso)| 45.9833172300958    | 23.0179371917263    |
+| Random Forest                 | 41.70826    | 16.94994    |
+| Support Vector Regression     | 41.3513970085533    | 15.5208363929206    |
+| Gradient Boosting Machine     | 40.0568441506894    | 14.7029830342072   |
+| Light GBM                     | 39.7645296838941    | 13.3646612615321    |
+| Deep Learning                 | 40.3360880601974    | 14.3416    |
 
-Based on this, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  This however does not mean these models were the easiest to work with if we take a look at the computing time. Like already said, both the SVR and GBM model took up a great amount of time when they were ran. So although the performances of the 3 last mentioned models are quite similar, we would still opt for light GBM since this model could be ran very easily and quickly.  
+Based on this table, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  This however does not mean these models were the easiest to work with if we take a look at the computing time. Like already said, both the SVR and GBM model took up a great amount of time when they were ran. So although the performances of the 3 last mentioned models are quite similar, we would still opt for light GBM since this model could be ran very easily and quickly.  
