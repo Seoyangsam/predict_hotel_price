@@ -1,6 +1,6 @@
 # ML22-TEAM12
 
-This is the repository for our group assignment of the Machine Learning course. The task is to finish hotel room price prediction on Kaggle competition. The goal of this assignment is to benchmark different Machine Learning regression models that predict average daily hotel room rates based on a range of indicators. 
+This is the repository for our group assignment regarding the Machine Learning course. The goal of this assignment is to train different Machine Learning regression models to predict the average daily hotel room rate in function of several indicators and to obtain the optimal model. 
 
 # Structure 
 
@@ -63,7 +63,4 @@ LGBM
 
 4.Select best model and retrain the model 
 
-Except the R code, we also have the technical report. 
-
-
-# What we fund:
+Besides our R code, we also provided a technical report. 
