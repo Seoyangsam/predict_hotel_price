@@ -19,39 +19,39 @@ results of diffirent models
 
 In src, we have our R code, as below:
 
-## data preprocessing:
+1. data preprocessing:
 
-data_exploration
+- data_exploration
 
-data_cleaning
+- data_cleaning
 
-feature_engineering
+- feature_engineering
 
-## models:
+2. models:
 
-(*) support_vector_regression
+- support_vector_regression
 
-(*) regularized_polynomial_model
+- regularized_polynomial_model
 
-(*) reg_linear_model_ridge
+- reg_linear_model_ridge
 
-(*) reg_linear_model_lasso
+- reg_linear_model_lasso
 
-(*) random forest
+- random forest
 
-(*) polynomial_model
+- polynomial_model
 
-(*) light_GBM
+- light_GBM
 
-(*) generalized_additive_models
+- generalized_additive_models
 
-(*) deep_learning
+- deep_learning
 
-(*) XGBoost
+- XGBoost
 
-(*) GBM
+- GBM
 
-(*) LGBM
+- LGBM
 
 # What we did:
 
