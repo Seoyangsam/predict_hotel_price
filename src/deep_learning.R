@@ -246,19 +246,26 @@ plot(regdeephistory)
 
 regfinaldeepmodelnn <- keras_model_sequential()
 regfinaldeepmodelnn %>%
-  layer_dense(units = 1500, activation = "relu",
-              input_shape = ncol(train_and_validation_X_matrix)) %>%
+  layer_dense(units = 1000, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
-  #kernel_constraint = maxnormConstraint(max_value = 2, axis = 0) %>%
-  #max_norm(3) %>%
-  layer_dense(units = 1200, activation = "relu") %>%
+  #kernel_constraint=max_norm(2.)
+  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
   #max_norm(3) %>%
-  layer_dense(units = 900, activation = "relu") %>%
+  layer_dense(units = 600, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
   #max_norm(3) %>%
-  layer_dense(units = 600, activation = "relu") %>%
+  layer_dense(units = 400, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
+  #max_norm(3) %>%
+  layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.2) %>%
+  layer_dense(units = 80, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.2) %>%
+  layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.2) %>%
   layer_dense(units = 1, activation = "linear")
 
 regfinaldeepmodelnn %>% compile(loss = "mse",
@@ -266,7 +273,7 @@ regfinaldeepmodelnn %>% compile(loss = "mse",
                     metrics = list("mean_absolute_error"))
 
 regfinaldeepmodelnn %>%
-    fit(train_and_validation_X_matrix, train_and_validation_Y, epochs = 150, batch_size = 300)
+    fit(train_and_validation_X_matrix, train_and_validation_Y, epochs = 150, batch_size = 64)
 
 y_test_pred <- regfinaldeepmodelnn %>% predict(test_set_matrix)
 str(test)
@@ -355,13 +362,11 @@ regdeepmodelnn %>%
   layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
   layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
-  layer_dropout(rate = 0.3) %>%
+  layer_dropout(rate = 0.2) %>%
   layer_dense(units = 80, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
-  layer_dropout(rate = 0.3) %>%
+  layer_dropout(rate = 0.2) %>%
   layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
-  layer_dropout(rate = 0.3) %>%
-  layer_dense(units = 20, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
-  layer_dropout(rate = 0.3) %>%
+  layer_dropout(rate = 0.2) %>%
   layer_dense(units = 1, activation = "linear")
 
 regdeepmodelnn %>% compile(loss = "mse",
