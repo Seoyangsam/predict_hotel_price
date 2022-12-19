@@ -63,7 +63,7 @@ LGBM
 
 4.Select best model and retrain the model 
 
-5.Submission on Kaggle
+5.Submission on [Kaggle](https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022)
 
 Besides our R code, we also provided a technical report. 
 
