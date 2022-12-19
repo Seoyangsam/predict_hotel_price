@@ -55,7 +55,7 @@ validation_X_matrix <- model.matrix(average_daily_rate ~. -1, data = validation_
 validation_Y <- validation_X_data$average_daily_rate
 
 train_and_validation_X_matrix <- model.matrix(average_daily_rate~. -1, data = train_and_validation_X_data)
-train_and_validation_Y <- dependent_y$average_daily_rate
+train_and_validation_Y <- train_and_validation_X_data$average_daily_rate
 
 test_set_matrix <- model.matrix(~.-1 , data = test_set)
 
@@ -286,7 +286,7 @@ plot(regwidedeephistory)
 # SECOND STEP: RE-TRAIN ON TRAINING + VALIDATION SET AND PREDICT ON TEST SET
 
 regfinaldeepmodelnn <- keras_model_sequential()
-regwidedeepmodelnn %>%
+regfinaldeepmodelnn %>%
   layer_dense(units = 1000, activation = "relu",
               input_shape = ncol(train_and_validation_X_matrix),constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.3) %>%
@@ -304,11 +304,10 @@ regwidedeepmodelnn %>%
   layer_dropout(rate = 0.2) %>%
   layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
   layer_dropout(rate = 0.2) %>%
- 
   layer_dense(units = 1, activation = "linear")
 
 regfinaldeepmodelnn %>% compile(loss = "mse",
-                    optimizer = optimizer_adam(),
+                    optimizer = optimizer_adam(learning_rate = 0.001),
                     metrics = list("mean_absolute_error"))
 
 regfinaldeepmodelnn %>%
@@ -317,7 +316,7 @@ regfinaldeepmodelnn %>%
 y_test_pred <- regfinaldeepmodelnn %>% predict(test_set_matrix)
 
 # make file with id and corresponding average daily rate
-final_deep_learning_submission <- data.frame(col1 = test_id$x, col2 = y_test_pred)
+final_deep_learning_submission <- data.frame(col1 = test_id$id, col2 = y_test_pred)
 
 colnames(final_deep_learning_submission) <- c("id", "average_daily_rate")
 write.table(final_deep_learning_submission, file = "data/results/deep_learning_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
