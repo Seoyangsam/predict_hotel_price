@@ -112,6 +112,7 @@ test_X_scale <- data.matrix(test_X_scale)
 param <- list(booster = "gbtree", objective = "reg:linear", eta = 0.2, max_depth = 15, alpha = 0.5)
 
 # Fit the model
+set.seed(70)
 xgboost_model <- xgboost(params = param, data = dtrain, nrounds = 120)
 
 # Predict on the validation set
@@ -129,6 +130,7 @@ write.table(mae, file = "data/results/XGBoost_MAE.csv", sep = ",", row.names = F
 param <- list(booster = "gbtree", objective = "reg:linear", eta = 0.2, max_depth = 15, alpha = 0.5)
 
 # Fit the model
+set.seed(70)
 xgboost_model <- xgboost(params = param, data = dtrain_retrain, nrounds = 120)
 
 # Predict on the test set
