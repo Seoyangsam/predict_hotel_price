@@ -75,7 +75,7 @@ We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metric
 | Linear model (Lasso)          | 45.984102829997 | 23.0158781113198|
 | Polynomial model              | 46.0840812969587| 23.0672143396751|
 | Polynomial model(Ridge)       | 46.0840812969586| 23.0672143396752|
-| Polynomial model(Lasso)       | Cell 8   | Cell 9   |
+| Polynomial model(Lasso)       | 47.8232444073485   | 24.2590743626255  |
 | Smoothing Spline model (Lasso)| 45.9833172300957    | 23.0179371917265   |
 | Local Regression model (Lasso)| 45.9833172300958    | 23.0179371917263    |
 | Random Forest                 | 41.70826            | 16.94994    |
