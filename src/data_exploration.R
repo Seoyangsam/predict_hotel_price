@@ -99,14 +99,16 @@ correlation <- cor(c)
 round(correlation,2)
 
 # histograms 
-hist(test_X$car_parking_spaces)
-hist(test_X$days_in_waiting_list)
-hist(test_X$nr_adults)
-hist(test_X$nr_children)
-hist(test_X$special_requests)
-hist(test_X$nr_nights)
-hist(test_X$nr_previous_bookings)
-hist(test_X$nr_booking_changes)
+hist(train$car_parking_spaces)
+hist(train$days_in_waiting_list)
+hist(train$nr_adults)
+hist(train$nr_children)
+hist(train$special_requests)
+hist(train$nr_nights)
+hist(train$nr_previous_bookings)
+hist(train$nr_booking_changes)
+# hist(train$average_daily_rate)
+hist(train_y$average_daily_rate, col = "darkseagreen2", main = " ", xlab = "Average daily rate", ylab = "Frequency")
 
 # box plots
 boxplot(train$car_parking_spaces)
@@ -155,6 +157,9 @@ ggplot(df, aes(x=team)) +
 # scatter plots
 plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
 
+# Density curve average daily rate
+plot_y <- ggplot(train, aes(x=average_daily_rate)) + geom_density()
+plot_y
 
 # distribution of dependent variable
 hist(train_y$average_daily_rate)
