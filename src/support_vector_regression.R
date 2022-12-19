@@ -1,6 +1,3 @@
-install.packages("e1071")
-install.packages("caret")
-install.packages("Metrics")
 library(e1071)
 library(caret)
 library(Metrics)

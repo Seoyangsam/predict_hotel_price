@@ -1,5 +1,4 @@
 # here we will perform a polynomial regression 
-install.packages("Metrics")
 library(Metrics)
 library(glmnet)
 
