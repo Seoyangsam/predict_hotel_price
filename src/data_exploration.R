@@ -6,13 +6,10 @@ install.packages("dplyr")
 library(dplyr)
 
 # we read our data
-train <- read.csv(file = 'data/bronze/train.csv', header = TRUE,fileEncoding = 'latin1' )
-str(train)
-
+train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
 test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
-str(test_X)
 
-test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE)
+train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
 
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
@@ -97,14 +94,16 @@ correlation <- cor(c)
 round(correlation,2)
 
 # histograms 
-hist(test_X$car_parking_spaces)
-hist(test_X$days_in_waiting_list)
-hist(test_X$nr_adults)
-hist(test_X$nr_children)
-hist(test_X$special_requests)
-hist(test_X$nr_nights)
-hist(test_X$nr_previous_bookings)
-hist(test_X$nr_booking_changes)
+hist(train$car_parking_spaces)
+hist(train$days_in_waiting_list)
+hist(train$nr_adults)
+hist(train$nr_children)
+hist(train$special_requests)
+hist(train$nr_nights)
+hist(train$nr_previous_bookings)
+hist(train$nr_booking_changes)
+# hist(train$average_daily_rate)
+hist(train_y$average_daily_rate, col = "darkseagreen2", main = " ", xlab = "Average daily rate", ylab = "Frequency")
 
 # box plots
 boxplot(train$car_parking_spaces)

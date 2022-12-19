@@ -1,6 +1,12 @@
-# read data: we will start from the data cleaning and do the feature engineering here
-train_X_cleaned <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
-train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
+# GBM
+#install.packages('gbm')
+library(gbm)
+library(caret)
+library(Metrics)
+install.packages("Metrics")
+# read data
+train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
+train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE)
 validation_y <- read.csv(file = 'data/gold/validation_y.csv', header = TRUE, fileEncoding = 'latin1')
 validation_X_cleaned <- read.csv(file = 'data/gold/validation_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 test_X_cleaned <- read.csv(file = 'data/gold/test_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
@@ -132,10 +138,9 @@ final_model_gbm = gbm(average_daily_rate ~.,
                 data = train_and_validation_X_data,
                 distribution = "gaussian",             #possibilities: gaussian,laplace,bernouilli,adaboost           
                 shrinkage = .1,
-                n.minobsinnode = 4,
+                n.minobsinnode = 5,
                 interaction.depth = 10,
-                n.trees = 4000)
-
+                n.trees = 2250)
 
 
 test_prediction <- predict(object = final_model_gbm, newdata = test_set, type = "response")

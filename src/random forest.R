@@ -1,3 +1,9 @@
+set.seed(1)
+
+# import libraris
+library(randomForest)
+library(caret)
+
 # Read files
 train_X <- read.csv(file = 'data/silver/train_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
@@ -12,8 +18,8 @@ validation_X <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header =
 #combined <- rbind(train_X, validation_X)
 
 # Create a vector of labels for stratified sampling
-#labels <- as.factor(combined$assigned_room_type)
-set.seed(1)
+labels <- as.factor(combined$assigned_room_type)
+
 # Split the combined dataset into a new training and validation set using stratified sampling
 #validation <- createDataPartition(labels, p = 0.3, list = FALSE)
 #validation_X1<- combined[validation, ]
@@ -45,12 +51,9 @@ train_X_data <- as.data.frame(unclass(train_X_data), stringsAsFactors = TRUE)
 validation_X <-as.data.frame(unclass(validation_X), stringsAsFactors = TRUE,levels = levels(train_X_data))
 
 # Hyperparemeter tuning with mtry
-library(randomForest)
-library(caret)
-set.seed(123)
 mtry_values <- c(sqrt(ncol(train_X)), ncol(train_X), 0.5*ncol(train_X))
 tunegrid <- expand.grid(mtry = mtry_values)
-rf_default <- train(average_daily_rate~.,
+rf_default <- train(train_y~.,
                       data=train_X_data,
                       method='rf',
                       metric="RMSE",
@@ -61,7 +64,6 @@ rf_default <- train(average_daily_rate~.,
 print(rf_default)
 
 # retrain Random forest
-set.seed(123)
 updated_mtry <- expand.grid(mtry=4)
 rf.train <- train(average_daily_rate~.,
                       data=train_X_data,
