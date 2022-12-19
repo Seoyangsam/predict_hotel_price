@@ -54,11 +54,13 @@ rf.train <- train(average_daily_rate~.,
 print(rf.train)
 
 yhat.rf <- predict(rf.train, newdata = validation_X)
-df<-yhat.rf - validation_y
+df <- yhat.rf - validation_y
+
 #calculate the rmse
 rf_error <- sqrt(mean((df$average_daily_rate)^2))
 rf_error
 
+#calculate the mae
 mae <- mean(abs(df$average_daily_rate))
 mae
 
