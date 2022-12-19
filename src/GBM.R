@@ -3,7 +3,7 @@
 library(gbm)
 library(caret)
 library(Metrics)
-install.packages("Metrics")
+
 # read data
 train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE)
