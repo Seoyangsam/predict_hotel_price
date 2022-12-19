@@ -20,7 +20,6 @@ library(tensorflow)
 library(ggplot2)
 library(caret)
 
-install.packages("ISLR2")
 library(ISLR2)
 
 #tryCatch(
@@ -53,7 +52,7 @@ dependent_y <- rbind(train_y, validation_y)
 
 train_and_validation_X_data <- data.frame(train_and_validation_X,dependent_y)
 
-# matrix
+ # matrix
 library(Matrix)
 require(Matrix)
 train_X_matrix <- model.matrix(average_daily_rate ~. -1 , data = train_X_data)
@@ -316,14 +315,12 @@ plot(regdeephistory)
 # step 1 make model powerful enough
 deepmodelnn <- keras_model_sequential()
 deepmodelnn %>%
-  layer_dense(units = 1000, activation = "relu",
+  layer_dense(units = 600, activation = "relu",
               input_shape =ncol(train_X_matrix)) %>%
-  layer_dense(units = 800, activation = "relu") %>%
-  layer_dense(units = 600, activation = "relu") %>%
-  layer_dense(units = 400, activation = "relu") %>%
+  layer_dense(units = 500, activation = "relu") %>%
+  layer_dense(units = 350, activation = "relu") %>%
   layer_dense(units = 200, activation = "relu") %>%
   layer_dense(units = 100, activation = "relu") %>%
-  layer_dense(units = 80, activation = "relu") %>%
   layer_dense(units = 40, activation = "relu") %>%
   layer_dense(units = 1, activation = "linear")
 
@@ -342,27 +339,29 @@ plot(deephistory)
 # step 3 reguralize architectrure
 regdeepmodelnn <- keras_model_sequential()
 regdeepmodelnn %>%
-  layer_dense(units = 1400, activation = "relu",
-              input_shape = ncol(train_X_matrix), constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
+
+  layer_dense(units = 1000, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
   #kernel_constraint=max_norm(2.)
-  layer_dense(units = 1100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
   #max_norm(3) %>%
-  layer_dense(units = 800, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 600, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
   #max_norm(3) %>%
-  layer_dense(units = 500, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 400, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
   #max_norm(3) %>%
-  layer_dense(units = 250, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
-  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
-  layer_dense(units = 50, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
-  layer_dense(units = 20, activation = "relu", constraint_maxnorm(max_value = 4), kernel_regularizer = regularizer_l1(l = 0.001)) %>%
-  layer_dropout(rate = 0.4) %>%
+  layer_dense(units = 200, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 100, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 80, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 40, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 20, activation = "relu", constraint_maxnorm(max_value = 5)) %>%
+  layer_dropout(rate = 0.3) %>%
   layer_dense(units = 1, activation = "linear")
 
 regdeepmodelnn %>% compile(loss = "mse",

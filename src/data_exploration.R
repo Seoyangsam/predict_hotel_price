@@ -126,3 +126,29 @@ barplot(train$nr_nights)
 barplot(train$nr_previous_bookings)
 barplot(train$special_requests, horiz = TRUE)
 
+df <- data.frame(reservedRoomType = c(train$reserved_room_type),
+                assigned = c(train$assigned_room_type),
+                customerType = c(train$customer_type),
+                arrivalDate = c(train$arrival_date),
+                bookingAgent = c(train$booking_agent),
+                bookingCompany = c(train$booking_company),
+                distributionChannel = c(train$booking_distribution_channel),
+                canceled = c(train$canceled),
+)
+        
+ggplot(df, aes(x = Assigned_room_type))
+geom_bar()
+
+#create data frame
+df <- data.frame(result = c('W', 'L', 'W', 'W', 'W', 'L', 'W', 'L', 'W', 'L'),
+                 team = c('B', 'B', 'B', 'B', 'D', 'A', 'A', 'A', 'C', 'C'),
+                 points = c(12, 28, 19, 22, 32, 45, 22, 28, 13, 19),
+                 rebounds = c(5, 7, 7, 12, 11, 4, 10, 7, 8, 8))
+
+#create bar chart of teams
+ggplot(df, aes(x=team)) +
+  geom_bar()
+
+# scatter plots
+plot(train$nr_adults, train$average_daily_rate, main = "Average daily rate in function of number of adults")
+
