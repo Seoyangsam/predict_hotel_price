@@ -7,9 +7,14 @@ library(dplyr)
 
 # we read our data
 train <- read.csv(file = 'data/bronze/train.csv', header = TRUE)
-test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
+str(train)
 
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE, fileEncoding = 'latin1')
+
+test_X <- read.csv(file = 'data/bronze/test.csv', header = TRUE)
+str(test_X)
+
+test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE)
 
 test_id <- test_X$id
 write.table(test_id, file = "data/bronze/test_id.csv", sep = ",", row.names = F)
