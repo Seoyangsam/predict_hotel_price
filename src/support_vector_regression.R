@@ -71,8 +71,8 @@ svr_test_set <- svm(average_daily_rate~ ., data = train_and_validation_X_data, k
 prediction <- predict(object = svr_test_set, newdata = test_set)
 
 # make file with id and corresponding average daily rate
-svr_submission <- data.frame(col1 = test_id$x, col2 = prediction)
+svr_submission <- data.frame(col1 = test_id$x)
 
-colnames(svr_submission) <- c("id", "average_daily_rate")
+colnames(svr_submission) <- c("id")
 write.table(svr_submission, file = "data/results/svr_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
