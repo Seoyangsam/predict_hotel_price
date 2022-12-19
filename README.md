@@ -15,7 +15,7 @@ dataet after cleaning
 dataset after cleaning and feature engineering 
 
 - results:
-results of diffirent models 
+results of diffirent models<br> 
 
 In src, we have our R code, as below:
 
@@ -55,15 +55,15 @@ In src, we have our R code, as below:
 
 # What we did:
 
-1.Data preprocessing 
+1. Data preprocessing 
 
-2.Create the linear baseline 
+2. Create the linear baseline 
 
-3.Build other models with hyperparameter tuning 
+3. Build other models with hyperparameter tuning 
 
-4.Select best model and retrain the model 
+4. Select best model and retrain the model 
 
-5.Submission on [Kaggle](https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022)
+5. Submission on [Kaggle](https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022)
 
 Besides our R code, we also provided a technical report. 
 
