@@ -152,6 +152,7 @@ params_optimal <- list(
   max_depth = 10,
   lambda_l1 = 0.01)
 
+set.seed(100)
 lgb <- lgb.train(params = params_optimal, data = dtrain, nrounds = 800, task = "regression")
 
 predictions <- predict(lgb, test_X_scale)
@@ -253,6 +254,7 @@ params_optimal <- list(
   lambda_l1 = 0.01
 )
 
+set.seed(50)
 lgb_final_model <- lgb.train(params = params_optimal, data = dtrain_retrain, nrounds = 800, task = "regression")
 
 
