@@ -61,14 +61,15 @@ In src, we have our R code, as below:
 
 3. Build other models with hyperparameter tuning 
 
-4. Select best model and retrain the model 
+4. Select best model and retrain the model on train+validation set  
 
-5. Submission on [Kaggle](https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022)
+5. Submissions on [Kaggle](https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022)
 
 Besides our R code, we also provided a technical report. 
 
 # What we fund:
-We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metrics. 
+Below is the perfermance comparision of different models on validation set. We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metrics. 
+
 | Model                         | RMSE     | MAE      |
 |-------------------------------|----------|----------|
 | Linear model (Ridge)          | 45.9838087301083| 23.0158474776116|
