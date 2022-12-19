@@ -88,20 +88,25 @@ sapply(validation_X_scale[, scale_cols], sd)
 #train_X_data <- data.frame(train_X_scale,train_y)
 #validation_X_data <- data.frame(validation_X_scale,validation_y)
 
+#train_X_scale <- as.numeric(train_X_scale)
+train_X_scale[] <− lapply(train_X_scale,as.numeric)
+#validation_X_scale <- as.numeric(validation_X_scale)
+validation_X_scale[] <− lapply(validation_X_scale,as.numeric)
+#train_y <- as.numeric(train_y)
+train_y[] <− lapply(train_y,as.numeric)
+validation_y[] <− lapply(validation_y,as.numeric)
+
 #train_X_data <- as.matrix(train_X_data)
 #validation_X_data <- as.matrix(validation_X_data) 
-train_X_scale <- as.matrix(train_X_scale)
-validation_X_scale <- as.matrix(validation_X_scale) 
-train_y <- as.matrix(train_y)
-#validation_y <- as.matrix(validation_y)
+train_X_scale <- data.matrix(train_X_scale)
+validation_X_scale <- data.matrix(validation_X_scale) 
+train_y <- data.matrix(train_y)
+validation_y <- data.matrix(validation_y)
 
-train_X_scale <- as.numeric(train_X_scale)
-validation_X_scale <- as.numeric(validation_X_scale)
-train_y <- as.numeric(train_y)
 
 # Convert the data to an xgb.DMatrix object
-dtrain <- xgb.DMatrix(data = as.matrix(train_X_scale), label = train_y)
-dvalid <- xgb.DMatrix(data = as.matrix(validation_X_scale), label = validation_y)
+dtrain <- xgb.DMatrix(data = train_X_scale, label = train_y)
+dvalid <- xgb.DMatrix(data = validation_X_scale, label = validation_y)
 
 # Set the xgboost parameters
 param <- list(booster = "gbtree", objective = "reg:linear", eta = 0.2, max_depth = 12)
