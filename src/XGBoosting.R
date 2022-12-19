@@ -1,4 +1,3 @@
-install.packages("xgboost")
 library(xgboost)
 
 # read data: we will start from the data cleaning and do the feature engineering here
