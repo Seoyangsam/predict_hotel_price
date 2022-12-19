@@ -55,13 +55,7 @@ LGBM
 
 # What we did:
 
-1.Data preprocessing
--exploratory data analysis
--feature selection 
--handle outliers
--dealing missing value 
--dummy encoding
--scalling 
+1.Data preprocessing 
 
 2.Create the linear baseline 
 
