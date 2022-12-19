@@ -86,7 +86,7 @@ Below is the perfermance comparision of different models on validation set. We u
 | XGBoost                       | 39.7322809704038| 13.4160055318152|
 | Deep Learning                 | 40.3360880601974| 14.3416000000000|
 
-Based on this table, we decided that light GBM and XGBoost model were the best fit for our data since these model’s errors were the lowest.  
+Based on this table, we can conclude that light GBM and XGBoost model were the best fit for our data since these model’s errors were the lowest.  
 
 # Authors 
 Hanne Van Impe<br>
