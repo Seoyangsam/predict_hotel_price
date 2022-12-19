@@ -1,6 +1,5 @@
 
 # here we will perform GAM 
-install.packages("gam")
 library(gam)
 library(glmnet)
 
