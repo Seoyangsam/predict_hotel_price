@@ -6,9 +6,10 @@ validation_X_cleaned <- read.csv(file = 'data/silver/validation_X_cleaned.csv', 
 test_X_cleaned <- read.csv(file = 'data/silver/test_X_cleaned.csv', header = TRUE, fileEncoding = 'latin1')
 test_id <- read.csv(file = 'data/bronze/test_id.csv', header = TRUE, fileEncoding = 'latin1')
 
-# power transform dependent variable to make it more left skewed (<1)
-train_y <- sqrt(train_y)
-colMeans(is.na(train_y))
+# transform dependent variable to make it more normally distributed
+# this did not result in much changes so we decided to only try it for LGBM which is our best model
+#train_y <- sqrt(train_y)
+#colMeans(is.na(train_y))
 
 # packages
 library(gbm)
@@ -17,7 +18,6 @@ library(lightgbm)
 library(Metrics)
 
 # integer encoding for meal booked
-
 train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 validation_X_ft_engineering <- validation_X_cleaned
@@ -85,7 +85,7 @@ sapply(test_X_scale[, scale_cols], sd)
 colMeans(validation_X_scale[, scale_cols])
 sapply(validation_X_scale[, scale_cols], sd)
 
-
+# prepare data to be used with the lightGBM package
 train_X_data <- data.frame(train_X_scale,train_y)
 
 validation_X_data <- data.frame(validation_X_scale,validation_y)
@@ -113,23 +113,65 @@ params_optimal <- list(
   max_depth = 10,
   lambda_l1 = 0.01)
 
+
 lgb <- lgb.train(params = params_optimal, data = dtrain, nrounds = 800, task = "regression")
 
 # Use the trained model to make predictions on the test data
 predictions <- predict(lgb, validation_X_scale)
-predictions <- predictions^2
+#predictions <- predictions^2
 
-# Evaluate the predictions using an appropriate metric
+# Evaluate the predictions using RMSE and MAE
 LGBM_RMSE <- sqrt(mean((predictions - validation_y$average_daily_rate)^2))
 LGBM_MAE <- mae(validation_y$average_daily_rate, predictions)
-summary(predictions)
 
 write.table(LGBM_RMSE, file = "data/results/LGBM_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 write.table(LGBM_MAE, file = "data/results/LGBM_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
+# step 2: retrain with training + validation set as new training set and predict on test set
+train_and_validation_X <- rbind(train_X, validation_X)
+dependant_y <- rbind(train_y, validation_y)
+
+train_and_validation_X <- as.matrix(train_and_validation_X)
+dependant_y <- as.matrix(dependant_y)
+
+dtrain_test <- lgb.Dataset(data = train_and_validation_X, label = dependant_y)
+dtrain_test <- lgb.Dataset.construct(data = dtrain_test)
+
+test_X_scale <- as.matrix(test_X_scale)
+
+# Train the LightGBM model using the training data and optimal parameters
+params_optimal <- list(
+  tree_learner = "serial",
+  task = "train",
+  boosting_type = "gbdt",
+  objective = "regression",
+  metrics = "l2",
+  learning_rate = 0.15,
+  num_leaves = 80,
+  max_depth = 10,
+  lambda_l1 = 0.01)
+
+lgb <- lgb.train(params = params_optimal, data = dtrain, nrounds = 800, task = "regression")
+
+predictions <- predict(lgb, test_X_scale)
+
+# make file with id and corresponding average daily rate
+lgbm_submission <- data.frame(col1 = test_id$x, col2 = predictions)
+
+colnames(lgbm_submission) <- c("id", "average_daily_rate")
+write.table(lgbm_submission, file = "data/results/LGBM_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+
+
+
+
+
 
 # step 2: retrain on val+train set and predict on test set
+# here we used the data preprocessing where we did not split the training set into training and validation set.
+# this way, we used the mean, median and mode from the whole training set for the test set.
+# However, the results barely changed compared to the other method, we used in all the other files where we combine training and validation.
+# Since it did not change much, we decided to leave it as it is in this file but didn't make changes in the other files.
 
 #First we read our datas
 train_X_cleaned <- read.csv(file = 'data/silver/train_X_cleaned_retrain.csv', header = TRUE)
@@ -140,7 +182,6 @@ str(test_X_cleaned)
 
 train_y_retrain <- read.csv(file = 'data/gold/train_y_retrain.csv', header = TRUE)
 
-
 train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 
@@ -148,7 +189,6 @@ union(unique(train_X_ft_engineering$meal_booked), unique(test_X_ft_engineering$m
 meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
 train_X_ft_engineering$meal_booked <- as.numeric(factor(train_X_ft_engineering$meal_booked, levels = meal_booked_levels))
 test_X_ft_engineering$meal_booked <- as.numeric(factor(test_X_ft_engineering$meal_booked, levels = meal_booked_levels))
-
 
 library(dummy)
 # get categories and dummies
@@ -169,14 +209,6 @@ train_X_ft_engineering <- cbind(train_X_ft_engineering, dummies_train)
 test_X_ft_engineering <- subset(test_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, month_arrival_date, day_arrival_date))
 test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
 
-
-#convert the predictors to factors
-#train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)] <- lapply(train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)], as.factor)
-#str(train_X_ft_engineering)
-#test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)] <- lapply(test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)], as.factor)
-#str(test_X_ft_engineering)
-#validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)] <- lapply(validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)], as.factor)
-#str(validation_X_ft_engineering)
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_scale <- train_X_ft_engineering

@@ -111,28 +111,12 @@ pred.valset <- predict(poly.fit_ridge1, newdata = validation_X)
 
 # MSE 
 pred_valset_mse <- sqrt(mean((pred.valset - validation_y$average_daily_rate)^2))
-write.table(pred_valset_mse, file = "data/results/ridgepolynomial_model_RMSE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mse, file = "data/results/ridgepolynomial_model_RMSE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 # MAE 
 pred_valset_mae <- mae(validation_y$average_daily_rate, pred.valset)
-write.table(pred_valset_mae, file = "data/results/ridgepolynomial_model_MAE_2.csv", sep = ",", row.names = FALSE, col.names=TRUE)
+write.table(pred_valset_mae, file = "data/results/ridgepolynomial_model_MAE.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
-
-
-# SECOND STEP
-train_val_data <- data.frame(train_and_validation, dependant_y)
-
-# POLY  
-poly.fit_ridge2 <- lm(average_daily_rate ~ . + I(lead_time^2) + I(nr_adults^2) + I(nr_children^2) + I(nr_nights^2) + I(previous_cancellations^2) , data = train_X_data)
-
-# predict on test set
-pred.testset <- predict(poly.fit_ridge2, newdata = test_set)
-
-# make file with id and corresponding average daily rate
-poly_submission <- data.frame(col1 = test_id$x, col2 = pred.testset)
-
-colnames(poly_submission) <- c("id", "average_daily_rate")
-write.table(poly_submission, file = "data/results/regpoly_submission.csv", sep = ",", row.names = FALSE, col.names=TRUE)
 
 
 

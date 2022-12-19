@@ -4,6 +4,7 @@ library(gbm)
 library(caret)
 library(Metrics)
 install.packages("Metrics")
+
 # read data
 train_X <- read.csv(file = 'data/gold/train_X_scale.csv', header = TRUE, fileEncoding = 'latin1')
 train_y <- read.csv(file = 'data/gold/train_y.csv', header = TRUE)
@@ -18,7 +19,6 @@ library(caret)
 library(lightgbm)
 library(Metrics)
 
-
 # create 1 dataframe
 train_X_data <- data.frame(train_X_scale,train_y)
 validation_X_data <- data.frame(validation_X_scale,validation_y)
@@ -27,7 +27,7 @@ validation_X_data <- data.frame(validation_X_scale,validation_y)
 cv_5 = trainControl(method = "cv", number = 5)
 
 gbm_grid =  expand.grid(interaction.depth = 1:5,
-                        n.trees = (1:6) * 500,
+                        n.trees = c(500,1000,2000,3000,4000),
                         shrinkage = c(0.001, 0.01, 0.1),
                         n.minobsinnode = 10)
                     
@@ -41,14 +41,14 @@ gbm_tune = train(average_daily_rate ~ ., data = train_X_data,
                       tuneGrid = gbm_grid)
 
 print(gbm_tune)
-# optimal parameters are: n.trees = 3000, interaction.depth = 5, shrinkage = 0.1
-# since these are all the maximum values, we tune again to see if we can further improve
+# optimal parameters are: n.trees = 2000, interaction.depth = 5, shrinkage = 0.1
+# we tune again to see if we can further improve
 
 # 2: tune parameters using cv k=5
 cv_5 = trainControl(method = "cv", number = 5, verboseIter = TRUE)
 
 gbm_grid =  expand.grid(interaction.depth = 5:10,
-                        n.trees = c(3000,4000,5000,6000),
+                        n.trees = c(1750,2000,2250,2500),
                         shrinkage = c(0.1,0.5,1),
                         n.minobsinnode = 10)
 
@@ -63,13 +63,13 @@ gbm_tune = train(average_daily_rate ~ ., data = train_X_data,
                       tuneGrid = gbm_grid)  
 
 print(gbm_tune)
-# optimal parameters are: n.trees = 4000, interaction.depth = 10, shrinkage = 0.1
+# optimal parameters are: n.trees = 2250, interaction.depth = 10, shrinkage = 0.1
 
 # 3: tune n.minobsinnode with optimal parameters
 cv_5 = trainControl(method = "cv", number = 5, verboseIter = TRUE)
 
 gbm_grid =  expand.grid(interaction.depth = 10,
-                        n.trees = 4000,
+                        n.trees = 2250,
                         shrinkage = 0.1,
                         n.minobsinnode = c(5,10,15,20))
 
@@ -87,8 +87,8 @@ print(gbm_tune)
 # 4: tune n.minobsinnode + interaction depth
 cv_5 = trainControl(method = "cv", number = 5, verboseIter = TRUE)
 
-gbm_grid =  expand.grid(interaction.depth = 10,
-                        n.trees = 4000,
+gbm_grid =  expand.grid(interaction.depth = 10:13,
+                        n.trees = 2250,
                         shrinkage = 0.1,
                         n.minobsinnode = c(4,5,6))
 
