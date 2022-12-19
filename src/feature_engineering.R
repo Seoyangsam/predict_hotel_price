@@ -8,15 +8,11 @@ str(test_X_cleaned)
 validation_X_cleaned <- read.csv(file = 'data/silver/validation_X_cleaned.csv', header = TRUE)
 str(validation_X_cleaned)
 
+# new names for dataframes to avoid confusion
 train_X_ft_engineering <- train_X_cleaned
 test_X_ft_engineering <- test_X_cleaned
 validation_X_ft_engineering <- validation_X_cleaned
 
-#integer encoding for meal_booked, save for later
-#union(unique(train_X$meal_booked), unique(test_X$meal_booked))
-#meal_booked_levels <- c("meal package NOT booked", "bed & breakfast (BB)", "breakfast + one other meal // usually dinner (half board)", "full board [BREAKF -- lunch -- Dinner]") # in correct order!
-#train_X$meal_booked <- as.numeric(factor(train_X$meal_booked, levels = meal_booked_levels))
-#test_X$meal_booked <- as.numeric(factor(test_X$meal_booked, levels = meal_booked_levels))
 
 library(dummy)
 # get categories and dummies
@@ -44,13 +40,6 @@ test_X_ft_engineering <- cbind(test_X_ft_engineering, dummies_test)
 validation_X_ft_engineering <- subset(validation_X_ft_engineering, select = -c(assigned_room_type, customer_type, last_status, market_segment, meal_booked, month_arrival_date, day_arrival_date))
 validation_X_ft_engineering <- cbind(validation_X_ft_engineering, dummies_validation)
 
-#convert the predictors to factors
-#train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)] <- lapply(train_X_ft_engineering[sapply(train_X_ft_engineering, is.character)], as.factor)
-#str(train_X_ft_engineering)
-#test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)] <- lapply(test_X_ft_engineering[sapply(test_X_ft_engineering, is.character)], as.factor)
-#str(test_X_ft_engineering)
-#validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)] <- lapply(validation_X_ft_engineering[sapply(validation_X_ft_engineering, is.character)], as.factor)
-#str(validation_X_ft_engineering)
 
 # create new dataframes to avoid overwriting the existing dataframes
 train_X_scale <- train_X_ft_engineering
