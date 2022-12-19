@@ -67,3 +67,4 @@ Except the R code, we also have the technical report.
 
 
 # What we fund:
+Looking at our results(as stored in results folder), we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  This however does not mean these models were the easiest to work with if we take a look at the computing time. Like already said, both the SVR and GBM model took up a great amount of time when they were ran. So although the performances of the 3 last mentioned models are quite similar, we would still opt for light GBM since this model could be ran very easily and quickly.  
