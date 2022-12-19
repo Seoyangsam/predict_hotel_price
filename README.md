@@ -56,12 +56,20 @@ LGBM
 # What we did:
 
 1.Data preprocessing
+-exploratory data analysis
+-feature selection 
+-handle outliers
+-dealing missing value 
+-dummy encoding
+-scalling 
 
 2.Create the linear baseline 
 
 3.Build other models with hyperparameter tuning 
 
 4.Select best model and retrain the model 
+
+5.Submission on Kaggle https://www.kaggle.com/competitions/hotel-price-prediction-ugent-ml-2022
 
 Except the R code, we also have the technical report. 
 
@@ -79,7 +87,7 @@ We used RMSE(root of mean squared error) and MAE(mean abusolute error) as metric
 | Polynomial model(Lasso)       | Cell 8   | Cell 9   |
 | Smoothing Spline model (Lasso)| 45.9833172300957    | 23.0179371917265   |
 | Local Regression model (Lasso)| 45.9833172300958    | 23.0179371917263    |
-| Random Forest                 | 41.70826    | 16.94994    |
+| Random Forest                 | 41.70826            | 16.94994    |
 | Support Vector Regression     | 41.3513970085533    | 15.5208363929206    |
 | Gradient Boosting Machine     | 40.0568441506894    | 14.7029830342072   |
 | Light GBM                     | 39.7645296838941    | 13.3646612615321    |
