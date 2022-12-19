@@ -72,20 +72,21 @@ Below is the perfermance comparision of different models on validation set. We u
 
 | Model                         | RMSE     | MAE      |
 |-------------------------------|----------|----------|
-| Linear model (Ridge)          | 45.9838087301083| 23.0158474776116|
-| Linear model (Lasso)          | 45.984102829997 | 23.0158781113198|
-| Polynomial model              | 46.0840812969587| 23.0672143396751|
-| Polynomial model(Ridge)       | 46.0840812969586| 23.0672143396752|
+| Linear model (Ridge)          | 46.9450739620167| 24.0875589083806|
+| Linear model (Lasso)          | 46.9452004237641| 24.0878229405589|
+| Polynomial model              | 47.8232444073489| 24.2590743626267|
+| Polynomial model(Ridge)       | 47.8232444073485| 24.2590743626255|
 | Polynomial model(Lasso)       | 47.8232444073485| 24.2590743626255|
-| Smoothing Spline model (Lasso)| 45.9833172300957| 23.0179371917265|
-| Local Regression model (Lasso)| 45.9833172300958| 23.0179371917263|
-| Random Forest                 | 41.70826        | 16.94994        |
+| Smoothing Spline model (Lasso)| 46.9450187663735| 24.0883525771904|
+| Local Regression model (Lasso)| 46.9450187663735| 24.0883525771905|
+| Random Forest                 | 41.7082616838757| 16.9499372629923|
 | Support Vector Regression     | 41.3513970085533| 15.5208363929206|
 | Gradient Boosting Machine     | 40.0568441506894| 14.7029830342072|
-| Light GBM                     | 39.7645296838941| 13.3646612615321|
-| Deep Learning                 | 40.3360880601974| 14.3416         |
+| Light GBM                     | 39.7322809704038| 13.4160055318152|
+| XGBoost.                      | 39.7322809704038| 13.4160055318152|
+| Deep Learning                 | 40.3360880601974| 14.3416000000000|
 
-Based on this table, we decided that the SVR, GBM and light GBM model were the best fit for our data since these model’s errors were the lowest.  
+Based on this table, we decided that light GBM and XGBoost model were the best fit for our data since these model’s errors were the lowest.  
 
 # Authors 
 Hanne Van Impe<br>
